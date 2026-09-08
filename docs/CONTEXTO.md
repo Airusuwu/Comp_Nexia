@@ -25,23 +25,25 @@ incluye JavaScript funcional ni backend.
 
 - Repositorio privado: `https://github.com/Airusuwu/Comp_Nexia`.
 - Rama activa: `front`, sincronizada con `origin/front` al iniciar esta mejora.
-- Último commit relevante al iniciar esta mejora: `01dec13 docs: crear guía de colaboración con Git`.
+- Último commit relevante al iniciar esta mejora: `e14411d docs: incorporar referencia visual de Nexia`.
 - Estructura inicial y exclusiones de Git creadas.
 - Documentación del punto 4 completada.
 - `GUIA_GIT.md` completada para el flujo de colaboración del proyecto.
 - Referencia visual guardada sin cambios en `docs/referencias/nexia-referencia.png`.
 - Referencia analizada y guía de diseño ajustada a su paleta, composición y jerarquía.
-- No hay interfaz implementada ni lógica funcional.
+- Maqueta visual de escritorio implementada con HTML y CSS.
+- Encabezado, acciones, editor, estructuras, resultado y error incluidos como contenido estático.
+- No existe JavaScript ni lógica funcional o de backend.
 - No hay cambios integrados en `main` después del commit inicial.
 
 ## Validaciones y pendientes
 
 - Se verificó que `main`, `front` y `back` existen localmente y en GitHub.
 - La referencia mide 1672 × 941 px y su copia coincide con el archivo recibido.
-- Falta construir la interfaz y validarla en un navegador.
+- Falta completar la adaptación del punto 8 y validar la interfaz en un navegador.
 
 ## Próximos pasos
 
-1. Implementar la interfaz estática con HTML y CSS en `front`.
+1. Adaptar la interfaz a tabletas y celulares y completar estados visuales.
 2. Compararla visualmente con la referencia en escritorio.
-3. Validar su adaptación a tableta y celular.
+3. Validar escritorio, tableta y celular en un navegador.

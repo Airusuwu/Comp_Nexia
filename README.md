@@ -7,9 +7,9 @@ personas con distintos niveles de experiencia.
 
 ## Estado del proyecto
 
-La entrega actual es una **maqueta visual en preparación**. Utiliza HTML y CSS
-y no ejecuta, analiza ni guarda programas. Los resultados y errores que se
-mostrarán en pantalla serán ejemplos estáticos de demostración.
+La entrega actual es una **maqueta visual estática**. Utiliza HTML y CSS y no
+ejecuta, analiza ni guarda programas. Los resultados y errores mostrados en
+pantalla son ejemplos estáticos de demostración.
 
 El backend, la ejecución de pseudocódigo y el resto de las funciones están
 fuera del alcance de esta entrega.
@@ -32,8 +32,6 @@ Comp_Nexia/
 ```
 
 ## Cómo revisar el frontend
-
-La interfaz todavía no está construida. Cuando se complete el diseño:
 
 1. Descarga o clona el repositorio.
 2. Abre la carpeta `Comp_Nexia`.
