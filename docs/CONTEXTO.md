@@ -25,7 +25,7 @@ incluye JavaScript funcional ni backend.
 
 - Repositorio privado: `https://github.com/Airusuwu/Comp_Nexia`.
 - Rama activa: `front`, sincronizada con `origin/front` al iniciar esta mejora.
-- Último commit relevante al iniciar esta mejora: `fa29482 feat: construir maqueta visual de Nexia`.
+- Último commit relevante al iniciar esta mejora: `de1adaa feat: adaptar interfaz a distintos tamaños`.
 - Estructura inicial y exclusiones de Git creadas.
 - Documentación del punto 4 completada.
 - `GUIA_GIT.md` completada para el flujo de colaboración del proyecto.
@@ -35,6 +35,7 @@ incluye JavaScript funcional ni backend.
 - Encabezado, acciones, editor, estructuras, resultado y error incluidos como contenido estático.
 - Diseño adaptable completado para escritorio, tableta y celular.
 - Estados de `hover`, foco y pulsación definidos; movimiento reducido respetado.
+- Validación visual y técnica del punto 9 completada sin defectos bloqueantes.
 - No existe JavaScript ni lógica funcional o de backend.
 - No hay cambios integrados en `main` después del commit inicial.
 
@@ -46,10 +47,14 @@ incluye JavaScript funcional ni backend.
 - Se comprobaron 1440 × 900, 1024 × 768 y 390 × 844 en un navegador.
 - No se detectó desplazamiento horizontal global; el editor usa desplazamiento interno en celular.
 - Se confirmó foco visible mediante teclado y controles anunciados como no disponibles.
-- Falta realizar la validación final completa del punto 9.
+- La comparación final también se realizó a 1672 × 941, tamaño de la referencia.
+- No se detectaron textos cortados, superposiciones, identificadores duplicados ni errores de consola.
+- Las dos hojas CSS respondieron con HTTP 200 y los 19 usos de iconos SVG resolvieron correctamente.
+- La revisión confirmó 0 scripts y un backend reservado únicamente con `.gitkeep`.
+- La revisión de navegador se realizó en Edge/Chromium; no se ejecutaron pruebas en Firefox o Safari ni una auditoría WCAG completa.
 
 ## Próximos pasos
 
-1. Realizar la validación final visual y técnica del punto 9.
-2. Corregir cualquier diferencia o problema detectado.
-3. Actualizar el contexto y preparar la entrega en GitHub.
+1. Ejecutar el cierre y entrega del punto 10.
+2. Confirmar el estado final de Git y GitHub.
+3. Preparar el Pull Request de `front` hacia `main` sin integrarlo.
