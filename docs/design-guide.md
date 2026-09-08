@@ -2,64 +2,75 @@
 
 ## Referencia principal
 
-La referencia visual principal será
-`docs/referencias/nexia-referencia.png`. La imagen aún no ha sido facilitada,
-por lo que los valores de esta guía son una base provisional derivada del plan.
-Antes de maquetar se deberá guardar y estudiar la imagen, y ajustar los valores
-que no coincidan con ella.
+La referencia visual principal es
+`docs/referencias/nexia-referencia.png`. Es una imagen PNG de 1672 × 941 px,
+con proporción cercana a 16:9. Fue recibida, guardada sin cambios y estudiada
+antes de comenzar la maquetación.
 
 La referencia debe orientar la composición y el lenguaje visual. No se usará
 como una captura única que sustituya los elementos HTML.
 
 ## Dirección visual
 
-- Apariencia amable, clara e inclusiva para aprender programación.
-- Amarillo como color enérgico principal y morado oscuro como base de contraste.
-- Claymorphism mediante superficies redondeadas, volumen suave y combinación de sombras exteriores e interiores.
-- Controles grandes, legibles y fáciles de reconocer.
+- Apariencia enérgica, amable y de alto contraste para aprender programación.
+- Amarillo luminoso como superficie dominante y morado profundo para el fondo, los bordes, los textos y los controles.
+- Claymorphism mediante paneles amarillos redondeados, resplandor suave, sombra morada exterior y relieve interior.
+- Botones morados grandes con iconos y etiquetas amarillas.
+- Trazos oscuros consistentes que separan cada región sin perder el volumen suave.
 
-## Colores provisionales
+## Colores extraídos de la referencia
 
-| Uso | Variable propuesta | Valor inicial |
+| Uso | Variable propuesta | Valor de referencia |
 | --- | --- | --- |
-| Fondo principal | `--color-bg` | `#F5C842` |
-| Superficie amarilla | `--color-surface` | `#FFD95A` |
-| Morado principal | `--color-primary` | `#35245F` |
-| Morado profundo | `--color-primary-deep` | `#24163F` |
-| Texto sobre amarillo | `--color-text` | `#261B3F` |
+| Fondo exterior | `--color-bg` | `#1E0D42` |
+| Amarillo principal | `--color-surface` | `#FEE705` |
+| Amarillo secundario | `--color-surface-deep` | `#F9E202` |
+| Morado de controles | `--color-primary` | `#1D0B3D` |
+| Morado resaltado | `--color-primary-soft` | `#250D49` |
+| Morado del panel de error | `--color-primary-deep` | `#2A0942` |
+| Texto sobre amarillo | `--color-text` | `#110F39` |
 | Texto sobre morado | `--color-text-inverse` | `#FFFFFF` |
-| Éxito | `--color-success` | `#287A55` |
-| Error | `--color-error` | `#B53B45` |
-| Foco | `--color-focus` | `#1769E0` |
+| Texto e iconos amarillos | `--color-accent` | `#FFED03` |
+| Error coral | `--color-error` | `#F75947` |
+| Foco accesible | `--color-focus` | `#FFFFFF` |
 
-Los contrastes deberán verificarse después de comparar esta paleta con la imagen.
+Los valores representan muestras de zonas planas de la imagen. Para reproducir
+su volumen se podrán usar variaciones cercanas dentro de gradientes y sombras,
+manteniendo siempre el contraste entre amarillo y morado.
 
 ## Tipografía
 
-- Usar una familia sans serif del sistema para la interfaz, con alternativas seguras y sin dependencias externas.
-- Usar una familia monoespaciada del sistema para el pseudocódigo y los números de línea.
-- Mantener un tamaño base mínimo de `16px` y una altura de línea aproximada de `1.5`.
-- Diferenciar títulos, ayudas y etiquetas principalmente con tamaño y peso, no solo mediante color.
+- Usar una familia sans serif gruesa y compacta para marca, títulos, botones y resultados, con alternativas del sistema y sin dependencias externas.
+- Usar una familia monoespaciada de peso medio o alto para el pseudocódigo y los números de línea.
+- Reservar cursiva para la ayuda “Escribe tu programa aquí”, como en la referencia.
+- Mantener un tamaño base mínimo de `16px` y una altura de línea aproximada de `1.4`.
+- Usar mayúsculas en encabezados de panel y acciones principales; mantener el lema y la ayuda en caja normal.
+- Diferenciar títulos, ayudas y etiquetas mediante tamaño, peso y posición, no solo mediante color.
 
 ## Espaciado y composición
 
 - Utilizar una escala basada en `4px`: 4, 8, 12, 16, 24 y 32px.
-- Mantener tres columnas en pantallas amplias: acciones, editor y estructuras.
-- Colocar resultados y errores debajo del editor.
-- Mantener separación suficiente para que las sombras no mezclen los paneles.
+- Crear un encabezado horizontal de ancho completo con marca y lema a la izquierda y tres controles de ventana decorativos a la derecha.
+- Mantener tres columnas en pantallas amplias: acciones de aproximadamente 19%, área central de 62% y estructuras de 19%.
+- Dividir el centro en editor arriba y terminal de resultados y errores abajo.
+- Alinear las tarjetas de acciones y estructuras en listas verticales con alturas y separaciones regulares.
+- Mantener separación estrecha y consistente entre paneles para que el fondo morado forme divisores visuales.
 - En pantallas estrechas, apilar los bloques siguiendo el orden encabezado, acciones, editor, estructuras y resultados.
 
 ## Bordes y sombras
 
-- Usar radios amplios entre `16px` y `28px`; los controles pequeños pueden usar radios menores.
-- Evitar bordes duros cuando la separación pueda lograrse con contraste y profundidad.
+- Usar radios amplios entre `14px` y `22px`; los controles de ventana pueden usar radios menores.
+- Utilizar bordes morados finos en paneles y bordes algo más marcados en el editor y la terminal.
 - Definir sombras mediante variables CSS para mantener consistencia.
-- Combinar una sombra exterior suave con brillos y sombras interiores discretos.
+- Combinar resplandor amarillo, sombra morada exterior y brillos interiores discretos para reproducir el Claymorphism.
+- Usar un gradiente morado muy sutil en botones y en la fila de error.
 - Reducir las sombras en pantallas pequeñas si afectan la legibilidad o el espacio disponible.
 
 ## Iconos
 
-- Utilizar iconos SVG simples y consistentes, acompañados por etiquetas visibles cuando representen acciones.
+- Utilizar iconos SVG simples y consistentes, de trazo o relleno grueso, acompañados por etiquetas visibles cuando representen acciones.
+- Reproducir la familia visual de la referencia: reproducir, detener, altavoz, lupa con signo más, guardar, documento, cubo, estructura, ciclo y función.
+- Mantener los iconos amarillos sobre controles morados y morados sobre superficies amarillas.
 - Evitar emojis como sustitutos de iconos.
 - Tratar los iconos decorativos como no anunciables para lectores de pantalla.
 - No depender únicamente del icono o del color para comunicar el estado de un control.
@@ -71,6 +82,17 @@ Los contrastes deberán verificarse después de comparar esta paleta con la imag
 - Los controles sin funcionalidad deberán conservar su apariencia demostrativa e indicar accesiblemente que todavía no están disponibles.
 - No simular que una acción se ejecutó cuando todo el contenido es estático.
 
+## Contenido y jerarquía observados
+
+- Marca superior: símbolo de código, nombre “Nexia”, divisor vertical y lema “Programar también es para todos”.
+- Panel izquierdo: encabezado “ACCIONES” y cinco controles grandes.
+- Editor: icono de documento, título “EDITOR DE CÓDIGO”, ayuda en cursiva, canal de números de línea y trece líneas de muestra.
+- Línea activa: franja morada completa con número, texto y contraste amarillo.
+- Panel derecho: encabezado “ESTRUCTURAS” y seis controles grandes.
+- Terminal inferior: encabezado común, una fila amarilla de resultado correcto y una fila morada de error.
+- El éxito utiliza un círculo morado con marca amarilla; el error utiliza un círculo coral con una cruz morada.
+- Los controles de ventana de la referencia son decorativos y no deben prometer control real sobre el navegador.
+
 ## Comportamiento adaptable
 
 - Escritorio: conservar las tres columnas y priorizar el área del editor.
@@ -79,8 +101,10 @@ Los contrastes deberán verificarse después de comparar esta paleta con la imag
 - Evitar el desplazamiento horizontal global; el contenido extenso del editor podrá desplazarse dentro de su propio panel.
 - Impedir textos cortados, controles superpuestos y áreas táctiles demasiado pequeñas.
 
-## Validación pendiente
+## Validación durante la maquetación
 
-Cuando la referencia esté disponible, se deberán confirmar la paleta exacta,
-las proporciones de los paneles, los radios, las sombras, la tipografía, los
-iconos y el comportamiento en escritorio, tableta y celular.
+La comparación visual deberá hacerse con la referencia abierta a 1672 × 941 px.
+Se comprobarán la jerarquía, las proporciones de paneles, la densidad de los
+controles, los radios, el contraste y la sensación de volumen. La adaptación a
+tableta y celular será una extensión accesible del diseño, ya que la referencia
+solo muestra la composición de escritorio.
