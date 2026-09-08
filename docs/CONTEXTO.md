@@ -25,7 +25,7 @@ incluye JavaScript funcional ni backend.
 
 - Repositorio privado: `https://github.com/Airusuwu/Comp_Nexia`.
 - Rama activa: `front`, sincronizada con `origin/front` al iniciar esta mejora.
-- Último commit relevante al iniciar esta mejora: `de1adaa feat: adaptar interfaz a distintos tamaños`.
+- Último commit relevante disponible: `e27a199 docs: registrar validación visual y técnica`.
 - Estructura inicial y exclusiones de Git creadas.
 - Documentación del punto 4 completada.
 - `GUIA_GIT.md` completada para el flujo de colaboración del proyecto.
@@ -38,6 +38,8 @@ incluye JavaScript funcional ni backend.
 - Validación visual y técnica del punto 9 completada sin defectos bloqueantes.
 - No existe JavaScript ni lógica funcional o de backend.
 - No hay cambios integrados en `main` después del commit inicial.
+- El usuario decidió no abrir todavía el Pull Request porque realizará mejoras adicionales.
+- El trabajo continúa en `front`; no se creó ni integró ningún Pull Request.
 
 ## Validaciones y pendientes
 
@@ -55,6 +57,8 @@ incluye JavaScript funcional ni backend.
 
 ## Próximos pasos
 
-1. Ejecutar el cierre y entrega del punto 10.
-2. Confirmar el estado final de Git y GitHub.
-3. Preparar el Pull Request de `front` hacia `main` sin integrarlo.
+1. Recopilar e implementar las mejoras adicionales indicadas por el usuario en `front`.
+2. Repetir las validaciones visuales y técnicas después de los cambios.
+3. Actualizar este contexto y confirmar que `front` esté sincronizada con GitHub.
+4. Abrir el Pull Request de `front` hacia `main` únicamente cuando el usuario lo autorice.
+5. Mantener pendiente la integración y usar **Squash and merge** después de la revisión.
