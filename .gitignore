@@ -1,0 +1,26 @@
+# Dependencias y resultados generados
+node_modules/
+dist/
+build/
+coverage/
+
+# Variables de entorno y credenciales
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Archivos temporales y registros
+*.log
+*.tmp
+*.temp
+*.swp
+*~
+
+# Configuración local de editores y sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
