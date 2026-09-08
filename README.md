@@ -7,9 +7,9 @@ personas con distintos niveles de experiencia.
 
 ## Estado del proyecto
 
-La entrega actual es una **maqueta visual estática**. Utiliza HTML y CSS y no
-ejecuta, analiza ni guarda programas. Los resultados y errores mostrados en
-pantalla son ejemplos estáticos de demostración.
+La entrega actual es una **maqueta visual estática y adaptable**. Utiliza HTML
+y CSS y no ejecuta, analiza ni guarda programas. Los resultados y errores
+mostrados en pantalla son ejemplos estáticos de demostración.
 
 El backend, la ejecución de pseudocódigo y el resto de las funciones están
 fuera del alcance de esta entrega.
@@ -38,6 +38,7 @@ Comp_Nexia/
 3. Abre `frontend/index.html` en un navegador moderno.
 
 No será necesario instalar dependencias ni ejecutar herramientas de compilación.
+La distribución se adapta a escritorio, tableta y celular.
 
 ## Ramas de trabajo
 

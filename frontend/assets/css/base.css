@@ -45,15 +45,13 @@
 }
 
 html {
-  min-width: 70rem;
   background: var(--color-bg);
 }
 
 body {
-  min-width: 70rem;
   min-height: 100vh;
   margin: 0;
-  overflow-x: auto;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 50% 35%, rgb(72 26 107 / 48%), transparent 52%),
     var(--color-bg);
@@ -72,6 +70,11 @@ select {
 
 button {
   border: 0;
+}
+
+button,
+[tabindex] {
+  -webkit-tap-highlight-color: transparent;
 }
 
 h1,
