@@ -25,9 +25,10 @@ incluye JavaScript funcional ni backend.
 
 - Repositorio privado: `https://github.com/Airusuwu/Comp_Nexia`.
 - Rama activa: `front`, sincronizada con `origin/front` al iniciar esta mejora.
-- Último commit base: `6a8dadc chore: preparar estructura inicial del proyecto`.
+- Último commit relevante al iniciar esta mejora: `0e0e2df docs: documentar alcance y guía visual`.
 - Estructura inicial y exclusiones de Git creadas.
-- Documentación del punto 4 completada en esta mejora.
+- Documentación del punto 4 completada.
+- `GUIA_GIT.md` completada para el flujo de colaboración del proyecto.
 - No hay interfaz implementada ni lógica funcional.
 - No hay cambios integrados en `main` después del commit inicial.
 
@@ -35,11 +36,10 @@ incluye JavaScript funcional ni backend.
 
 - Se verificó que `main`, `front` y `back` existen localmente y en GitHub.
 - La imagen `docs/referencias/nexia-referencia.png` aún no ha sido facilitada.
-- Falta crear `GUIA_GIT.md`, estudiar la referencia, construir la interfaz y validarla en un navegador.
+- Falta estudiar la referencia, construir la interfaz y validarla en un navegador.
 
 ## Próximos pasos
 
-1. Completar `GUIA_GIT.md`.
-2. Recibir y guardar la imagen de referencia.
-3. Ajustar la guía visual a la referencia antes de maquetar.
-4. Implementar y validar la interfaz en `front`.
+1. Recibir y guardar la imagen de referencia.
+2. Ajustar la guía visual a la referencia antes de maquetar.
+3. Implementar y validar la interfaz en `front`.
