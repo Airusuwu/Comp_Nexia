@@ -1,1 +1,206 @@
-<!-- La interfaz visual de Nexia se implementará en el paso 7. -->
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Maqueta visual estática de Nexia, una interfaz accesible para aprender pseudocódigo."
+    >
+    <title>Nexia — Editor de pseudocódigo</title>
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+  </head>
+  <body>
+    <svg class="svg-library" aria-hidden="true">
+      <defs>
+        <symbol id="icon-code" viewBox="0 0 64 48">
+          <path d="m22 5-16 19 16 19M42 5l16 19-16 19M37 2 27 46" />
+        </symbol>
+        <symbol id="icon-play" viewBox="0 0 48 48">
+          <path class="icon-fill" d="M12 7v34l28-17z" />
+        </symbol>
+        <symbol id="icon-stop" viewBox="0 0 48 48">
+          <rect class="icon-fill" x="10" y="10" width="28" height="28" rx="2" />
+        </symbol>
+        <symbol id="icon-volume" viewBox="0 0 48 48">
+          <path class="icon-fill" d="M5 19v10h8l11 9V10l-11 9z" />
+          <path d="M30 17a10 10 0 0 1 0 14M35 12a17 17 0 0 1 0 24" />
+        </symbol>
+        <symbol id="icon-zoom" viewBox="0 0 48 48">
+          <circle cx="20" cy="20" r="12" />
+          <path d="m29 29 12 12M20 14v12M14 20h12" />
+        </symbol>
+        <symbol id="icon-save" viewBox="0 0 48 48">
+          <path class="icon-fill" fill-rule="evenodd" d="M7 5h28l8 8v30H7zm8 2v12h20V7zm1 23v11h18V30z" />
+        </symbol>
+        <symbol id="icon-file" viewBox="0 0 40 48">
+          <path class="icon-fill" d="M7 2h18l10 10v34H7z" />
+          <path class="icon-cut" d="M25 2v11h10M13 23h16M13 30h16M13 37h12" />
+        </symbol>
+        <symbol id="icon-cube" viewBox="0 0 48 48">
+          <path class="icon-fill" d="m24 2 19 10-19 10L5 12zm-20 13 18 10v21L4 36zm40 0v21L26 46V25z" />
+        </symbol>
+        <symbol id="icon-branch" viewBox="0 0 48 48">
+          <circle class="icon-fill" cx="24" cy="7" r="5" />
+          <circle class="icon-fill" cx="10" cy="39" r="5" />
+          <circle class="icon-fill" cx="38" cy="39" r="5" />
+          <path d="M24 12v10M10 34v-5c0-4 3-7 7-7h14c4 0 7 3 7 7v5" />
+        </symbol>
+        <symbol id="icon-cycle" viewBox="0 0 48 48">
+          <path d="M39 19A16 16 0 0 0 11 12L6 17M9 29a16 16 0 0 0 28 7l5-5" />
+          <path class="icon-fill" d="M5 7v12h12zM43 41V29H31z" />
+        </symbol>
+        <symbol id="icon-while" viewBox="0 0 48 48">
+          <path d="M33 10a16 16 0 1 0 7 12" />
+          <path class="icon-fill" d="m32 3 11 5-9 8z" />
+        </symbol>
+        <symbol id="icon-repeat" viewBox="0 0 48 48">
+          <path d="M12 15a16 16 0 1 1-2 16" />
+          <path class="icon-fill" d="M4 12h13v13z" />
+        </symbol>
+        <symbol id="icon-define" viewBox="0 0 48 48">
+          <path d="M16 7h-5v34h5M32 7h5v34h-5" />
+          <path d="m20 18 9 13M29 18l-9 13" />
+        </symbol>
+        <symbol id="icon-terminal" viewBox="0 0 48 48">
+          <rect class="icon-fill" x="2" y="4" width="44" height="40" rx="6" />
+          <path class="icon-cut" d="m10 15 8 8-8 8M23 33h13" />
+        </symbol>
+        <symbol id="icon-check" viewBox="0 0 48 48">
+          <circle class="icon-fill" cx="24" cy="24" r="22" />
+          <path class="icon-cut" d="m13 24 8 8 15-17" />
+        </symbol>
+        <symbol id="icon-error" viewBox="0 0 48 48">
+          <circle class="icon-fill" cx="24" cy="24" r="22" />
+          <path class="icon-cut" d="m16 16 16 16M32 16 16 32" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <main class="app-shell" aria-labelledby="app-title">
+      <header class="topbar clay-panel">
+        <div class="brand">
+          <svg class="brand__icon" aria-hidden="true"><use href="#icon-code" /></svg>
+          <h1 id="app-title" class="brand__name">Nexia</h1>
+          <span class="brand__divider" aria-hidden="true"></span>
+          <p class="brand__tagline">Programar también es para todos</p>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <aside class="side-panel side-panel--actions clay-panel" aria-labelledby="actions-title">
+          <h2 class="panel-title" id="actions-title">Acciones</h2>
+          <div class="control-list">
+            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+              <svg class="action-card__icon" aria-hidden="true"><use href="#icon-play" /></svg>
+              <span>Ejecutar<br>programa</span>
+            </button>
+            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+              <svg class="action-card__icon" aria-hidden="true"><use href="#icon-stop" /></svg>
+              <span>Detener</span>
+            </button>
+            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+              <svg class="action-card__icon" aria-hidden="true"><use href="#icon-volume" /></svg>
+              <span>Escuchar<br>resultado</span>
+            </button>
+            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+              <svg class="action-card__icon" aria-hidden="true"><use href="#icon-zoom" /></svg>
+              <span>Aumentar<br>texto</span>
+            </button>
+            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+              <svg class="action-card__icon" aria-hidden="true"><use href="#icon-save" /></svg>
+              <span>Guardar</span>
+            </button>
+          </div>
+        </aside>
+
+        <section class="main-stage" aria-label="Área de edición y resultados">
+          <section class="editor clay-panel" aria-labelledby="editor-title">
+            <header class="section-heading section-heading--editor">
+              <div class="section-heading__title">
+                <svg class="section-heading__icon file-icon" aria-hidden="true"><use href="#icon-file" /></svg>
+                <h2 id="editor-title">Editor de código</h2>
+              </div>
+              <p>Escribe tu programa aquí</p>
+            </header>
+
+            <div class="code-window" role="region" aria-label="Pseudocódigo de demostración" tabindex="0">
+              <ol class="code-lines">
+                <li><code class="code-comment">// Nuevas líneas añadidas para demostrar espacio</code></li>
+                <li><code>Inicio</code></li>
+                <li><code>Definir a, b, resultado Como Entero</code></li>
+                <li class="is-active"><code>Escribir y</code></li>
+                <li><code>a ← 6</code></li>
+                <li><code>b ← 4</code></li>
+                <li><code>resultado ← a + b</code></li>
+                <li><code>Si resultado &gt; 5 Entonces</code></li>
+                <li><code class="indent-1">Escribir "Es mayor a 5"</code></li>
+                <li><code>Sino</code></li>
+                <li><code class="indent-1">Escribir "Es menor o igual a 5"</code></li>
+                <li><code>FinSi</code></li>
+                <li><code>Fin</code></li>
+              </ol>
+            </div>
+          </section>
+
+          <section class="terminal clay-panel" aria-labelledby="terminal-title">
+            <header class="section-heading section-heading--terminal">
+              <div class="section-heading__title">
+                <svg class="section-heading__icon terminal-icon" aria-hidden="true"><use href="#icon-terminal" /></svg>
+                <h2 id="terminal-title">Terminal de resultados y lista de errores</h2>
+              </div>
+            </header>
+
+            <p class="demo-note" id="demo-note">Contenido estático de demostración; no corresponde a una ejecución real.</p>
+            <div class="terminal-output" aria-describedby="demo-note">
+              <div class="result-row result-row--success">
+                <svg class="result-row__icon success-icon" aria-hidden="true"><use href="#icon-check" /></svg>
+                <span class="result-row__divider" aria-hidden="true"></span>
+                <p><strong>Resultado:</strong> 10</p>
+              </div>
+              <div class="result-row result-row--error">
+                <svg class="result-row__icon error-icon" aria-hidden="true"><use href="#icon-error" /></svg>
+                <span class="result-row__divider" aria-hidden="true"></span>
+                <p><strong>Error en línea 4:</strong> Palabra no reconocida</p>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <aside class="side-panel side-panel--structures clay-panel" aria-labelledby="structures-title">
+          <h2 class="panel-title panel-title--icon" id="structures-title">
+            <svg aria-hidden="true"><use href="#icon-cube" /></svg>
+            <span>Estructuras</span>
+          </h2>
+          <div class="control-list">
+            <button class="structure-card" type="button" aria-disabled="true" title="Disponible próximamente">
+              <svg aria-hidden="true"><use href="#icon-branch" /></svg>
+              <span>Si — Entonces</span>
+            </button>
+            <button class="structure-card" type="button" aria-disabled="true" title="Disponible próximamente">
+              <svg aria-hidden="true"><use href="#icon-cycle" /></svg>
+              <span>Para</span>
+            </button>
+            <button class="structure-card" type="button" aria-disabled="true" title="Disponible próximamente">
+              <svg aria-hidden="true"><use href="#icon-while" /></svg>
+              <span>Mientras</span>
+            </button>
+            <button class="structure-card" type="button" aria-disabled="true" title="Disponible próximamente">
+              <svg aria-hidden="true"><use href="#icon-repeat" /></svg>
+              <span>Repetir</span>
+            </button>
+            <button class="structure-card" type="button" aria-disabled="true" title="Disponible próximamente">
+              <svg aria-hidden="true"><use href="#icon-define" /></svg>
+              <span>Definir</span>
+            </button>
+            <button class="structure-card structure-card--function" type="button" aria-disabled="true" title="Disponible próximamente">
+              <span class="function-symbol" aria-hidden="true">ƒ(x)</span>
+              <span>Función</span>
+            </button>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>
