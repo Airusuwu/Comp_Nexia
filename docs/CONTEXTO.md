@@ -25,7 +25,7 @@ incluye JavaScript funcional ni backend.
 
 - Repositorio privado: `https://github.com/Airusuwu/Comp_Nexia`.
 - Rama activa: `front`, sincronizada con `origin/front` al iniciar esta mejora.
-- Último commit relevante disponible: `e27a199 docs: registrar validación visual y técnica`.
+- Último commit relevante disponible al iniciar las mejoras: `60a2056 docs: registrar cierre y mejoras pendientes`.
 - Estructura inicial y exclusiones de Git creadas.
 - Documentación del punto 4 completada.
 - `GUIA_GIT.md` completada para el flujo de colaboración del proyecto.
@@ -40,6 +40,7 @@ incluye JavaScript funcional ni backend.
 - No hay cambios integrados en `main` después del commit inicial.
 - El usuario decidió no abrir todavía el Pull Request porque realizará mejoras adicionales.
 - El trabajo continúa en `front`; no se creó ni integró ningún Pull Request.
+- Se eliminaron del encabezado los controles decorativos de minimizar, maximizar y cerrar, junto con sus SVG y estilos sin uso.
 
 ## Validaciones y pendientes
 

@@ -50,7 +50,7 @@ manteniendo siempre el contraste entre amarillo y morado.
 ## Espaciado y composición
 
 - Utilizar una escala basada en `4px`: 4, 8, 12, 16, 24 y 32px.
-- Crear un encabezado horizontal de ancho completo con marca y lema a la izquierda y tres controles de ventana decorativos a la derecha.
+- Crear un encabezado horizontal de ancho completo con la marca y el lema alineados a la izquierda.
 - Mantener tres columnas en pantallas amplias: acciones de aproximadamente 19%, área central de 62% y estructuras de 19%.
 - Dividir el centro en editor arriba y terminal de resultados y errores abajo.
 - Alinear las tarjetas de acciones y estructuras en listas verticales con alturas y separaciones regulares.
@@ -59,7 +59,7 @@ manteniendo siempre el contraste entre amarillo y morado.
 
 ## Bordes y sombras
 
-- Usar radios amplios entre `14px` y `22px`; los controles de ventana pueden usar radios menores.
+- Usar radios amplios entre `14px` y `22px`.
 - Utilizar bordes morados finos en paneles y bordes algo más marcados en el editor y la terminal.
 - Definir sombras mediante variables CSS para mantener consistencia.
 - Combinar resplandor amarillo, sombra morada exterior y brillos interiores discretos para reproducir el Claymorphism.
@@ -91,7 +91,7 @@ manteniendo siempre el contraste entre amarillo y morado.
 - Panel derecho: encabezado “ESTRUCTURAS” y seis controles grandes.
 - Terminal inferior: encabezado común, una fila amarilla de resultado correcto y una fila morada de error.
 - El éxito utiliza un círculo morado con marca amarilla; el error utiliza un círculo coral con una cruz morada.
-- Los controles de ventana de la referencia son decorativos y no deben prometer control real sobre el navegador.
+- Los controles de ventana presentes en la referencia se omiten por decisión del usuario, ya que no representan acciones disponibles en la página.
 
 ## Comportamiento adaptable
 
