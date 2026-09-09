@@ -1,0 +1,13 @@
+{
+  "name": "nexia-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.11.1 <25"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "check": "node --check src/server.js && node --check src/api/app.js"
+  }
+}

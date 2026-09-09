@@ -11,8 +11,10 @@ La entrega actual es una **maqueta visual estática y adaptable**. Utiliza HTML
 y CSS y no ejecuta, analiza ni guarda programas. Los resultados y errores
 mostrados en pantalla son ejemplos estáticos de demostración.
 
-El backend, la ejecución de pseudocódigo y el resto de las funciones están
-fuera del alcance de esta entrega.
+La nueva etapa funcional se desarrolla en `back`. El backend cuenta con una
+infraestructura local en Node.js y una ruta de salud, pero todavía no analiza
+ni ejecuta pseudocódigo y no está conectado al editor. Consulta
+[`backend/README.md`](backend/README.md) para iniciarlo y conocer sus límites.
 
 ## Estructura principal
 
@@ -37,21 +39,21 @@ Comp_Nexia/
 2. Abre la carpeta `Comp_Nexia`.
 3. Abre `frontend/index.html` en un navegador moderno.
 
-No será necesario instalar dependencias ni ejecutar herramientas de compilación.
+Para revisar esta maqueta no será necesario instalar dependencias ni ejecutar herramientas de compilación.
 La distribución se adapta a escritorio, tableta y celular.
 
 ## Ramas de trabajo
 
 - `main` contiene la versión estable.
 - `front` contiene el trabajo del frontend.
-- `back` queda reservada para el backend.
+- `back` contiene el desarrollo funcional en curso.
 
 Los cambios de `front` y `back` se revisarán mediante Pull Requests hacia
 `main`. El método de integración acordado es **Squash and merge**.
 
 ## Documentación
 
-- [`docs/plan.md`](docs/plan.md): alcance y orden de implementación.
+- [`docs/plan.md`](docs/plan.md): plan histórico de la maqueta visual.
 - [`docs/design-guide.md`](docs/design-guide.md): decisiones visuales y adaptables.
 - [`docs/CONTEXTO.md`](docs/CONTEXTO.md): estado breve para continuar el trabajo.
-- [`GUIA_GIT.md`](GUIA_GIT.md): guía de colaboración, pendiente del punto 5.
+- [`GUIA_GIT.md`](GUIA_GIT.md): guía de colaboración.

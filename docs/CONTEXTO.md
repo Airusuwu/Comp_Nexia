@@ -1,5 +1,37 @@
 # Contexto de Nexia
 
+## Estado vigente — punto 3 completado (2026-09-09)
+
+Este registro tiene prioridad sobre los anteriores. El punto 4 no se ha iniciado.
+
+- Rama activa: `back`. Se inició sin cambios locales, después del cierre del
+  punto 2 (`7893bf1`). Se conservaron frontend, documentación histórica y PDF.
+- Tecnología elegida y justificada antes de crear infraestructura: JavaScript
+  con módulos ES y Node.js 24.x. El equipo tiene Node.js 24.11.1 y npm 11.6.2.
+  No había decisiones tecnológicas previas para backend. Se utiliza `node:http`
+  integrado; no se instalaron dependencias, frameworks ni base de datos.
+- `backend/package.json` define arranque y comprobación de sintaxis.
+  `backend/src/server.js` arranca en `127.0.0.1:3000`; `src/api/app.js` separa
+  la capa HTTP. Solo existe `GET /api/health`, con capacidades de análisis y
+  ejecución explícitamente desactivadas. No sirve archivos ni conecta el editor.
+- Se reservaron lexer, parser, semantic, types, symbols, diagnostics, runtime
+  y tests. Los directorios del lenguaje solo contienen `.gitkeep`; no hay
+  analizadores, reglas inventadas ni resultados simulados. `tests/README.md`
+  registra cobertura pendiente, no una suite aprobada.
+- `backend/README.md` documenta tecnología, arranque, responsabilidades y límites.
+  Los componentes del lenguaje serán independientes de HTTP y del DOM; la
+  ejecución real deberá interpretar el AST, no utilizar eval/Function.
+- Validaciones realizadas: `npm.cmd --prefix backend run check` sin errores;
+  comprobación HTTP local con puerto efímero y aserciones de salud 200, JSON,
+  capacidades desactivadas, ruta inexistente 404 y método no permitido 405.
+  El servidor temporal se cerró al finalizar. Esto no prueba el compilador.
+- Se confirmó frontend sin modificaciones y PDF excluido. No se leyó el PDF,
+  ni se probaron navegador o lector de pantalla. No hay ejecución de pseudocódigo.
+- Cierre mediante commit local sin push. No se actualizó software del equipo.
+- Siguiente paso: punto 4, acciones de la barra izquierda. Precisar Guardar y
+  Aumentar texto; respetar exclusión de voz. Ejecutar/Detener seguirán pendientes
+  de conexión y motor real, sin anunciar funcionamiento inexistente.
+
 ## Estado vigente — punto 2 completado (2026-09-09)
 
 Esta sección tiene prioridad sobre los registros históricos posteriores.
