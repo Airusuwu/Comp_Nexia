@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta
       name="description"
-      content="Maqueta visual estática de Nexia, una interfaz accesible para aprender pseudocódigo."
+      content="Nexia, una interfaz educativa de pseudocódigo en desarrollo."
     >
     <title>Nexia — Editor de pseudocódigo</title>
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/components.css">
+    <script src="assets/js/actions.js" defer></script>
   </head>
   <body>
     <svg class="svg-library" aria-hidden="true">
@@ -92,27 +93,38 @@
         <aside class="side-panel side-panel--actions clay-panel" aria-labelledby="actions-title">
           <h2 class="panel-title" id="actions-title">Acciones</h2>
           <div class="control-list">
-            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+            <button id="run-program" class="action-card" type="button" aria-disabled="true" aria-describedby="run-help" title="Pendiente del motor de ejecución">
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-play" /></svg>
               <span>Ejecutar<br>programa</span>
             </button>
-            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+            <button id="stop-program" class="action-card" type="button" aria-disabled="true" aria-describedby="stop-help" title="No hay un programa en ejecución">
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-stop" /></svg>
               <span>Detener</span>
             </button>
-            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+            <button id="listen-result" class="action-card" type="button" aria-disabled="true" aria-describedby="listen-help" title="Lectura de voz integrada fuera de esta etapa">
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-volume" /></svg>
               <span>Escuchar<br>resultado</span>
             </button>
-            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+            <button id="increase-text" class="action-card" type="button" aria-disabled="true" aria-describedby="text-help" title="Requiere JavaScript para aumentar código y resultados">
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-zoom" /></svg>
               <span>Aumentar<br>texto</span>
             </button>
-            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+            <button id="save-program" class="action-card" type="button" aria-disabled="true" aria-describedby="save-help" title="Requiere JavaScript para descargar el código">
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-save" /></svg>
               <span>Guardar</span>
             </button>
           </div>
+          <p class="action-status" id="action-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <button class="text-reset" id="reset-text" type="button" aria-disabled="true">Restablecer texto</button>
+          <noscript><p class="action-status">Activa JavaScript para aumentar el texto o descargar el código.</p></noscript>
+          <details class="action-help">
+            <summary>Disponibilidad de acciones</summary>
+            <p id="run-help">Ejecutar: pendiente del motor que realizará las operaciones, solicitará datos y mostrará las salidas del programa.</p>
+            <p id="stop-help">Detener: no hay un programa en ejecución. La interrupción real estará disponible junto con el motor.</p>
+            <p id="listen-help">Escuchar: no se incluirá lectura de voz integrada en esta etapa. Se mantiene el objetivo de compatibilidad con lectores de pantalla externos.</p>
+            <p id="text-help">Aumentar texto: amplía solo código y resultados en pasos de 25 %, hasta el 200 %. Restablecer texto vuelve al tamaño inicial.</p>
+            <p id="save-help">Guardar: descarga el código visible como archivo .txt en UTF-8. Por ahora contiene el ejemplo; la edición y apertura de archivos se incorporarán en el punto 5.</p>
+          </details>
         </aside>
 
         <section class="main-stage" aria-label="Área de edición y resultados">

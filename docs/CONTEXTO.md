@@ -1,5 +1,46 @@
 # Contexto de Nexia
 
+## Estado vigente — punto 4, acciones locales implementadas (2026-09-09)
+
+Este registro prevalece sobre los anteriores. El punto 4 tiene integración
+pendiente: Ejecutar y Detener requieren el motor; no están terminados.
+
+- Rama `back`, inicio limpio después de `b49ca15`. Se conservaron backend,
+  diseño y reglas pendientes. No se leyó el PDF ni se añadieron dependencias.
+- Uriel confirmó: Guardar debe producir un archivo que pueda volver a abrir,
+  y Aumentar texto debe afectar solamente código y resultados.
+- Se implementó descarga local `programa-nexia.txt` en UTF-8 desde el contenido
+  visible, sin números de línea, conservando saltos y dos espacios para la
+  indentación visual del ejemplo. No se envía información al backend.
+  El mensaje dice descarga solicitada, no afirma que el usuario la haya guardado.
+- El editor aún es estático: lo descargado es el ejemplo. Leer de vuelta el
+  archivo en Nexia queda pendiente del editor del punto 5; al habilitarlo,
+  Guardar deberá tomar su valor real en lugar de la lista de demostración.
+- Aumento local de código y resultados en pasos de 25 %, desde 100 % hasta
+  200 %, con Restablecer texto. Estos límites son una decisión de interfaz,
+  no una regla del lenguaje. No cambia títulos ni botones ni limita el zoom
+  del navegador. La preferencia no se persiste y vuelve al recargar.
+- `frontend/assets/js/actions.js` implementa ambas acciones; HTML mantiene
+  controles deshabilitados hasta que JavaScript habilita lo disponible.
+  Los manejadores respetan los límites aunque el control conserve foco.
+- Ejecutar/Detener siguen deshabilitados con explicación textual; Escuchar
+  continúa fuera de alcance. Se añadió ayuda desplegable nativa, referencias
+  accesibles, estado `aria-live` y foco visible, sin lectura de voz integrada.
+- Validaciones: sintaxis JavaScript con `node --check`; revisión en Edge de
+  navegación Tab, activación Enter/Espacio, límite 200 %, restablecimiento,
+  ayuda desplegable, nombres y estados en el árbol de accesibilidad.
+  Se revisó visualmente escritorio y móvil de 390 × 844, incluidos los
+  resultados al 200 %. No se realizó prueba con lector de pantalla real
+  ni auditoría WCAG completa; no se certifica accesibilidad por el árbol solo.
+- Se disparó una descarga real y se leyó el archivo generado en Descargas:
+  texto UTF-8, acentos, flecha, saltos e indentación conservados. Se dejó ese
+  archivo de comprobación en el equipo; no se añadió al repositorio.
+- Solo se utilizó un servidor temporal para el frontend, sin servir docs ni
+  el PDF. No se inició el motor ni se conectó el frontend a la API.
+- Cierre mediante commit local sin push. Siguiente paso: punto 5, editor real,
+  apertura de archivos guardados y comunicación estructurada con backend.
+  Mantener explícito que los analizadores y la ejecución siguen pendientes.
+
 ## Estado vigente — punto 3 completado (2026-09-09)
 
 Este registro tiene prioridad sobre los anteriores. El punto 4 no se ha iniciado.

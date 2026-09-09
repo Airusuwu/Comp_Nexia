@@ -7,9 +7,12 @@ personas con distintos niveles de experiencia.
 
 ## Estado del proyecto
 
-La entrega actual es una **maqueta visual estática y adaptable**. Utiliza HTML
-y CSS y no ejecuta, analiza ni guarda programas. Los resultados y errores
-mostrados en pantalla son ejemplos estáticos de demostración.
+La interfaz adaptable conserva un editor y resultados de demostración.
+Ya permite aumentar código y resultados entre 100 % y 200 %, restablecer
+el tamaño y descargar el código visible como `programa-nexia.txt` en UTF-8.
+Estas acciones utilizan JavaScript local; no envían el código al servidor.
+Todavía no permite editar, abrir, analizar ni ejecutar programas. La apertura
+del archivo guardado se conectará al editor en el punto 5.
 
 La nueva etapa funcional se desarrolla en `back`. El backend cuenta con una
 infraestructura local en Node.js y una ruta de salud, pero todavía no analiza
@@ -39,7 +42,7 @@ Comp_Nexia/
 2. Abre la carpeta `Comp_Nexia`.
 3. Abre `frontend/index.html` en un navegador moderno.
 
-Para revisar esta maqueta no será necesario instalar dependencias ni ejecutar herramientas de compilación.
+Para revisar la interfaz no será necesario instalar dependencias ni ejecutar herramientas de compilación.
 La distribución se adapta a escritorio, tableta y celular.
 
 ## Ramas de trabajo
