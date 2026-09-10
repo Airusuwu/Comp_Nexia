@@ -1,5 +1,17 @@
 # Contexto de Nexia
 
+## Ampliación vigente — declaraciones múltiples (2026-09-10)
+
+- Uriel solicitó permitir `Definir a, b, c Como ENTERO`.
+- Parser: Declaration usa targets (lista de identificadores con ubicación)
+  en lugar de target, tanto para una variable como para varias.
+- Semántica: registra cada nombre con el tipo común y sin inicializar;
+  mantiene ámbitos, equivalencia de mayúsculas y rechazo de duplicados.
+- Leer y asignaciones no cambian. No se modificó el frontend.
+- Validación: declaraciones simples/múltiples, cinco tipos, comas incorrectas,
+  duplicados, inicialización, ubicaciones y API; comprobación de sintaxis.
+  No se añade ejecución ni se da por terminado el punto 10.
+
 ## Estado vigente — punto 9 implementado (2026-09-09)
 
 - Uriel aprobó ámbitos locales para Si/Sino/Mientras e identificadores sin

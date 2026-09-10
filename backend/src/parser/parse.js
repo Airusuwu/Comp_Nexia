@@ -122,11 +122,15 @@ export function parse(tokens) {
     const start = current();
     if (matches('Definir')) {
       take();
-      const target = identifier();
+      const targets = [identifier()];
+      while (matches(',')) {
+        take();
+        targets.push(identifier());
+      }
       expect('Como');
       if (current().category !== 'TYPE') fail('Se esperaba ENTERO, REAL, TEXTO, CARACTER o BOOLEANO.');
       const declaredType = take().canonical;
-      return node('Declaration', start, { target, declaredType }, [target]);
+      return node('Declaration', start, { targets, declaredType }, targets);
     }
     if (matches('Leer')) {
       take();

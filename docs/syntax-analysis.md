@@ -28,7 +28,7 @@ automáticamente ni se admiten asignaciones con la flecha Unicode ←.
 ```text
 programa    = saltos Inicio salto bloque Fin saltos EOF
 bloque      = { declaración | asignación | lectura | escritura | condicional | ciclo }
-declaración = Definir identificador Como tipo finLínea
+declaración = Definir identificador { , identificador } Como tipo finLínea
 asignación  = identificador <- expresión finLínea
 lectura     = Leer identificador finLínea
 escritura   = Escribir expresión { , expresión } finLínea
@@ -50,8 +50,9 @@ comentarios. `finLínea` admite también EOF para diagnosticar el cierre faltant
 Fin puede terminar en EOF sin salto final. Inicio, Fin y cierres ocupan líneas
 propias. La indentación no determina bloques; se admiten bloques vacíos.
 
-El alcance usa una variable por Definir o Leer, como los ejemplos de A5;
-no extiende esas instrucciones a listas. No admite expresiones multilínea,
+Por ampliación solicitada por Uriel el 2026-09-10, Definir acepta listas de
+nombres separados por comas con un tipo común. Leer sigue usando una variable.
+No admite expresiones multilínea,
 inicializadores en declaraciones, funciones, Para o Repetir: esas extensiones
 no tienen gramática acordada. Tampoco decide ámbitos, igualdad entre nombres,
 rangos numéricos ni conversiones. Estas decisiones siguen pendientes.
@@ -70,7 +71,7 @@ incluyen sus cierres, pero no el salto posterior.
 | kind | Campos específicos |
 | --- | --- |
 | Program | body: instrucciones |
-| Declaration | target: Identifier, declaredType |
+| Declaration | targets: lista de Identifier (también para un solo nombre), declaredType |
 | Assignment | target: Identifier, value: expresión |
 | ReadStatement | target: Identifier |
 | WriteStatement | values: expresiones |

@@ -82,7 +82,9 @@ export function analyzeSemantics(ast) {
   function statements(body, symbols) {
     for (const node of body) {
       if (node.kind === 'Declaration') {
-        at(node.target, () => symbols.declare(node.target.name, node.declaredType, node.target.location));
+        for (const target of node.targets) {
+          at(target, () => symbols.declare(target.name, node.declaredType, target.location));
+        }
       } else if (node.kind === 'Assignment') {
         const target = at(node.target, () => symbols.resolve(node.target.name));
         const value = expression(node.value, symbols);
