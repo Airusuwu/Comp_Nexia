@@ -1,5 +1,10 @@
 # Análisis sintáctico — punto 8
 
+Actualización del punto 9: tras construir el AST, la API ejecuta el análisis
+semántico y devuelve analyzed o semantic_error. El contrato y pendientes
+descritos aquí conservan el estado histórico del punto 8; véase
+semantic-analysis.md para el estado vigente.
+
 ## Fuentes y decisiones
 
 El PDF A5 documenta declaraciones `Definir nombre Como TIPO`, asignaciones

@@ -1,16 +1,15 @@
 # Backend de Nexia
 
-## Estado después del punto 8
+## Estado después del punto 9
 
-Editor conectado al servidor, con análisis léxico y sintáctico sin ejecución de pseudocódigo.
+Editor conectado al servidor, con análisis léxico, sintáctico y semántico sin ejecución de pseudocódigo.
 `GET /api/health` indica disponibilidad del servidor. `POST /api/analyze`
-valida la solicitud y devuelve tokens, AST o errores ubicados. El análisis
-semántico sigue pendiente. Nunca devuelve resultados de ejecución ficticios.
+valida la solicitud y devuelve tokens, AST, símbolos, controles runtime o errores
+ubicados. Nunca devuelve resultados de ejecución ficticios.
 
 Ya existe un módulo independiente de compatibilidad de tipos, basado en el
 PDF A5, con controles auxiliares de declaración, inicialización y divisor.
-La compatibilidad aún no se aplica a programas; el lexer solo reutiliza la
-clasificación de literales. Véase
+La compatibilidad se aplica al AST durante el análisis semántico. Véase
 [`docs/type-rules.md`](../docs/type-rules.md) para reglas, límites y validaciones.
 
 ## Decisión técnica
@@ -50,7 +49,7 @@ Respuesta esperada:
 {
   "status": "ok",
   "service": "nexia-backend",
-  "capabilities": { "analysis": false, "lexical": true, "syntactic": true, "execution": false }
+  "capabilities": { "analysis": true, "lexical": true, "syntactic": true, "semantic": true, "execution": false }
 }
 ```
 
@@ -71,16 +70,16 @@ recibido ni acceso HTTP a docs, backend o archivos de Git.
 `{"code":"Inicio\nFin"}`. El texto no se recorta; se convierte en tokens con ubicación.
 Límites técnicos: código de 64 KiB UTF-8 y cuerpo JSON de 512 KiB.
 
-Respuesta sin errores léxicos ni sintácticos (HTTP 200, extracto sin tokens ni AST):
+Respuesta sin errores de análisis (HTTP 200, extracto sin tokens, AST ni símbolos):
 
 ```json
 {
-  "status": "partial",
+  "status": "analyzed",
   "executed": false,
   "results": [],
   "diagnostics": [{
-    "code": "SYNTAX_COMPLETED",
-    "message": "Análisis léxico y sintáctico completados. La validación semántica y la ejecución todavía están pendientes.",
+    "code": "ANALYSIS_COMPLETED",
+    "message": "Análisis léxico, sintáctico y semántico completados. El programa no se ha ejecutado. Controles pendientes de ejecución: 0.",
     "severity": "info",
     "stage": "service",
     "line": null,
@@ -89,16 +88,20 @@ Respuesta sin errores léxicos ni sintácticos (HTTP 200, extracto sin tokens ni
 }
 ```
 
-La respuesta también incluye `tokens`, `ast`, `truncated` y `analysis` con el estado
+La respuesta también incluye `tokens`, `ast`, `symbols`, `runtimeChecks`, `truncated` y `analysis` con el estado
 lexical, syntactic y semantic. Los errores léxicos devuelven HTTP 422,
 `status: "lexical_error"` y diagnósticos ubicados. Documentación detallada en
 [`docs/lexical-analysis.md`](../docs/lexical-analysis.md).
 
 Los errores sintácticos devuelven HTTP 422, `syntactic_error`, `ast: null`
 y el primer diagnóstico de etapa parser. Si falla el lexer, sintaxis queda
-skipped. Sin errores ambas fases quedan completed; semantic permanece
-not_implemented. Gramática, AST, límites y ejemplo de sintaxis en
+skipped. Sin errores las tres fases quedan completed. Gramática y AST en
 [`docs/syntax-analysis.md`](../docs/syntax-analysis.md).
+
+Errores semánticos: HTTP 422, semantic_error, primer diagnóstico ubicado.
+Si falla una fase previa, semantic queda skipped. Ámbitos, inicialización y
+controles que requieren valores reales se describen en
+[`docs/semantic-analysis.md`](../docs/semantic-analysis.md).
 
 Errores de solicitud: 400 para JSON/UTF-8 inválido, campo code inválido o
 texto vacío; 413 para exceso de tamaño; 415 para formato distinto de JSON;
@@ -123,13 +126,13 @@ como texto, no HTML. Ctrl+O abre un .txt local sin enviarlo automáticamente.
 | --- | --- | --- |
 | `src/server.js` | Arranque local y errores de escucha | Implementado |
 | `src/api/app.js` | Rutas, origen y errores HTTP | Implementado |
-| `src/api/analyze.js` | Validación, análisis léxico y sintáctico | Implementado |
+| `src/api/analyze.js` | Validación y coordinación de las tres fases | Implementado |
 | `src/api/static.js` | Lista permitida de recursos del frontend | Implementado |
 | `src/lexer/` | Tokens y ubicaciones originales | Implementado, punto 7 |
 | `src/parser/` | Gramática, precedencia y AST | Implementado, punto 8 |
-| `src/semantic/` | Validación estática del AST | Reservado, punto 9 |
-| `src/types/` | Compatibilidad, literales básicos y controles auxiliares | Implementado, integración pendiente |
-| `src/symbols/` | Declaraciones, tipos y ámbitos | Reservado |
+| `src/semantic/` | Validación estática del AST | Implementado, punto 9 |
+| `src/types/` | Compatibilidad, literales básicos y controles auxiliares | Integrado; entrada runtime pendiente |
+| `src/symbols/` | Declaraciones, tipos y ámbitos | Implementado, punto 9 |
 | `src/diagnostics/` | Esquema de respuesta y diagnósticos | Solicitudes implementadas |
 | `src/runtime/` | Ejecución, Leer, Escribir, límites y detención | Reservado |
 | `tests/` | Casos del lenguaje e integración | Solo planificación |
@@ -159,5 +162,6 @@ con aserciones y se comprobó en Edge de PC el envío, la conservación del text
 y el aviso de editor vacío. No hay suite automatizada persistente todavía.
 En el punto 7 se añadieron 102 comprobaciones de lexer y HTTP satisfactorias.
 En el punto 8 se ejecutaron 397 aserciones de parser, AST, límites y API.
+En el punto 9 se ejecutaron 498 aserciones de símbolos, semántica y API.
 Falta comprobar apertura mediante el selector real (bloqueada por permisos de
 la extensión), lector de pantalla y las futuras fases del compilador.

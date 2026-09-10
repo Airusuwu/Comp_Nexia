@@ -1,5 +1,6 @@
 import { tokenize } from '../lexer/tokenize.js';
 import { parse } from '../parser/parse.js';
+import { analyzeSemantics } from '../semantic/analyze.js';
 
 const maxBodyBytes = 512 * 1024;
 const maxCodeBytes = 64 * 1024;
@@ -64,17 +65,21 @@ export async function analyzeRequest(request) {
   const failed = lexical.diagnostics.length > 0;
   const syntax = failed ? null : parse(lexical.tokens);
   const syntaxFailed = syntax?.diagnostics.length > 0;
+  const semantic = syntax?.ast ? analyzeSemantics(syntax.ast) : null;
+  const semanticFailed = semantic?.diagnostics.length > 0;
   return {
-    status: failed ? 'lexical_error' : syntaxFailed ? 'syntactic_error' : 'partial',
+    status: failed ? 'lexical_error' : syntaxFailed ? 'syntactic_error' : semanticFailed ? 'semantic_error' : 'analyzed',
     executed: false,
     results: [],
-    analysis: { lexical: failed ? 'error' : 'completed', syntactic: failed ? 'skipped' : syntaxFailed ? 'error' : 'completed', semantic: 'not_implemented' },
+    analysis: { lexical: failed ? 'error' : 'completed', syntactic: failed ? 'skipped' : syntaxFailed ? 'error' : 'completed', semantic: !semantic ? 'skipped' : semanticFailed ? 'error' : 'completed' },
+    symbols: semantic?.symbols ?? [],
+    runtimeChecks: semantic?.runtimeChecks ?? [],
     tokens: lexical.tokens,
     ast: syntax?.ast ?? null,
     truncated: lexical.truncated || (syntax?.truncated ?? false),
-    diagnostics: failed ? lexical.diagnostics : syntaxFailed ? syntax.diagnostics : [{
-      code: 'SYNTAX_COMPLETED',
-      message: 'Análisis léxico y sintáctico completados. La validación semántica y la ejecución todavía están pendientes.',
+    diagnostics: failed ? lexical.diagnostics : syntaxFailed ? syntax.diagnostics : semanticFailed ? semantic.diagnostics : [{
+      code: 'ANALYSIS_COMPLETED',
+      message: `Análisis léxico, sintáctico y semántico completados. El programa no se ha ejecutado. Controles pendientes de ejecución: ${semantic.runtimeChecks.length}.`,
       severity: 'info', stage: 'service', line: null, column: null
     }]
   };

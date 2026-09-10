@@ -93,7 +93,7 @@
         <aside class="side-panel side-panel--actions clay-panel" aria-labelledby="actions-title">
           <h2 class="panel-title" id="actions-title">Acciones</h2>
           <div class="control-list">
-            <button id="run-program" class="action-card" type="button" aria-disabled="true" aria-describedby="editor-help" title="Enviar al análisis léxico y sintáctico; ejecución pendiente">
+            <button id="run-program" class="action-card" type="button" aria-disabled="true" aria-describedby="editor-help" title="Analizar código; ejecución pendiente">
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-play" /></svg>
               <span>Ejecutar<br>programa</span>
             </button>
@@ -153,12 +153,12 @@ Fin</textarea>
               </div>
             </header>
 
-            <p class="demo-note" id="editor-help">Escribe o pega código. Control más Enter o el botón Ejecutar realiza el análisis léxico y sintáctico; todavía no comprueba tipos ni ejecuta. Control más O abre un archivo .txt en UTF-8 desde el editor. Tab permite salir del editor.</p>
+            <p class="demo-note" id="editor-help">Escribe o pega código. Control más Enter o el botón Ejecutar realiza el análisis léxico, sintáctico y semántico; todavía no ejecuta. Control más O abre un archivo .txt en UTF-8 desde el editor. Tab permite salir del editor.</p>
             <div class="terminal-output" id="terminal-output" role="status" aria-live="polite" aria-atomic="true">
               <div class="result-row result-row--success">
                 <svg class="result-row__icon success-icon" aria-hidden="true"><use href="#icon-check" /></svg>
                 <span class="result-row__divider" aria-hidden="true"></span>
-                <p>Editor y análisis léxico y sintáctico disponibles al iniciar el servidor local. El análisis semántico y la ejecución están pendientes.</p>
+                <p>Editor y análisis léxico, sintáctico y semántico disponibles al iniciar el servidor local. La ejecución está pendiente.</p>
               </div>
             </div>
           </section>

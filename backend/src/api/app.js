@@ -25,7 +25,7 @@ export function createApp() {
         sendJson(response, 200, {
           status: 'ok',
           service: 'nexia-backend',
-          capabilities: { analysis: false, lexical: true, syntactic: true, execution: false }
+          capabilities: { analysis: true, lexical: true, syntactic: true, semantic: true, execution: false }
         });
         return;
       }
@@ -38,7 +38,7 @@ export function createApp() {
           throw new RequestError(403, 'ORIGIN_NOT_ALLOWED', 'Abre Nexia desde este servidor local para enviar el código.');
         }
         const analysis = await analyzeRequest(request);
-        sendJson(response, ['lexical_error', 'syntactic_error'].includes(analysis.status) ? 422 : 200, analysis);
+        sendJson(response, ['lexical_error', 'syntactic_error', 'semantic_error'].includes(analysis.status) ? 422 : 200, analysis);
         return;
       }
       if (await serveFrontend(request, response, pathname)) return;

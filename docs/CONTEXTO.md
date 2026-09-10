@@ -1,5 +1,27 @@
 # Contexto de Nexia
 
+## Estado vigente — punto 9 implementado (2026-09-09)
+
+- Uriel aprobó ámbitos locales para Si/Sino/Mientras e identificadores sin
+  distinción de mayúsculas. Se conservan nombres originales y tipos fijos.
+- Tabla de símbolos y recorrido semántico del AST implementados. Se reutiliza
+  el módulo de tipos para operaciones, asignaciones y condiciones.
+- Inicialización por caminos: intersección de ramas; los ciclos no garantizan
+  inicialización posterior. Los ámbitos hijos no filtran declaraciones.
+- Cero conocido se diagnostica; valores desconocidos y Leer registran controles
+  runtime. Propagación exacta limitada y conservadora, detallada en
+  docs/semantic-analysis.md; no se impone precisión numérica al futuro motor.
+- API: analyzed/200 o semantic_error/422; semántica skipped si falla una fase
+  previa. Incluye symbols y runtimeChecks; executed false, results vacío.
+- Solo cambian contrato y mensajes del frontend, sin nuevos elementos visuales.
+- 498 aserciones satisfactorias de semántica/símbolos/API. Sin dependencias,
+  suite persistente, pruebas móviles ni auditoría nueva de navegador.
+- Trabajo en back, cierre con commit local sin push. Al iniciar no había
+  cambios pendientes en Git; no se modificó GUIA_GIT.md.
+- Siguiente: punto 10, verificación integral. Ejecución real aún pendiente;
+  no confundir validación semántica con ejecución, ni declarar terminados los
+  controles del punto 4 que fueron retirados.
+
 ## Estado vigente — punto 8 implementado (2026-09-09)
 
 - Uriel aprobó Inicio/Fin, una instrucción por línea, Mientras/Hacer/FinMientras

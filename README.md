@@ -9,7 +9,7 @@ personas con distintos niveles de experiencia.
 
 El editor permite escribir, seleccionar y pegar código, con numeración de
 líneas. El botón existente Ejecutar o `Ctrl+Enter` envía el texto al backend;
-realiza análisis léxico y sintáctico, pero todavía no valida tipos ni ejecuta
+realiza análisis léxico, sintáctico y semántico, pero todavía no ejecuta
 programas. La terminal muestra el estado real
 de la solicitud y los errores, sin borrar el contenido del editor.
 
@@ -18,7 +18,7 @@ hasta 64 KiB, con confirmación antes de reemplazar contenido. Guardar,
 Aumentar texto, Detener y Escuchar siguen pendientes; no se añadieron botones.
 
 La nueva etapa funcional se desarrolla en `back`. El backend cuenta con una
-infraestructura local en Node.js conectada al editor, un lexer y un parser. Consulta
+infraestructura local en Node.js conectada al editor y las tres fases de análisis. Consulta
 [`backend/README.md`](backend/README.md) para iniciarlo y conocer sus límites.
 
 ## Estructura principal
@@ -60,6 +60,7 @@ Los cambios de `front` y `back` se revisarán mediante Pull Requests hacia
 
 ## Documentación
 
+- [`docs/semantic-analysis.md`](docs/semantic-analysis.md): ámbitos, tipos, inicialización y controles pendientes de ejecución.
 - [`docs/syntax-analysis.md`](docs/syntax-analysis.md): gramática aprobada, AST y límites del punto 8.
 - [`docs/plan.md`](docs/plan.md): plan histórico de la maqueta visual.
 - [`docs/design-guide.md`](docs/design-guide.md): decisiones visuales y adaptables.

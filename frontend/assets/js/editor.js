@@ -64,7 +64,7 @@
 
   function setBusy(busy) {
     runButton.setAttribute('aria-disabled', String(busy));
-    runButton.title = busy ? 'Enviando código' : 'Enviar al análisis léxico y sintáctico; ejecución pendiente';
+    runButton.title = busy ? 'Enviando código' : 'Analizar código; ejecución pendiente';
   }
 
   function codeChanged() {
@@ -76,12 +76,12 @@
     editor.removeAttribute('aria-invalid');
     editor.removeAttribute('aria-errormessage');
     updateNumbers();
-    showMessage('Código modificado. Ejecutar o Control + Enter realiza el análisis léxico y sintáctico; todavía no ejecuta el programa.');
+    showMessage('Código modificado. Ejecutar o Control + Enter realiza el análisis léxico, sintáctico y semántico; todavía no ejecuta el programa.');
   }
 
   function validResponse(data) {
     const positionsValid = (value) => value === null || (Number.isInteger(value) && value > 0);
-    return data && ['unavailable', 'invalid_request', 'error', 'analyzed', 'completed', 'partial', 'lexical_error', 'syntactic_error'].includes(data.status)
+    return data && ['unavailable', 'invalid_request', 'error', 'analyzed', 'completed', 'partial', 'lexical_error', 'syntactic_error', 'semantic_error'].includes(data.status)
       && typeof data.executed === 'boolean'
       && Array.isArray(data.results) && data.results.every((result) => typeof result === 'string')
       && (data.executed || data.results.length === 0)
