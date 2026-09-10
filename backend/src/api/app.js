@@ -25,7 +25,7 @@ export function createApp() {
         sendJson(response, 200, {
           status: 'ok',
           service: 'nexia-backend',
-          capabilities: { analysis: false, execution: false }
+          capabilities: { analysis: false, lexical: true, execution: false }
         });
         return;
       }
@@ -37,7 +37,8 @@ export function createApp() {
         if (request.headers.origin && request.headers.origin !== `http://${host}`) {
           throw new RequestError(403, 'ORIGIN_NOT_ALLOWED', 'Abre Nexia desde este servidor local para enviar el código.');
         }
-        sendJson(response, 501, await analyzeRequest(request));
+        const analysis = await analyzeRequest(request);
+        sendJson(response, analysis.status === 'lexical_error' ? 422 : 200, analysis);
         return;
       }
       if (await serveFrontend(request, response, pathname)) return;

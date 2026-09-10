@@ -1,15 +1,16 @@
 # Backend de Nexia
 
-## Estado después del punto 6
+## Estado después del punto 7
 
-Editor conectado al servidor, sin análisis ni ejecución de pseudocódigo.
+Editor conectado al servidor, con análisis léxico pero sin ejecución de pseudocódigo.
 `GET /api/health` indica disponibilidad del servidor. `POST /api/analyze`
-valida la solicitud y responde 501 para código recibido válido: los analizadores
-todavía no están implementados. Nunca devuelve resultados de ejecución ficticios.
+valida la solicitud y devuelve tokens o errores léxicos. El análisis sintáctico
+y semántico sigue pendiente. Nunca devuelve resultados de ejecución ficticios.
 
 Ya existe un módulo independiente de compatibilidad de tipos, basado en el
 PDF A5, con controles auxiliares de declaración, inicialización y divisor.
-Todavía no está conectado al análisis de programas. Véase
+La compatibilidad aún no se aplica a programas; el lexer solo reutiliza la
+clasificación de literales. Véase
 [`docs/type-rules.md`](../docs/type-rules.md) para reglas, límites y validaciones.
 
 ## Decisión técnica
@@ -49,7 +50,7 @@ Respuesta esperada:
 {
   "status": "ok",
   "service": "nexia-backend",
-  "capabilities": { "analysis": false, "execution": false }
+  "capabilities": { "analysis": false, "lexical": true, "execution": false }
 }
 ```
 
@@ -67,19 +68,19 @@ recibido ni acceso HTTP a docs, backend o archivos de Git.
 ## Contrato de envío
 
 `POST /api/analyze`, con `Content-Type: application/json` y cuerpo
-`{"code":"Inicio\nFin"}`. El texto no se recorta ni se convierte en tokens.
+`{"code":"Inicio\nFin"}`. El texto no se recorta; se convierte en tokens con ubicación.
 Límites técnicos: código de 64 KiB UTF-8 y cuerpo JSON de 512 KiB.
 
-Respuesta actual a una solicitud válida (HTTP 501):
+Respuesta sin errores léxicos (HTTP 200, extracto sin la lista de tokens):
 
 ```json
 {
-  "status": "unavailable",
+  "status": "partial",
   "executed": false,
   "results": [],
   "diagnostics": [{
-    "code": "ANALYSIS_NOT_IMPLEMENTED",
-    "message": "Código recibido. El análisis léxico, sintáctico y semántico aún no está implementado. El programa no se ha ejecutado.",
+    "code": "LEXICAL_COMPLETED",
+    "message": "Análisis léxico completado. El análisis sintáctico, semántico y la ejecución todavía están pendientes.",
     "severity": "info",
     "stage": "service",
     "line": null,
@@ -87,6 +88,11 @@ Respuesta actual a una solicitud válida (HTTP 501):
   }]
 }
 ```
+
+La respuesta también incluye `tokens`, `truncated` y `analysis` con el estado
+lexical, syntactic y semantic. Los errores léxicos devuelven HTTP 422,
+`status: "lexical_error"` y diagnósticos ubicados. Documentación detallada en
+[`docs/lexical-analysis.md`](../docs/lexical-analysis.md).
 
 Errores de solicitud: 400 para JSON/UTF-8 inválido, campo code inválido o
 texto vacío; 413 para exceso de tamaño; 415 para formato distinto de JSON;
@@ -111,9 +117,9 @@ como texto, no HTML. Ctrl+O abre un .txt local sin enviarlo automáticamente.
 | --- | --- | --- |
 | `src/server.js` | Arranque local y errores de escucha | Implementado |
 | `src/api/app.js` | Rutas, origen y errores HTTP | Implementado |
-| `src/api/analyze.js` | Validación y recepción de código | Sin analizadores |
+| `src/api/analyze.js` | Validación y análisis léxico | Implementado |
 | `src/api/static.js` | Lista permitida de recursos del frontend | Implementado |
-| `src/lexer/` | Tokens y ubicaciones originales | Reservado, punto 7 |
+| `src/lexer/` | Tokens y ubicaciones originales | Implementado, punto 7 |
 | `src/parser/` | Gramática, precedencia y AST | Reservado, punto 8 |
 | `src/semantic/` | Validación estática del AST | Reservado, punto 9 |
 | `src/types/` | Compatibilidad, literales básicos y controles auxiliares | Implementado, integración pendiente |
@@ -145,5 +151,6 @@ Este comando comprueba sintaxis de los módulos implementados, incluido el scrip
 del editor; no prueba reglas del lenguaje. Se realizaron 23 verificaciones HTTP
 con aserciones y se comprobó en Edge de PC el envío, la conservación del texto
 y el aviso de editor vacío. No hay suite automatizada persistente todavía.
+En el punto 7 se añadieron 102 comprobaciones de lexer y HTTP satisfactorias.
 Falta comprobar apertura mediante el selector real (bloqueada por permisos de
 la extensión), lector de pantalla y las futuras fases del compilador.

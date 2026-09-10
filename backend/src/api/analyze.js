@@ -1,4 +1,4 @@
-import { diagnosticResponse } from '../diagnostics/response.js';
+import { tokenize } from '../lexer/tokenize.js';
 
 const maxBodyBytes = 512 * 1024;
 const maxCodeBytes = 64 * 1024;
@@ -59,12 +59,19 @@ export async function analyzeRequest(request) {
     throw new RequestError(400, 'EMPTY_CODE', 'El editor está vacío. Escribe código antes de enviarlo.');
   }
 
-  const response = diagnosticResponse(
-    'unavailable',
-    'ANALYSIS_NOT_IMPLEMENTED',
-    'Código recibido. El análisis léxico, sintáctico y semántico aún no está implementado. El programa no se ha ejecutado.',
-    'info'
-  );
-  response.diagnostics[0].stage = 'service';
-  return response;
+  const lexical = tokenize(payload.code);
+  const failed = lexical.diagnostics.length > 0;
+  return {
+    status: failed ? 'lexical_error' : 'partial',
+    executed: false,
+    results: [],
+    analysis: { lexical: failed ? 'error' : 'completed', syntactic: 'not_implemented', semantic: 'not_implemented' },
+    tokens: lexical.tokens,
+    truncated: lexical.truncated,
+    diagnostics: failed ? lexical.diagnostics : [{
+      code: 'LEXICAL_COMPLETED',
+      message: 'Análisis léxico completado. El análisis sintáctico, semántico y la ejecución todavía están pendientes.',
+      severity: 'info', stage: 'service', line: null, column: null
+    }]
+  };
 }

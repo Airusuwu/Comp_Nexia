@@ -9,7 +9,8 @@ personas con distintos niveles de experiencia.
 
 El editor permite escribir, seleccionar y pegar código, con numeración de
 líneas. El botón existente Ejecutar o `Ctrl+Enter` envía el texto al backend;
-todavía no analiza ni ejecuta programas. La terminal muestra el estado real
+realiza análisis léxico, pero todavía no valida sintaxis, tipos ni ejecuta
+programas. La terminal muestra el estado real
 de la solicitud y los errores, sin borrar el contenido del editor.
 
 Con el foco en el editor, `Ctrl+O` permite abrir un archivo `.txt` UTF-8 de
@@ -17,8 +18,7 @@ hasta 64 KiB, con confirmación antes de reemplazar contenido. Guardar,
 Aumentar texto, Detener y Escuchar siguen pendientes; no se añadieron botones.
 
 La nueva etapa funcional se desarrolla en `back`. El backend cuenta con una
-infraestructura local en Node.js conectada al editor, pero todavía no analiza
-ni ejecuta pseudocódigo. Consulta
+infraestructura local en Node.js conectada al editor y un lexer. Consulta
 [`backend/README.md`](backend/README.md) para iniciarlo y conocer sus límites.
 
 ## Estructura principal

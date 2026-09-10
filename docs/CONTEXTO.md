@@ -1,5 +1,29 @@
 # Contexto de Nexia
 
+## Estado vigente — punto 7 implementado (2026-09-09)
+
+- Uriel confirmó que las palabras reservadas deben reconocerse igual en
+  mayúsculas/minúsculas. Se conserva el lexema original de cada token.
+- `backend/src/lexer/tokenize.js` reconoce palabras documentadas, identificadores,
+  literales, operadores y delimitadores con posiciones UTF-16, líneas y columnas.
+  No comprueba compatibilidad de tipos ni ejecuta operaciones.
+- Detecta símbolos inválidos, literales sin cerrar y CARACTER incorrecto;
+  recupera el análisis y limita errores. Los formatos pendientes del PDF se
+  distinguen con UNSPECIFIED_LITERAL_FORMAT, sin inventar reglas aprobadas.
+- POST /api/analyze devuelve 200/partial o 422/lexical_error con tokens,
+  diagnósticos y fases. analysis general sigue false; lexical es true.
+  Sintaxis, semántica y ejecución siguen pendientes, sin resultados ficticios.
+- Se conectaron esos estados a la terminal existente cambiando solo mensajes
+  y aceptación del contrato; sin botones, rediseño ni pruebas móviles.
+- 102 aserciones de lexer/API y comprobación de sintaxis satisfactorias.
+  `docs/lexical-analysis.md` detalla alcance, posiciones, convenciones técnicas,
+  recuperación, palabras todavía sin gramática y validaciones.
+- La muestra previa conserva ←: el lexer indica reemplazarla por <- según A5.
+  No se corrige automáticamente el código del usuario.
+- Rama back, commit local sin push; cambio del usuario en GUIA_GIT.md intacto.
+  Próximo paso: punto 8, gramática y AST, consultando lo no documentado antes
+  de decidir cierres, precedencia completa y estructuras adicionales.
+
 ## Estado vigente — punto 6 implementado (2026-09-09)
 
 - Se leyó el PDF A5 completo mediante extracción de texto y se contrastaron
