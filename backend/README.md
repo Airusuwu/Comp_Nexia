@@ -1,11 +1,16 @@
 # Backend de Nexia
 
-## Estado del punto 5
+## Estado después del punto 6
 
 Editor conectado al servidor, sin análisis ni ejecución de pseudocódigo.
 `GET /api/health` indica disponibilidad del servidor. `POST /api/analyze`
 valida la solicitud y responde 501 para código recibido válido: los analizadores
 todavía no están implementados. Nunca devuelve resultados de ejecución ficticios.
+
+Ya existe un módulo independiente de compatibilidad de tipos, basado en el
+PDF A5, con controles auxiliares de declaración, inicialización y divisor.
+Todavía no está conectado al análisis de programas. Véase
+[`docs/type-rules.md`](../docs/type-rules.md) para reglas, límites y validaciones.
 
 ## Decisión técnica
 
@@ -111,7 +116,7 @@ como texto, no HTML. Ctrl+O abre un .txt local sin enviarlo automáticamente.
 | `src/lexer/` | Tokens y ubicaciones originales | Reservado, punto 7 |
 | `src/parser/` | Gramática, precedencia y AST | Reservado, punto 8 |
 | `src/semantic/` | Validación estática del AST | Reservado, punto 9 |
-| `src/types/` | Compatibilidad central de tipos | Reservado, punto 6 |
+| `src/types/` | Compatibilidad, literales básicos y controles auxiliares | Implementado, integración pendiente |
 | `src/symbols/` | Declaraciones, tipos y ámbitos | Reservado |
 | `src/diagnostics/` | Esquema de respuesta y diagnósticos | Solicitudes implementadas |
 | `src/runtime/` | Ejecución, Leer, Escribir, límites y detención | Reservado |

@@ -1,5 +1,28 @@
 # Contexto de Nexia
 
+## Estado vigente — punto 6 implementado (2026-09-09)
+
+- Se leyó el PDF A5 completo mediante extracción de texto y se contrastaron
+  las 15 reglas numeradas con los ejemplos. No se modificó ni añadió el PDF
+  a Git. Las tablas no se verificaron visualmente; véase `docs/type-rules.md`.
+- Implementados `backend/src/types/compatibility.js`, `guards.js` y
+  `literals.js`: cinco tipos, matriz de operadores, asignación, entrada/salida
+  tipadas, condiciones, agrupación y controles de estado y divisor.
+- 449 aserciones satisfactorias, incluida la matriz binaria completa de 325
+  combinaciones y rechazo de conversiones no permitidas. La comprobación de
+  sintaxis incluye los nuevos módulos. No se añadieron dependencias.
+- No hay todavía lexer, parser, tabla de símbolos ni motor. Los controles
+  auxiliares reciben estado del llamador; su aplicación a programas requiere
+  esas fases. La API conserva 501/unavailable y executed false.
+- Literales básicos reconocidos; formatos no especificados tienen diagnóstico
+  diferenciado. Pendientes: escapes, variantes decimales, precisión/rangos,
+  grafemas de CARACTER, gramática, ámbitos y formato de entrada de Leer.
+  El documento de reglas distingue decisiones técnicas y reglas del PDF.
+- Trabajo en `back`; frontend intacto, sin pruebas móviles ni de navegador.
+  Se conserva la modificación de Uriel en `GUIA_GIT.md`, fuera del commit.
+- Cierre mediante commit local sin push. Siguiente punto: 7, análisis léxico;
+  consultar las decisiones de literales necesarias antes de inventar sintaxis.
+
 ## Estado vigente — punto 5 implementado (2026-09-09)
 
 Este registro prevalece sobre los anteriores. Por decisión de Uriel, las
