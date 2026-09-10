@@ -3,6 +3,7 @@
   const gutter = document.querySelector('.line-gutter');
   const numbers = document.getElementById('line-numbers');
   const runButton = document.getElementById('run-program');
+  const stopButton = document.getElementById('stop-program');
   const output = document.getElementById('terminal-output');
   const fileInput = document.getElementById('open-program');
   const maxCodeBytes = 64 * 1024;
@@ -64,7 +65,9 @@
 
   function setBusy(busy) {
     runButton.setAttribute('aria-disabled', String(busy));
-    runButton.title = busy ? 'Enviando código' : 'Analizar código; ejecución pendiente';
+    runButton.title = busy ? 'Ejecutando código' : 'Analizar y ejecutar código';
+    stopButton.setAttribute('aria-disabled', String(!busy));
+    stopButton.title = busy ? 'Detener ejecución' : 'No hay ejecución activa';
   }
 
   function codeChanged() {
@@ -76,12 +79,12 @@
     editor.removeAttribute('aria-invalid');
     editor.removeAttribute('aria-errormessage');
     updateNumbers();
-    showMessage('Código modificado. Ejecutar o Control + Enter realiza el análisis léxico, sintáctico y semántico; todavía no ejecuta el programa.');
+    showMessage('Código modificado. Ejecutar o Control + Enter analiza y ejecuta el programa.');
   }
 
   function validResponse(data) {
     const positionsValid = (value) => value === null || (Number.isInteger(value) && value > 0);
-    return data && ['unavailable', 'invalid_request', 'error', 'analyzed', 'completed', 'partial', 'lexical_error', 'syntactic_error', 'semantic_error'].includes(data.status)
+    return data && ['unavailable', 'invalid_request', 'error', 'analyzed', 'completed', 'partial', 'lexical_error', 'syntactic_error', 'semantic_error', 'runtime_error', 'waiting_input', 'stopped'].includes(data.status)
       && typeof data.executed === 'boolean'
       && Array.isArray(data.results) && data.results.every((result) => typeof result === 'string')
       && (data.executed || data.results.length === 0)
@@ -108,7 +111,8 @@
       }
     }
     for (const result of data.results) addMessage(`Resultado: ${result}`);
-    if (!output.children.length) {
+    if (data.status === 'completed') addMessage('Ejecución finalizada.');
+    if (!output.children.length && data.status !== 'waiting_input') {
       showMessage(data.executed ? 'Ejecución finalizada sin salidas.' : 'El programa no se ha ejecutado.');
     }
     updateNumbers();
@@ -134,23 +138,42 @@
     pending = controller;
     const submittedRevision = revision;
     let timedOut = false;
-    const timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 8000);
+    let timeout;
+    const inputs = [];
     setBusy(true);
-    showMessage('Procesando solicitud: enviando código al backend. Esto no significa que se esté ejecutando.');
+    showMessage('Analizando y ejecutando el programa…');
 
     try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
-        signal: controller.signal
-      });
-      const data = await response.json();
-      if (revision !== submittedRevision || pending !== controller) return;
-      if (!validResponse(data) || (!response.ok && !data.diagnostics.length)) {
-        throw new Error('Invalid response');
+      while (true) {
+        timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 8000);
+        const response = await fetch('/api/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, inputs }),
+          signal: controller.signal
+        });
+        const data = await response.json();
+        clearTimeout(timeout);
+        if (revision !== submittedRevision || pending !== controller) return;
+        if (!validResponse(data) || (!response.ok && !data.diagnostics.length)) {
+          throw new Error('Invalid response');
+        }
+        displayResponse(data);
+        if (data.status !== 'waiting_input') break;
+        if (!data.input || data.input.index !== inputs.length || typeof data.input.name !== 'string'
+          || !['ENTERO', 'REAL', 'TEXTO', 'CARACTER', 'BOOLEANO'].includes(data.input.type)) throw new Error('Invalid input request');
+        addMessage(`Esperando Leer ${data.input.name} (${data.input.type}).`);
+        const value = window.prompt(`Leer ${data.input.name} (${data.input.type}). Escribe el dato sin comillas. Cancelar detiene el programa.`);
+        if (value === null) {
+          addMessage('Ejecución detenida: entrada cancelada.');
+          break;
+        }
+        if (value.length > 65536) {
+          addMessage('Entrada demasiado larga. Ejecución detenida; el código se conserva.', true);
+          break;
+        }
+        inputs.push(value);
       }
-      displayResponse(data);
     } catch {
       if (revision !== submittedRevision || pending !== controller) return;
       showMessage(timedOut
@@ -171,6 +194,13 @@
   editor.addEventListener('keyup', highlightPosition);
   editor.addEventListener('select', highlightPosition);
   runButton.addEventListener('click', sendCode);
+  stopButton.addEventListener('click', () => {
+    if (!pending) return;
+    pending.abort();
+    pending = null;
+    setBusy(false);
+    addMessage('Ejecución detenida. El código se conserva.');
+  });
   editor.addEventListener('keydown', (event) => {
     if (event.isComposing) return;
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {

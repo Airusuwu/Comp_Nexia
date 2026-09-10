@@ -1,11 +1,15 @@
 # Backend de Nexia
 
-## Estado después del punto 9
+## Estado con ejecución básica
 
-Editor conectado al servidor, con análisis léxico, sintáctico y semántico sin ejecución de pseudocódigo.
+Editor conectado al servidor, con tres fases de análisis y ejecución del AST.
 `GET /api/health` indica disponibilidad del servidor. `POST /api/analyze`
 valida la solicitud y devuelve tokens, AST, símbolos, controles runtime o errores
 ubicados. Nunca devuelve resultados de ejecución ficticios.
+
+`POST /api/execute` analiza y ejecuta; `/api/analyze` sigue siendo solo análisis.
+Contrato de entrada, salidas, cancelación y límites en
+[`docs/runtime.md`](../docs/runtime.md).
 
 Ya existe un módulo independiente de compatibilidad de tipos, basado en el
 PDF A5, con controles auxiliares de declaración, inicialización y divisor.
@@ -49,12 +53,12 @@ Respuesta esperada:
 {
   "status": "ok",
   "service": "nexia-backend",
-  "capabilities": { "analysis": true, "lexical": true, "syntactic": true, "semantic": true, "execution": false }
+  "capabilities": { "analysis": true, "lexical": true, "syntactic": true, "semantic": true, "execution": true }
 }
 ```
 
-Detener este servidor de desarrollo con Ctrl+C. Esto no implementa el botón
-Detener del compilador. El servidor solo escucha en la interfaz local;
+Detener este servidor de desarrollo con Ctrl+C. El botón Detener del compilador
+cancela la petición de ejecución, no el servidor. Solo escucha en la interfaz local;
 solo sirve una lista explícita de archivos del frontend, no publica el PDF y no está preparado
 para despliegue público. Si el puerto 3000 está ocupado, informa el error
 sin cerrar procesos ajenos. No hace falta ejecutar `npm install`.
@@ -117,7 +121,7 @@ líneas vacías e indentación. La gramática del punto 8 está documentada por 
 
 El frontend conserva texto ante errores, bloquea envíos simultáneos, descarta
 respuestas a versiones anteriores y limita la espera a 8 segundos. Editar
-cancela la espera local, no una ejecución de programa. Los mensajes se insertan
+cancela la solicitud y la ejecución en curso. Los mensajes se insertan
 como texto, no HTML. Ctrl+O abre un .txt local sin enviarlo automáticamente.
 
 ## Responsabilidades
@@ -131,10 +135,10 @@ como texto, no HTML. Ctrl+O abre un .txt local sin enviarlo automáticamente.
 | `src/lexer/` | Tokens y ubicaciones originales | Implementado, punto 7 |
 | `src/parser/` | Gramática, precedencia y AST | Implementado, punto 8 |
 | `src/semantic/` | Validación estática del AST | Implementado, punto 9 |
-| `src/types/` | Compatibilidad, literales básicos y controles auxiliares | Integrado; entrada runtime pendiente |
+| `src/types/` | Compatibilidad, literales básicos y controles auxiliares | Integrado con semántica y runtime |
 | `src/symbols/` | Declaraciones, tipos y ámbitos | Implementado, punto 9 |
 | `src/diagnostics/` | Esquema de respuesta y diagnósticos | Solicitudes implementadas |
-| `src/runtime/` | Ejecución, Leer, Escribir, límites y detención | Reservado |
+| `src/runtime/` | Ejecución, Leer, Escribir, límites y detención | Motor básico implementado |
 | `tests/` | Casos del lenguaje e integración | Solo planificación |
 
 Las carpetas reservadas no contienen implementaciones ficticias. Sus archivos

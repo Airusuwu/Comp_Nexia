@@ -1,6 +1,7 @@
 import { tokenize } from '../lexer/tokenize.js';
 import { parse } from '../parser/parse.js';
 import { analyzeSemantics } from '../semantic/analyze.js';
+import { execute } from '../runtime/execute.js';
 
 const maxBodyBytes = 512 * 1024;
 const maxCodeBytes = 64 * 1024;
@@ -38,7 +39,7 @@ function readBody(request) {
   });
 }
 
-export async function analyzeRequest(request) {
+export async function analyzeRequest(request, { run = false, signal } = {}) {
   const mediaType = request.headers['content-type']?.split(';')[0].trim().toLowerCase();
   if (mediaType !== 'application/json') {
     throw new RequestError(415, 'JSON_REQUIRED', 'Envía el código como application/json.');
@@ -60,6 +61,10 @@ export async function analyzeRequest(request) {
   if (!payload.code.trim()) {
     throw new RequestError(400, 'EMPTY_CODE', 'El editor está vacío. Escribe código antes de enviarlo.');
   }
+  const inputs = payload.inputs ?? [];
+  if (run && (!Array.isArray(inputs) || inputs.length > 100 || inputs.some(input => typeof input !== 'string' || input.length > 65536))) {
+    throw new RequestError(400, 'INVALID_INPUTS', 'inputs debe ser una lista de hasta 100 textos de máximo 65536 unidades cada uno.');
+  }
 
   const lexical = tokenize(payload.code);
   const failed = lexical.diagnostics.length > 0;
@@ -67,7 +72,7 @@ export async function analyzeRequest(request) {
   const syntaxFailed = syntax?.diagnostics.length > 0;
   const semantic = syntax?.ast ? analyzeSemantics(syntax.ast) : null;
   const semanticFailed = semantic?.diagnostics.length > 0;
-  return {
+  const analysis = {
     status: failed ? 'lexical_error' : syntaxFailed ? 'syntactic_error' : semanticFailed ? 'semantic_error' : 'analyzed',
     executed: false,
     results: [],
@@ -83,4 +88,6 @@ export async function analyzeRequest(request) {
       severity: 'info', stage: 'service', line: null, column: null
     }]
   };
+  if (!run || analysis.status !== 'analyzed') return analysis;
+  return { ...analysis, ...await execute(syntax.ast, inputs, { signal }) };
 }

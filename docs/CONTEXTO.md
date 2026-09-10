@@ -1,5 +1,26 @@
 # Contexto de Nexia
 
+## Estado vigente — ejecución básica implementada (2026-09-10)
+
+- Uriel solicitó ejecutar las operaciones ya implementadas. Se añadió un
+  intérprete de AST sin eval, con valores tipados y ámbitos independientes.
+- Ejecutar/Ctrl+Enter ahora usa /api/execute; /api/analyze conserva solo análisis.
+  Incluye aritmética, lógica, comparación, texto, Si/Sino, Mientras y E/S reales.
+- Leer usa diálogo nativo y replay determinista con inputs, sin sesiones. Cancelar
+  termina la secuencia. Detener aborta la petición; el motor atiende cancelación.
+- No hay botones nuevos ni rediseño. Salidas parciales se conservan ante error;
+  el éxito se distingue de espera de datos y error runtime.
+- Límites técnicos, precisión REAL aproximada, ENTERO seguro y formato de
+  entrada están explícitos en docs/runtime.md; no se atribuyen al PDF.
+- 93 aserciones aprobadas, check satisfactorio. Edge PC: suma/resta/producto/
+  división, Leer 4.5 con resultado 9 y cancelación del diálogo verificados.
+- Sin suite persistente, auditoría con lector de pantalla ni pruebas móviles.
+  Guardar/Aumentar texto e inserción de estructuras siguen pendientes.
+- Muestra antigua del editor permanece inválida (← y Escribir y); usar ejemplo
+  de docs/runtime.md. El código del usuario no se corrige automáticamente.
+- Servidor actualizado en http://127.0.0.1:55962/. Rama back; commit local sin
+  push ni integración a main. Los estados anteriores se conservan como historia.
+
 ## Estado vigente — punto 10 verificado con pendientes (2026-09-10)
 
 - 26 programas y 140 aserciones de integración HTTP satisfactorias; se probaron
