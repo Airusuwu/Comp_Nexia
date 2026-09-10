@@ -1,5 +1,27 @@
 # Contexto de Nexia
 
+## Estado vigente — punto 8 implementado (2026-09-09)
+
+- Uriel aprobó Inicio/Fin, una instrucción por línea, Mientras/Hacer/FinMientras
+  y precedencia: paréntesis, unarios, multiplicativos, aditivos, comparaciones,
+  Y, O. Se distingue esta aprobación de las reglas originalmente documentadas.
+- Parser independiente en backend/src/parser/parse.js: declaraciones,
+  asignaciones, Leer, Escribir, Si/Sino y Mientras; AST con ubicaciones UTF-16.
+  Conserva literales sin conversiones; no evalúa ni comprueba tipos.
+- Ante error sintáctico devuelve el primer diagnóstico ubicado y ast null.
+  Límites técnicos de recursión y profundidad protegen el servicio.
+- API: 200/partial con AST o 422/syntactic_error. Si falla el lexer, sintaxis
+  skipped. Semántica not_implemented, executed false, results vacío.
+  health declara syntactic true y mantiene analysis general false.
+- Frontend: solo contrato y mensajes de los controles existentes; sin cambios
+  visuales. La muestra antigua con ← se conserva y sigue requiriendo <-.
+- 397 aserciones de parser/AST/API aprobadas y comprobación de sintaxis.
+  Sin nuevas dependencias, pruebas móviles ni auditoría nueva de navegador.
+- docs/syntax-analysis.md documenta gramática, AST, decisiones técnicas,
+  pruebas y pendientes. No hay suite persistente ni recuperación múltiple.
+- Rama back; conservar GUIA_GIT.md ajeno al commit, sin push ni integración.
+  Siguiente: punto 9, semántica y símbolos. Motor de ejecución aún pendiente.
+
 ## Estado vigente — punto 7 implementado (2026-09-09)
 
 - Uriel confirmó que las palabras reservadas deben reconocerse igual en

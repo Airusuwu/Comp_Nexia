@@ -1,5 +1,10 @@
 # Análisis léxico — punto 7
 
+Actualización del punto 8: se añaden las palabras Hacer y FinMientras aprobadas
+por Uriel. La API ahora ejecuta el parser tras un léxico sin errores y devuelve
+AST o syntactic_error; véase syntax-analysis.md. El contrato HTTP descrito al
+final de este documento conserva el estado histórico del punto 7.
+
 `backend/src/lexer/tokenize.js` expone `tokenize(source)` y devuelve
 `{ tokens, diagnostics, truncated }`. No calcula expresiones, no valida
 compatibilidad entre operandos ni construye un AST.

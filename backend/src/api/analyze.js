@@ -1,4 +1,5 @@
 import { tokenize } from '../lexer/tokenize.js';
+import { parse } from '../parser/parse.js';
 
 const maxBodyBytes = 512 * 1024;
 const maxCodeBytes = 64 * 1024;
@@ -61,16 +62,19 @@ export async function analyzeRequest(request) {
 
   const lexical = tokenize(payload.code);
   const failed = lexical.diagnostics.length > 0;
+  const syntax = failed ? null : parse(lexical.tokens);
+  const syntaxFailed = syntax?.diagnostics.length > 0;
   return {
-    status: failed ? 'lexical_error' : 'partial',
+    status: failed ? 'lexical_error' : syntaxFailed ? 'syntactic_error' : 'partial',
     executed: false,
     results: [],
-    analysis: { lexical: failed ? 'error' : 'completed', syntactic: 'not_implemented', semantic: 'not_implemented' },
+    analysis: { lexical: failed ? 'error' : 'completed', syntactic: failed ? 'skipped' : syntaxFailed ? 'error' : 'completed', semantic: 'not_implemented' },
     tokens: lexical.tokens,
-    truncated: lexical.truncated,
-    diagnostics: failed ? lexical.diagnostics : [{
-      code: 'LEXICAL_COMPLETED',
-      message: 'Análisis léxico completado. El análisis sintáctico, semántico y la ejecución todavía están pendientes.',
+    ast: syntax?.ast ?? null,
+    truncated: lexical.truncated || (syntax?.truncated ?? false),
+    diagnostics: failed ? lexical.diagnostics : syntaxFailed ? syntax.diagnostics : [{
+      code: 'SYNTAX_COMPLETED',
+      message: 'Análisis léxico y sintáctico completados. La validación semántica y la ejecución todavía están pendientes.',
       severity: 'info', stage: 'service', line: null, column: null
     }]
   };
