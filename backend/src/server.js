@@ -10,6 +10,6 @@ server.on('error', (error) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`Backend de Nexia: http://${host}:${port}/api/health`);
-  console.log('Solo infraestructura; análisis y ejecución todavía no disponibles.');
+  console.log(`Nexia: http://${host}:${port}/`);
+  console.log('Editor y comunicación disponibles; análisis y ejecución pendientes.');
 });

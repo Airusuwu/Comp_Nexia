@@ -1,5 +1,42 @@
 # Contexto de Nexia
 
+## Estado vigente — punto 5 implementado (2026-09-09)
+
+Este registro prevalece sobre los anteriores. Por decisión de Uriel, las
+validaciones siguientes se centran en PC; no repetir comprobaciones móviles
+ni tareas accesorias que consuman tiempo sin aportar al funcionamiento actual.
+
+- Rama `back`; cambios del usuario en `GUIA_GIT.md` conservados y excluidos
+  del commit. El PDF permanece ignorado y sin leer hasta el punto 6.
+- Se sustituyó la lista estática por un textarea con numeración y selección
+  nativas, sin botones nuevos ni rediseño. El script necesario es
+  `frontend/assets/js/editor.js`; la terminal existente muestra estados reales.
+- El botón existente Ejecutar y Ctrl+Enter envían código; NO ejecutan aún.
+  Detener, Escuchar, Aumentar texto y Guardar siguen pendientes del punto 4.
+- Ctrl+O desde el editor abre .txt UTF-8 de hasta 64 KiB, confirmando reemplazo.
+  Apertura implementada, pero no verificada de extremo a extremo: la extensión
+  bloqueó la selección automática de archivos por permisos; no se cambiaron.
+- Node sirve frontend y API en `http://127.0.0.1:3000/`. Iniciar desde la raíz
+  con `npm.cmd --prefix backend start`. No requiere paquetes externos.
+- `POST /api/analyze` valida JSON, tamaño y texto vacío, con diagnóstico
+  estructurado. Una solicitud válida responde 501/unavailable: recibido pero
+  sin analizadores. `executed` permanece false y `results` vacío.
+- El contrato completo, códigos HTTP y convención de ubicaciones se registran
+  en `backend/README.md`. No se inventaron reglas ni diagnósticos del lenguaje.
+- La interfaz conserva código ante fallos, indica procesamiento y vacío,
+  descarta respuestas obsoletas al editar y limita la espera a 8 segundos.
+  Mensajes accesibles y errores textuales con inversión de colores; las
+  futuras líneas diagnosticadas se señalarán en el canal de numeración.
+- Verificado: sintaxis de todos los módulos; 23 comprobaciones HTTP con
+  aserciones; en Edge de PC, edición, envío Ctrl+Enter, texto conservado con
+  acentos/espacios/líneas vacías y aviso de editor vacío. Se conservan estas
+  verificaciones de la sesión anterior, sin repetirlas innecesariamente.
+- Limitaciones: no se completó prueba con lector de pantalla, selección real
+  de archivo ni comprobación final de desplazamiento sincronizado. El navegador
+  no está disponible al retomar. No se presenta esto como auditoría completa.
+- Documentación actualizada y cierre en commit local sin push. Próximo paso:
+  punto 6, leer el PDF A5 y convertir sus reglas en compatibilidad de tipos.
+
 ## Estado vigente — retirada de cambios del frontend (2026-09-09)
 
 Este registro sustituye el estado funcional descrito para el punto 4 abajo,

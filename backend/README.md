@@ -1,10 +1,11 @@
 # Backend de Nexia
 
-## Estado del punto 3
+## Estado del punto 5
 
-Infraestructura inicial, sin procesamiento de pseudocódigo. Solo funciona
-`GET /api/health`; su estado `ok` significa que el servidor responde, NO que
-un programa haya sido analizado o ejecutado. El frontend no está conectado.
+Editor conectado al servidor, sin análisis ni ejecución de pseudocódigo.
+`GET /api/health` indica disponibilidad del servidor. `POST /api/analyze`
+valida la solicitud y responde 501 para código recibido válido: los analizadores
+todavía no están implementados. Nunca devuelve resultados de ejecución ficticios.
 
 ## Decisión técnica
 
@@ -30,7 +31,8 @@ Desde la raíz del repositorio, en PowerShell:
 npm.cmd --prefix backend start
 ```
 
-Consultar `http://127.0.0.1:3000/api/health` en un navegador o con:
+Abrir la aplicación en `http://127.0.0.1:3000/`. Frontend y API comparten origen;
+ya no hace falta un servidor Python independiente. Consultar salud con:
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:3000/api/health
@@ -48,27 +50,70 @@ Respuesta esperada:
 
 Detener este servidor de desarrollo con Ctrl+C. Esto no implementa el botón
 Detener del compilador. El servidor solo escucha en la interfaz local;
-no sirve archivos del repositorio, no publica el PDF y no está preparado
+solo sirve una lista explícita de archivos del frontend, no publica el PDF y no está preparado
 para despliegue público. Si el puerto 3000 está ocupado, informa el error
 sin cerrar procesos ajenos. No hace falta ejecutar `npm install`.
 
-Las otras rutas responden 404 y los métodos distintos de GET en la ruta de
-salud responden 405. No hay rutas de análisis o ejecución simuladas.
-La API funcional y su conexión con el editor corresponden al punto 5 y a
-los componentes posteriores. Todavía no se habilita CORS ni se sirve el HTML.
+Las rutas no autorizadas responden 404; los métodos no admitidos, 405.
+El envío exige JSON y el mismo origen de la aplicación cuando existe cabecera
+Origin. No se habilita CORS. No hay almacenamiento, registros del código
+recibido ni acceso HTTP a docs, backend o archivos de Git.
+
+## Contrato de envío
+
+`POST /api/analyze`, con `Content-Type: application/json` y cuerpo
+`{"code":"Inicio\nFin"}`. El texto no se recorta ni se convierte en tokens.
+Límites técnicos: código de 64 KiB UTF-8 y cuerpo JSON de 512 KiB.
+
+Respuesta actual a una solicitud válida (HTTP 501):
+
+```json
+{
+  "status": "unavailable",
+  "executed": false,
+  "results": [],
+  "diagnostics": [{
+    "code": "ANALYSIS_NOT_IMPLEMENTED",
+    "message": "Código recibido. El análisis léxico, sintáctico y semántico aún no está implementado. El programa no se ha ejecutado.",
+    "severity": "info",
+    "stage": "service",
+    "line": null,
+    "column": null
+  }]
+}
+```
+
+Errores de solicitud: 400 para JSON/UTF-8 inválido, campo code inválido o
+texto vacío; 413 para exceso de tamaño; 415 para formato distinto de JSON;
+403 para host/origen no permitido. Mantienen el mismo esquema con
+`status: "invalid_request"`, `executed: false` y diagnósticos de etapa request.
+Los fallos internos devuelven 500 y `status: "error"`, sin detalles internos.
+
+Las ubicaciones son null cuando no corresponden, nunca líneas inventadas.
+Para las futuras fases serán índices desde 1; columnas en unidades UTF-16
+como la selección del textarea, contando cada tabulador como una unidad.
+El textarea normaliza finales CRLF/CR a LF al editar/abrir; conserva espacios,
+líneas vacías e indentación. No se ha definido la gramática del lenguaje.
+
+El frontend conserva texto ante errores, bloquea envíos simultáneos, descarta
+respuestas a versiones anteriores y limita la espera a 8 segundos. Editar
+cancela la espera local, no una ejecución de programa. Los mensajes se insertan
+como texto, no HTML. Ctrl+O abre un .txt local sin enviarlo automáticamente.
 
 ## Responsabilidades
 
 | Ruta | Responsabilidad | Estado |
 | --- | --- | --- |
 | `src/server.js` | Arranque local y errores de escucha | Implementado |
-| `src/api/app.js` | Comunicación HTTP, sin reglas del lenguaje | Solo salud |
+| `src/api/app.js` | Rutas, origen y errores HTTP | Implementado |
+| `src/api/analyze.js` | Validación y recepción de código | Sin analizadores |
+| `src/api/static.js` | Lista permitida de recursos del frontend | Implementado |
 | `src/lexer/` | Tokens y ubicaciones originales | Reservado, punto 7 |
 | `src/parser/` | Gramática, precedencia y AST | Reservado, punto 8 |
 | `src/semantic/` | Validación estática del AST | Reservado, punto 9 |
 | `src/types/` | Compatibilidad central de tipos | Reservado, punto 6 |
 | `src/symbols/` | Declaraciones, tipos y ámbitos | Reservado |
-| `src/diagnostics/` | Mensajes con etapa y ubicación | Reservado |
+| `src/diagnostics/` | Esquema de respuesta y diagnósticos | Solicitudes implementadas |
 | `src/runtime/` | Ejecución, Leer, Escribir, límites y detención | Reservado |
 | `tests/` | Casos del lenguaje e integración | Solo planificación |
 
@@ -81,8 +126,8 @@ estado de ejecución separado por programa y controles de valores en ejecución.
 No se ejecutará el pseudocódigo como JavaScript mediante `eval` o `Function`,
 ni se heredarán conversiones implícitas del lenguaje anfitrión.
 
-Los formatos definitivos de tokens, AST, diagnósticos y respuestas se definirán
-en sus etapas. No se han decidido reglas gramaticales a partir de la maqueta.
+Los formatos de tokens y AST se definirán en sus etapas. El contrato HTTP
+anterior no determina las reglas gramaticales a partir de la maqueta.
 Los cambios visuales y los eventos del editor permanecerán en `frontend/`.
 
 ## Verificación
@@ -91,7 +136,9 @@ Los cambios visuales y los eventos del editor permanecerán en `frontend/`.
 npm.cmd --prefix backend run check
 ```
 
-Este comando comprueba sintaxis de los dos módulos existentes; no prueba reglas
-del lenguaje. Las verificaciones HTTP de esta etapa deben distinguir salud,
-rutas inexistentes y métodos no permitidos. No hay pruebas funcionales del
-compilador, navegador ni lector de pantalla realizadas por esta infraestructura.
+Este comando comprueba sintaxis de los módulos implementados, incluido el script
+del editor; no prueba reglas del lenguaje. Se realizaron 23 verificaciones HTTP
+con aserciones y se comprobó en Edge de PC el envío, la conservación del texto
+y el aviso de editor vacío. No hay suite automatizada persistente todavía.
+Falta comprobar apertura mediante el selector real (bloqueada por permisos de
+la extensión), lector de pantalla y las futuras fases del compilador.

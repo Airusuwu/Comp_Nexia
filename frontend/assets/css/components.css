@@ -218,75 +218,84 @@
 }
 
 .code-window {
+  display: grid;
+  grid-template-columns: 4.7rem minmax(0, 1fr);
   min-width: 0;
   height: calc(100% - 3.15rem);
-  overflow: auto;
+  min-height: 18rem;
+  overflow: hidden;
   border: 0.16rem solid var(--color-text);
   border-top: 0;
   border-radius: 0 0 0.75rem 0.75rem;
   outline: none;
 }
 
-.code-window:focus-visible {
+.code-window:focus-within {
   box-shadow:
     inset 0 0 0 0.15rem var(--color-surface),
     0 0 0 0.2rem var(--color-focus);
 }
 
-.code-lines {
-  min-width: max-content;
+.line-numbers,
+.code-input {
   margin: 0;
-  padding: 0.45rem 0 0.45rem 4.7rem;
-  counter-reset: code-line;
   font-family: var(--font-code);
   font-size: clamp(1rem, 1.45vw, 1.45rem);
   font-weight: 700;
-  line-height: 1.38;
-  list-style: none;
+  line-height: 1.5;
+  tab-size: 2;
 }
 
-.code-lines li {
-  position: relative;
-  min-height: 1.9rem;
-  padding: 0 1.25rem 0 1.4rem;
-  counter-increment: code-line;
-  white-space: pre;
-}
-
-.code-lines li::before {
-  position: absolute;
-  top: 0;
-  right: calc(100% - 0.05rem);
-  width: 4.7rem;
-  height: 100%;
-  padding-right: 1.25rem;
+.line-gutter {
+  contain: size;
+  min-height: 0;
+  overflow: hidden;
   border-right: 0.1rem solid rgb(17 15 57 / 42%);
-  content: counter(code-line);
+}
+
+.line-numbers {
+  padding: 0.45rem 0;
+  list-style: none;
   text-align: right;
 }
 
-.code-lines code {
-  font: inherit;
+.line-numbers li {
+  padding-right: 1rem;
 }
 
-.code-lines .code-comment {
-  font-weight: 600;
+.code-input {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0.45rem 1.4rem;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  resize: none;
+  overflow: auto;
+  background: transparent;
+  color: var(--color-text);
+  caret-color: var(--color-text);
 }
 
-.code-lines .indent-1 {
-  display: inline-block;
-  padding-left: 1.65rem;
-}
-
-.code-lines li.is-active {
-  background: linear-gradient(90deg, var(--color-primary-soft), var(--color-primary-deep));
-  box-shadow: inset 0 0.12rem 0.2rem rgb(255 255 255 / 10%);
+.code-input::selection {
+  background: var(--color-primary);
   color: var(--color-accent);
 }
 
-.code-lines li.is-active::before {
-  border-right-color: var(--color-accent);
-  background: var(--color-primary-soft);
+.line-numbers .is-active,
+.line-numbers .is-error {
+  background: var(--color-primary);
+  color: var(--color-accent);
+}
+
+.line-numbers .is-error {
+  text-decoration: underline;
+}
+
+.action-card[aria-disabled="false"] {
+  cursor: pointer;
 }
 
 .terminal {
@@ -335,6 +344,9 @@
 }
 
 .result-row p {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
   font-size: clamp(1.2rem, 1.7vw, 1.75rem);
   font-weight: 800;
 }
@@ -390,6 +402,7 @@
 
   .editor {
     min-height: 36rem;
+    height: 36rem;
     grid-area: editor;
   }
 
@@ -492,6 +505,7 @@
 
   .editor {
     min-height: 32rem;
+    height: 32rem;
   }
 
   .section-heading {
@@ -513,21 +527,19 @@
 
   .code-window {
     height: calc(100% - 2.75rem);
+    grid-template-columns: 3.8rem minmax(0, 1fr);
   }
 
-  .code-lines {
-    min-width: 42rem;
-    padding-left: 3.8rem;
+  .line-numbers,
+  .code-input {
     font-size: 1rem;
   }
 
-  .code-lines li {
+  .code-input {
     padding-left: 1rem;
   }
 
-  .code-lines li::before {
-    right: 100%;
-    width: 3.8rem;
+  .line-numbers li {
     padding-right: 0.85rem;
   }
 

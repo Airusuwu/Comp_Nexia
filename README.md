@@ -7,14 +7,18 @@ personas con distintos niveles de experiencia.
 
 ## Estado del proyecto
 
-La interfaz es una maqueta visual estática y adaptable con HTML y CSS.
-Los controles, el código y los resultados son de demostración. Las acciones
-locales añadidas en el punto 4 se retiraron por indicación de Uriel; todavía
-no permite editar, abrir, guardar, analizar ni ejecutar programas.
+El editor permite escribir, seleccionar y pegar código, con numeración de
+líneas. El botón existente Ejecutar o `Ctrl+Enter` envía el texto al backend;
+todavía no analiza ni ejecuta programas. La terminal muestra el estado real
+de la solicitud y los errores, sin borrar el contenido del editor.
+
+Con el foco en el editor, `Ctrl+O` permite abrir un archivo `.txt` UTF-8 de
+hasta 64 KiB, con confirmación antes de reemplazar contenido. Guardar,
+Aumentar texto, Detener y Escuchar siguen pendientes; no se añadieron botones.
 
 La nueva etapa funcional se desarrolla en `back`. El backend cuenta con una
-infraestructura local en Node.js y una ruta de salud, pero todavía no analiza
-ni ejecuta pseudocódigo y no está conectado al editor. Consulta
+infraestructura local en Node.js conectada al editor, pero todavía no analiza
+ni ejecuta pseudocódigo. Consulta
 [`backend/README.md`](backend/README.md) para iniciarlo y conocer sus límites.
 
 ## Estructura principal
@@ -38,10 +42,12 @@ Comp_Nexia/
 
 1. Descarga o clona el repositorio.
 2. Abre la carpeta `Comp_Nexia`.
-3. Abre `frontend/index.html` en un navegador moderno.
+3. Con Node.js 24 instalado, ejecuta `npm.cmd --prefix backend start`.
+4. Abre `http://127.0.0.1:3000/` en el navegador de tu PC.
 
-Para revisar la interfaz no será necesario instalar dependencias ni ejecutar herramientas de compilación.
-La distribución se adapta a escritorio, tableta y celular.
+No es necesario instalar paquetes ni compilar. Abrir el HTML directamente
+permite editar, pero no comunicarse con el backend. La validación actual se
+centra en PC; las comprobaciones móviles quedan aplazadas por decisión de Uriel.
 
 ## Ramas de trabajo
 
