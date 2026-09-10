@@ -152,6 +152,11 @@ Los cambios visuales y los eventos del editor permanecerán en `frontend/`.
 
 ## Verificación
 
+El punto 10 registró 140 aserciones de integración (26 programas), pruebas
+reales en Edge PC y recuperación ante desconexión. Véase
+[`docs/verification.md`](../docs/verification.md) para evidencia y pendientes;
+no constituye una auditoría completa con lector de pantalla.
+
 ```powershell
 npm.cmd --prefix backend run check
 ```

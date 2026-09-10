@@ -1,5 +1,10 @@
 # Reglas de tipos — punto 6
 
+Nota de continuidad: el alcance de API y los pendientes escritos aquí describen
+el punto 6. Las reglas se integraron al AST en el punto 9 (semantic-analysis.md)
+y se verificaron en el punto 10 (verification.md). La API ya no responde 501
+para el análisis y sí existe tabla de símbolos; la ejecución sigue pendiente.
+
 Fuente: `docs/A5 Reglas de tipos de datos.pdf`, documento del equipo fechado
 05/09/2026, apartado «Reglas», páginas 3–7 y ejemplos de páginas 8–11.
 El PDF permanece local e ignorado por Git. Se extrajo su texto con pdftotext;

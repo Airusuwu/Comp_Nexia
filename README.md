@@ -60,6 +60,7 @@ Los cambios de `front` y `back` se revisarán mediante Pull Requests hacia
 
 ## Documentación
 
+- [`docs/verification.md`](docs/verification.md): verificación en PC y pendientes reales del punto 10.
 - [`docs/semantic-analysis.md`](docs/semantic-analysis.md): ámbitos, tipos, inicialización y controles pendientes de ejecución.
 - [`docs/syntax-analysis.md`](docs/syntax-analysis.md): gramática aprobada, AST y límites del punto 8.
 - [`docs/plan.md`](docs/plan.md): plan histórico de la maqueta visual.

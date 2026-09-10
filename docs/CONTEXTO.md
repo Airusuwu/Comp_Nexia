@@ -1,5 +1,25 @@
 # Contexto de Nexia
 
+## Estado vigente — punto 10 verificado con pendientes (2026-09-10)
+
+- 26 programas y 140 aserciones de integración HTTP satisfactorias; se probaron
+  reglas A5, declaraciones múltiples, fases, errores, límites y rutas privadas.
+  Check de sintaxis satisfactorio. Script temporal eliminado, sin nueva suite.
+- Edge PC: pegado, Ctrl+Enter, errores de las tres fases, editor vacío, Tab y
+  Shift+Tab, Ejecutar con Enter, foco visible, numeración desplazada hasta línea
+  63 y marca de error en línea 62. Sin pruebas móviles ni cambios de interfaz.
+- Se verificó desconexión real sin pérdida de código y recuperación al reiniciar
+  el servidor. Queda activo en http://127.0.0.1:55962/ para revisión del usuario.
+- docs/verification.md registra evidencia, casos repetibles y límites. No se
+  presenta el árbol accesible como una prueba real con lector de pantalla.
+- Pendientes de validación: NVDA/Narrador, selector .txt real y pruebas de
+  latencia/timeout. No se afirma que todo el criterio del punto 10 esté cumplido.
+- Pendientes funcionales: motor, entrada/salida y detención; Guardar/Aumentar
+  texto y estructuras retirados en el punto 4. Escuchar/dictado fuera del alcance.
+- Esta etapa solo actualiza documentación. Rama back, commit local sin push.
+  Siguiente implementación principal: acordar e implementar el motor; no iniciar
+  automáticamente ni tratar análisis exitoso como programa ya ejecutado.
+
 ## Ampliación vigente — declaraciones múltiples (2026-09-10)
 
 - Uriel solicitó permitir `Definir a, b, c Como ENTERO`.
