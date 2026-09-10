@@ -117,53 +117,9 @@
 }
 
 .action-card:focus-visible,
-.structure-card:focus-visible,
-.text-reset:focus-visible,
-.action-help summary:focus-visible {
+.structure-card:focus-visible {
   outline: 0.2rem solid var(--color-focus);
   outline-offset: 0.18rem;
-}
-
-.action-help {
-  margin-top: 1rem;
-  font-size: 1rem;
-  overflow-wrap: anywhere;
-}
-
-.action-help summary {
-  padding-block: 0.5rem;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-.action-help p {
-  margin-top: 0.75rem;
-}
-
-.action-card[aria-disabled="false"],
-.text-reset[aria-disabled="false"] {
-  cursor: pointer;
-}
-
-.action-status {
-  font-size: 1rem;
-  overflow-wrap: anywhere;
-}
-
-.action-status:not(:empty) {
-  margin-top: 0.75rem;
-}
-
-.text-reset {
-  margin-top: 0.75rem;
-  min-height: 2.75rem;
-  padding: 0.5rem 0.75rem;
-  border: var(--border-thin);
-  border-radius: var(--radius-sm);
-  background: var(--color-primary);
-  color: var(--color-accent);
-  font-weight: 700;
-  cursor: not-allowed;
 }
 
 .action-card {
@@ -283,7 +239,7 @@
   padding: 0.45rem 0 0.45rem 4.7rem;
   counter-reset: code-line;
   font-family: var(--font-code);
-  font-size: calc(clamp(1rem, 1.45vw, 1.45rem) * var(--reading-scale));
+  font-size: clamp(1rem, 1.45vw, 1.45rem);
   font-weight: 700;
   line-height: 1.38;
   list-style: none;
@@ -379,8 +335,7 @@
 }
 
 .result-row p {
-  font-size: calc(clamp(1.2rem, 1.7vw, 1.75rem) * var(--reading-scale));
-  overflow-wrap: anywhere;
+  font-size: clamp(1.2rem, 1.7vw, 1.75rem);
   font-weight: 800;
 }
 
@@ -563,7 +518,7 @@
   .code-lines {
     min-width: 42rem;
     padding-left: 3.8rem;
-    font-size: calc(1rem * var(--reading-scale));
+    font-size: 1rem;
   }
 
   .code-lines li {
@@ -597,7 +552,7 @@
 
   .result-row p {
     overflow-wrap: anywhere;
-    font-size: calc(1.08rem * var(--reading-scale));
+    font-size: 1.08rem;
   }
 }
 

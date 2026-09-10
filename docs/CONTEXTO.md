@@ -1,5 +1,24 @@
 # Contexto de Nexia
 
+## Estado vigente — retirada de cambios del frontend (2026-09-09)
+
+Este registro sustituye el estado funcional descrito para el punto 4 abajo,
+que se conserva únicamente como antecedente histórico.
+
+- Uriel pidió retirar las adiciones al frontend y centrarse en dar
+  funcionamiento al proyecto conforme al plan, sin añadir elementos al diseño.
+- Se restauró el contenido de `frontend/` al estado anterior al punto 4
+  (`b49ca15`): se retiraron Restablecer texto, ayuda desplegable, mensajes,
+  cambios de estilos y el archivo `assets/js/actions.js`.
+- Por tanto, Guardar y Aumentar texto vuelven a ser controles estáticos.
+  El punto 4 queda pendiente; no se deben anunciar esas acciones como terminadas.
+- La infraestructura del backend permanece intacta. No se leyó el PDF.
+- Se detectaron cambios locales del usuario en `GUIA_GIT.md`; no se tocaron
+  ni deben incluirse en el commit de esta retirada.
+- Para continuar: conservar la interfaz existente y limitar los futuros
+  cambios a la conexión funcional necesaria según el plan, sin controles
+  adicionales ni rediseño. No se avanzó al punto 5 en esta retirada.
+
 ## Estado vigente — punto 4, acciones locales implementadas (2026-09-09)
 
 Este registro prevalece sobre los anteriores. El punto 4 tiene integración

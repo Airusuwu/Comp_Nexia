@@ -7,12 +7,10 @@ personas con distintos niveles de experiencia.
 
 ## Estado del proyecto
 
-La interfaz adaptable conserva un editor y resultados de demostración.
-Ya permite aumentar código y resultados entre 100 % y 200 %, restablecer
-el tamaño y descargar el código visible como `programa-nexia.txt` en UTF-8.
-Estas acciones utilizan JavaScript local; no envían el código al servidor.
-Todavía no permite editar, abrir, analizar ni ejecutar programas. La apertura
-del archivo guardado se conectará al editor en el punto 5.
+La interfaz es una maqueta visual estática y adaptable con HTML y CSS.
+Los controles, el código y los resultados son de demostración. Las acciones
+locales añadidas en el punto 4 se retiraron por indicación de Uriel; todavía
+no permite editar, abrir, guardar, analizar ni ejecutar programas.
 
 La nueva etapa funcional se desarrolla en `back`. El backend cuenta con una
 infraestructura local en Node.js y una ruta de salud, pero todavía no analiza
