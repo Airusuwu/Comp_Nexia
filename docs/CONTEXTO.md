@@ -1,5 +1,16 @@
 # Contexto de Nexia
 
+## Restauración de Guardar y Aumentar texto — 2026-09-11
+
+- Por solicitud del usuario se habilitan los dos botones existentes, sin añadir
+  controles ni cambiar la paleta o el diseño inicial.
+- Guardar descarga el contenido actual del editor como programa-nexia.txt UTF-8,
+  conservando saltos de línea y espacios; puede reabrirse con Ctrl+O (hasta 64 KiB).
+- Aumentar texto recorre 100, 125, 150, 175 y 200 %, y vuelve a 100 %.
+  Afecta código, numeración, resultados y entrada de consola, no toda la interfaz.
+- Estas decisiones sustituyen los pendientes históricos de ambos botones.
+- No se alteran el código, los diagnósticos ni una ejecución activa al usarlos.
+
 ## Preparación del PR de la primera versión
 
 - Uriel autorizó subir back y crear el PR hacia main, sin fusionarlo.
