@@ -11,5 +11,5 @@ server.on('error', (error) => {
 
 server.listen(port, host, () => {
   console.log(`Nexia: http://${host}:${port}/`);
-  console.log('Editor y análisis léxico disponibles; sintaxis, semántica y ejecución pendientes.');
+  console.log('Editor, análisis léxico/sintáctico/semántico y ejecución básica disponibles.');
 });

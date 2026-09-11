@@ -1,5 +1,15 @@
 # Contexto de Nexia
 
+## Preparación del PR de la primera versión
+
+- Uriel autorizó subir back y crear el PR hacia main, sin fusionarlo.
+- README raíz ampliado con requisitos Node 24.11.1–24.x, ausencia de dependencias
+  externas, descarga, arranque, prueba de suma con Leer, comprobación y apagado.
+- Se documentaron problemas habituales y que el arranque normal usa puerto 3000.
+- Mensaje antiguo de server.js corregido para reflejar la ejecución disponible.
+- El push anterior quedó confirmado hasta 603699f; esta documentación se añade
+  en otro commit antes de crear el PR. No se usa force ni merge automático.
+
 ## Estado vigente — Leer integrado en terminal
 
 - Uriel pidió sustituir los mensajes emergentes por entrada tipo consola.

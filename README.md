@@ -41,16 +41,82 @@ Comp_Nexia/
 └── README.md
 ```
 
-## Cómo revisar el frontend
+## Inicio rápido
 
-1. Descarga o clona el repositorio.
-2. Abre la carpeta `Comp_Nexia`.
-3. Con Node.js 24 instalado, ejecuta `npm.cmd --prefix backend start`.
-4. Abre `http://127.0.0.1:3000/` en el navegador de tu PC.
+### Requisitos y dependencias
 
-No es necesario instalar paquetes ni compilar. Abrir el HTML directamente
-permite editar, pero no comunicarse con el backend. La validación actual se
-centra en PC; las comprobaciones móviles quedan aplazadas por decisión de Uriel.
+- Node.js **24.x, versión mínima 24.11.1**, con npm incluido.
+- Git para clonar el repositorio (o descargar y descomprimir el código).
+- Navegador de escritorio; las pruebas actuales se centran en PC.
+- Acceso al repositorio de GitHub para obtener el código.
+
+No requiere paquetes externos, base de datos, Python, framework, archivo .env
+ni compilación previa. **No es necesario ejecutar npm install**. El PDF A5
+no se distribuye con Git y no hace falta para iniciar la aplicación.
+
+### Descargar e iniciar en Windows
+
+En PowerShell, para una copia nueva de la primera versión funcional:
+
+```powershell
+git clone --branch back https://github.com/Airusuwu/Comp_Nexia.git
+cd Comp_Nexia
+node --version
+npm.cmd --version
+npm.cmd --prefix backend start
+```
+
+Si ya tienes el proyecto, abre una terminal en su carpeta raíz y ejecuta solo
+el comando start. No cambies de rama con trabajo pendiente sin conservarlo.
+La rama back contiene esta entrega mientras se revisa su PR hacia main.
+
+Abre **http://127.0.0.1:3000/** y deja la terminal del servidor abierta.
+El mismo servidor sirve frontend y backend; no necesitas Live Server.
+En una terminal que no sea PowerShell puedes usar `npm` en lugar de `npm.cmd`.
+
+### Ejecutar un programa
+
+Reemplaza el ejemplo antiguo del editor por este código:
+
+```text
+Inicio
+Definir a, b Como ENTERO
+Escribir "Ingresa el primer número:"
+Leer a
+Escribir "Ingresa el segundo número:"
+Leer b
+Escribir "La suma es: ", a + b
+Fin
+```
+
+Pulsa **Ejecutar** o **Ctrl+Enter**. Escribe los datos en la terminal de Nexia
+y confirma con Enter o Enviar. Si introduces 3 y 4, debe mostrar 7.
+Usa `<-` para asignar, no la flecha `←`. Detener o Escape en el campo de
+entrada cancela el programa; no apaga el servidor.
+
+### Comprobar y detener
+
+Desde otra terminal en la raíz:
+
+```powershell
+npm.cmd --prefix backend run check
+Invoke-RestMethod http://127.0.0.1:3000/api/health
+```
+
+Check comprueba la sintaxis de los módulos; no sustituye pruebas funcionales.
+Consulta [las verificaciones](docs/verification.md) y [los límites del motor](docs/runtime.md).
+Para apagar el servidor, pulsa **Ctrl+C en la terminal donde ejecutaste start**.
+
+### Problemas habituales
+
+- **node no se reconoce:** instala la versión requerida y vuelve a abrir la terminal.
+- **npm.ps1 bloqueado:** usa `npm.cmd`; no hace falta cambiar políticas de PowerShell.
+- **Puerto 3000 ocupado (EADDRINUSE):** detén tu instancia anterior con Ctrl+C;
+  no cierres procesos ajenos. El arranque normal usa el puerto fijo 3000.
+- **Fallo de comunicación:** comprueba que start siga activo y que abriste la URL
+  del servidor, no index.html directamente ni otro puerto de una sesión anterior.
+- **Página desactualizada:** copia primero tu código y luego pulsa Ctrl+Shift+R.
+  Guardar sigue pendiente, por lo que recargar puede perder la edición actual.
 
 ## Ramas de trabajo
 
