@@ -1,0 +1,13 @@
+{
+  "name": "nexia-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.11.1 <25"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "check": "node --check src/server.js && node --check src/api/app.js && node --check src/api/analyze.js && node --check src/api/static.js && node --check src/diagnostics/response.js && node --check src/types/compatibility.js && node --check src/types/guards.js && node --check src/types/literals.js && node --check src/lexer/tokenize.js && node --check src/parser/parse.js && node --check src/symbols/table.js && node --check src/semantic/analyze.js && node --check src/runtime/values.js && node --check src/runtime/execute.js && node --check ../frontend/assets/js/editor.js"
+  }
+}

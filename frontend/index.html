@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta
       name="description"
-      content="Maqueta visual estática de Nexia, una interfaz accesible para aprender pseudocódigo."
+      content="Nexia, editor educativo de pseudocódigo en desarrollo."
     >
     <title>Nexia — Editor de pseudocódigo</title>
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/components.css">
+    <script src="assets/js/editor.js" defer></script>
   </head>
   <body>
     <svg class="svg-library" aria-hidden="true">
@@ -92,11 +93,11 @@
         <aside class="side-panel side-panel--actions clay-panel" aria-labelledby="actions-title">
           <h2 class="panel-title" id="actions-title">Acciones</h2>
           <div class="control-list">
-            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+            <button id="run-program" class="action-card" type="button" aria-disabled="true" aria-describedby="editor-help" title="Analizar y ejecutar código">
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-play" /></svg>
               <span>Ejecutar<br>programa</span>
             </button>
-            <button class="action-card" type="button" aria-disabled="true" title="Disponible próximamente">
+            <button id="stop-program" class="action-card" type="button" aria-disabled="true" title="No hay ejecución activa">
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-stop" /></svg>
               <span>Detener</span>
             </button>
@@ -125,23 +126,23 @@
               <p>Escribe tu programa aquí</p>
             </header>
 
-            <div class="code-window" role="region" aria-label="Pseudocódigo de demostración" tabindex="0">
-              <ol class="code-lines">
-                <li><code class="code-comment">// Nuevas líneas añadidas para demostrar espacio</code></li>
-                <li><code>Inicio</code></li>
-                <li><code>Definir a, b, resultado Como Entero</code></li>
-                <li class="is-active"><code>Escribir y</code></li>
-                <li><code>a ← 6</code></li>
-                <li><code>b ← 4</code></li>
-                <li><code>resultado ← a + b</code></li>
-                <li><code>Si resultado &gt; 5 Entonces</code></li>
-                <li><code class="indent-1">Escribir "Es mayor a 5"</code></li>
-                <li><code>Sino</code></li>
-                <li><code class="indent-1">Escribir "Es menor o igual a 5"</code></li>
-                <li><code>FinSi</code></li>
-                <li><code>Fin</code></li>
-              </ol>
+            <div class="code-window">
+              <div class="line-gutter" aria-hidden="true"><ol class="line-numbers" id="line-numbers"></ol></div>
+              <textarea id="code-editor" class="code-input" aria-labelledby="editor-title" aria-describedby="editor-help" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off">// Nuevas líneas añadidas para demostrar espacio
+Inicio
+Definir a, b, resultado Como Entero
+Escribir y
+a ← 6
+b ← 4
+resultado ← a + b
+Si resultado &gt; 5 Entonces
+  Escribir "Es mayor a 5"
+Sino
+  Escribir "Es menor o igual a 5"
+FinSi
+Fin</textarea>
             </div>
+            <input id="open-program" type="file" accept=".txt,text/plain" hidden>
           </section>
 
           <section class="terminal clay-panel" aria-labelledby="terminal-title">
@@ -152,19 +153,22 @@
               </div>
             </header>
 
-            <p class="demo-note" id="demo-note">Contenido estático de demostración; no corresponde a una ejecución real.</p>
-            <div class="terminal-output" aria-describedby="demo-note">
+            <p class="demo-note" id="editor-help">Control más Enter o Ejecutar analiza y ejecuta el código. Leer solicita datos en la terminal: Enter envía; Escape o Detener cancela. Control más O abre un archivo .txt en UTF-8. Tab permite salir del editor.</p>
+            <div class="terminal-output" id="terminal-output" role="status" aria-live="polite" aria-atomic="true">
               <div class="result-row result-row--success">
                 <svg class="result-row__icon success-icon" aria-hidden="true"><use href="#icon-check" /></svg>
                 <span class="result-row__divider" aria-hidden="true"></span>
-                <p><strong>Resultado:</strong> 10</p>
-              </div>
-              <div class="result-row result-row--error">
-                <svg class="result-row__icon error-icon" aria-hidden="true"><use href="#icon-error" /></svg>
-                <span class="result-row__divider" aria-hidden="true"></span>
-                <p><strong>Error en línea 4:</strong> Palabra no reconocida</p>
+                <p>Listo para analizar y ejecutar. Usa Escribir para mostrar resultados y Leer para introducir datos.</p>
               </div>
             </div>
+            <form id="terminal-input" class="terminal-input" hidden>
+              <label id="terminal-input-label" for="terminal-value">Entrada</label>
+              <div class="terminal-input__controls">
+                <input id="terminal-value" type="text" maxlength="65536" autocomplete="off" spellcheck="false" aria-describedby="terminal-input-help">
+                <button type="submit">Enviar</button>
+              </div>
+              <p id="terminal-input-help">Escribe el dato sin comillas. Enter envía; Escape o Detener cancela.</p>
+            </form>
           </section>
         </section>
 
