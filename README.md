@@ -16,7 +16,7 @@ de la solicitud y los errores, sin borrar el contenido del editor.
 Con el foco en el editor, `Ctrl+O` permite abrir un archivo `.txt` UTF-8 de
 hasta 64 KiB, con confirmación antes de reemplazar contenido. Guardar,
 Aumentar texto y Escuchar siguen pendientes; no se añadieron botones.
-Leer solicita datos mediante un diálogo. Cancelar o el botón existente Detener
+Leer solicita datos dentro de la terminal; Enter o Enviar confirma. Escape o Detener
 interrumpen la ejecución. Consulta los ejemplos y límites en
 [`docs/runtime.md`](docs/runtime.md).
 

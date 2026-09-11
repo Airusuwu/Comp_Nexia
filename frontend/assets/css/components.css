@@ -320,6 +320,68 @@
   padding: 0.7rem 0.55rem 0;
 }
 
+.console-line {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 700 1.15rem/1.5 var(--font-code);
+}
+
+.terminal-input {
+  margin: 0.75rem 0.55rem;
+  padding: 0.75rem;
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.terminal-input[hidden] {
+  display: none;
+}
+
+.terminal-input label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 700;
+}
+
+.terminal-input__controls {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.terminal-input input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem;
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: 700 1.15rem/1.5 var(--font-code);
+}
+
+.terminal-input button {
+  padding: 0.5rem 1rem;
+  border: var(--border-thin);
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: var(--color-accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.terminal-input p {
+  margin: 0.5rem 0 0;
+}
+
+.terminal-input input:focus-visible,
+.terminal-input button:focus-visible {
+  outline: 0.2rem solid var(--color-primary);
+  outline-offset: 0.15rem;
+}
+
 .result-row {
   display: grid;
   min-height: 4.55rem;

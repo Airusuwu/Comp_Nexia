@@ -27,10 +27,12 @@ BOOLEANO como VERDADERO/FALSO. La terminal recibe texto, nunca HTML ejecutable.
 Las salidas anteriores a un error runtime se conservan y no se muestra una
 finalización exitosa cuando la ejecución falla.
 
-## Leer sin rediseñar la interfaz
+## Leer dentro de la terminal
 
-Leer solicita el dato mediante el diálogo nativo del navegador. No se añadió
-un panel ni botones nuevos. Reglas de entrada del motor básico:
+Por solicitud posterior de Uriel, Leer ya no abre un diálogo: muestra un campo
+etiquetado con variable/tipo dentro de la terminal y un botón Enviar. Enter
+confirma, Escape o Detener cancela. Se conserva la paleta amarillo/violeta.
+Reglas de entrada del motor básico:
 
 - ENTERO: dígitos con signo opcional; no admite 2.5 ni 2.0.
 - REAL: entero o decimal con punto y dígitos a ambos lados.
@@ -46,12 +48,16 @@ y reenvía el mismo código con las entradas recibidas. El motor repite desde el
 inicio de forma determinista hasta la siguiente lectura o el final. La terminal
 reemplaza las salidas completas, sin duplicarlas. Esto solo es apropiado mientras
 el lenguaje no tenga efectos externos, aleatoriedad o acceso al reloj.
-No hay procesos esperando mientras el usuario escribe en el diálogo.
+No hay procesos esperando mientras el usuario escribe en la terminal.
 
-Cancelar/Escape detiene esta secuencia. El botón Detener aborta la solicitud
+Escape detiene esta secuencia. El botón Detener aborta la solicitud
 activa; el servidor observa la desconexión y cancela cooperativamente el motor.
-Editar el código también aborta y descarta respuestas obsoletas. Mientras esté
-abierto el diálogo modal se utiliza Cancelar, no el botón de la página.
+Editar el código también aborta y descarta respuestas obsoletas. El formulario
+se oculta y sus listeners se eliminan al enviar o cancelar; no se bloquea la página.
+El campo recibe foco y tiene etiqueta y ayuda; está fuera del área aria-live
+para no anunciar cada tecla. El historial conserva las entradas con prefijo >
+intercaladas entre las salidas, sin duplicarlas al repetir la ejecución.
+Escribir se presenta como texto de consola, sin el prefijo artificial Resultado.
 
 ## Límites técnicos explícitos
 
@@ -73,7 +79,7 @@ Son límites de esta implementación, no nuevas reglas atribuidas al PDF:
 - Se conservan 64 KiB de código y 512 KiB por solicitud JSON. En el replay de
   Leer los límites de tiempo/pasos se aplican a cada solicitud desde el inicio.
 - El frontend limita a ocho segundos cada petición; no cuenta el tiempo de
-  espera del diálogo de entrada.
+  espera de entrada en la terminal.
 
 ## Contrato HTTP
 
@@ -113,6 +119,12 @@ Para entrada: `Definir dato Como REAL`, `Leer dato`, `Escribir dato * 2`
 entre Inicio/Fin. Introducir 4.5 produce 9.
 
 ## Validación y pendientes
+
+Cambio a entrada integrada: comprobado en Edge PC el recorrido de dos lecturas
+(3 y 4, suma 7), envío con Enter y botón, historial sin duplicados, Escape y
+entrada no numérica con diagnóstico situado. No se repitieron las pruebas del
+motor: el backend y su contrato no cambiaron. Check de sintaxis satisfactorio.
+Las verificaciones del diálogo descritas abajo corresponden a la versión anterior.
 
 93 aserciones satisfactorias del motor/API: operaciones, tipos, ámbitos,
 ciclos, entradas, cero proveniente de Leer, salidas parciales, límites de

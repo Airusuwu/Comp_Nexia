@@ -1,5 +1,21 @@
 # Contexto de Nexia
 
+## Estado vigente — Leer integrado en terminal
+
+- Uriel pidió sustituir los mensajes emergentes por entrada tipo consola.
+- Leer muestra un formulario dentro de la terminal: etiqueta variable/tipo,
+  campo enfocado y Enviar; Enter confirma, Escape o Detener cancela.
+- El historial intercala salidas y entradas (> valor), sin duplicados durante
+  el replay. Se conserva la paleta y no se cambian reglas ni backend.
+- La espera no bloquea la página ni activa el timeout HTTP. Editar/cancelar
+  oculta la entrada y libera la promesa y listeners; el código se conserva.
+- Formulario fuera del aria-live, con etiqueta, ayuda y foco visible. Falta
+  auditoría con lector real; no se hicieron comprobaciones móviles.
+- Edge PC: dos lecturas 3/4 con suma 7, Enter/Enviar, Escape y dato inválido
+  comprobados; check de sintaxis satisfactorio. Documentación actualizada.
+- Rama back, commit local sin push. El servidor sigue en 127.0.0.1:55962;
+  copiar el código antes de recargar las pestañas abiertas para obtener el JS nuevo.
+
 ## Estado vigente — ejecución básica implementada (2026-09-10)
 
 - Uriel solicitó ejecutar las operaciones ya implementadas. Se añadió un

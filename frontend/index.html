@@ -153,7 +153,7 @@ Fin</textarea>
               </div>
             </header>
 
-            <p class="demo-note" id="editor-help">Control más Enter o Ejecutar analiza y ejecuta el código. Leer solicita datos en un diálogo; Cancelar o Detener interrumpe el programa. Control más O abre un archivo .txt en UTF-8. Tab permite salir del editor.</p>
+            <p class="demo-note" id="editor-help">Control más Enter o Ejecutar analiza y ejecuta el código. Leer solicita datos en la terminal: Enter envía; Escape o Detener cancela. Control más O abre un archivo .txt en UTF-8. Tab permite salir del editor.</p>
             <div class="terminal-output" id="terminal-output" role="status" aria-live="polite" aria-atomic="true">
               <div class="result-row result-row--success">
                 <svg class="result-row__icon success-icon" aria-hidden="true"><use href="#icon-check" /></svg>
@@ -161,6 +161,14 @@ Fin</textarea>
                 <p>Listo para analizar y ejecutar. Usa Escribir para mostrar resultados y Leer para introducir datos.</p>
               </div>
             </div>
+            <form id="terminal-input" class="terminal-input" hidden>
+              <label id="terminal-input-label" for="terminal-value">Entrada</label>
+              <div class="terminal-input__controls">
+                <input id="terminal-value" type="text" maxlength="65536" autocomplete="off" spellcheck="false" aria-describedby="terminal-input-help">
+                <button type="submit">Enviar</button>
+              </div>
+              <p id="terminal-input-help">Escribe el dato sin comillas. Enter envía; Escape o Detener cancela.</p>
+            </form>
           </section>
         </section>
 

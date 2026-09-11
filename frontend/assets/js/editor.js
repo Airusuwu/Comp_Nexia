@@ -6,6 +6,9 @@
   const stopButton = document.getElementById('stop-program');
   const output = document.getElementById('terminal-output');
   const fileInput = document.getElementById('open-program');
+  const inputForm = document.getElementById('terminal-input');
+  const inputField = document.getElementById('terminal-value');
+  const inputLabel = document.getElementById('terminal-input-label');
   const maxCodeBytes = 64 * 1024;
   const stages = {
     request: 'Solicitud', service: 'Servicio', lexer: 'Léxico',
@@ -95,7 +98,52 @@
         && positionsValid(diagnostic.line) && positionsValid(diagnostic.column));
   }
 
-  function displayResponse(data) {
+  function consoleLine(text) {
+    const line = document.createElement('p');
+    line.className = 'console-line';
+    line.textContent = text;
+    output.append(line);
+  }
+
+  function requestConsoleInput(input, signal) {
+    return new Promise((resolve) => {
+      if (signal.aborted) { resolve(null); return; }
+      inputLabel.textContent = `Leer ${input.name} (${input.type})`;
+      inputField.value = '';
+      inputForm.hidden = false;
+      function finish(value) {
+        inputForm.removeEventListener('submit', submit);
+        inputField.removeEventListener('keydown', keydown);
+        signal.removeEventListener('abort', cancel);
+        inputForm.hidden = true;
+        inputField.value = '';
+        resolve(value);
+      }
+      function submit(event) {
+        event.preventDefault();
+        if (inputField.value.length > maxCodeBytes) return;
+        finish(inputField.value);
+        editor.focus({ preventScroll: true });
+      }
+      function cancel() { finish(null); }
+      function keydown(event) {
+        if (event.isComposing) return;
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          stopButton.click();
+          stopButton.focus();
+        }
+        if (event.key === 'Enter' && event.repeat) event.preventDefault();
+      }
+      inputForm.addEventListener('submit', submit);
+      inputField.addEventListener('keydown', keydown);
+      signal.addEventListener('abort', cancel, { once: true });
+      inputField.focus();
+      inputForm.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
+  function displayResponse(data, entries) {
     errorLines.clear();
     editor.removeAttribute('aria-invalid');
     editor.removeAttribute('aria-errormessage');
@@ -110,7 +158,12 @@
         if (diagnostic.line !== null) errorLines.add(diagnostic.line);
       }
     }
-    for (const result of data.results) addMessage(`Resultado: ${result}`);
+    for (let index = 0; index <= data.results.length; index += 1) {
+      for (const entry of entries) {
+        if (entry.after === index) consoleLine(`> ${entry.value}`);
+      }
+      if (index < data.results.length) consoleLine(data.results[index]);
+    }
     if (data.status === 'completed') addMessage('Ejecución finalizada.');
     if (!output.children.length && data.status !== 'waiting_input') {
       showMessage(data.executed ? 'Ejecución finalizada sin salidas.' : 'El programa no se ha ejecutado.');
@@ -140,6 +193,7 @@
     let timedOut = false;
     let timeout;
     const inputs = [];
+    const entries = [];
     setBusy(true);
     showMessage('Analizando y ejecutando el programa…');
 
@@ -158,25 +212,23 @@
         if (!validResponse(data) || (!response.ok && !data.diagnostics.length)) {
           throw new Error('Invalid response');
         }
-        displayResponse(data);
+        displayResponse(data, entries);
         if (data.status !== 'waiting_input') break;
         if (!data.input || data.input.index !== inputs.length || typeof data.input.name !== 'string'
           || !['ENTERO', 'REAL', 'TEXTO', 'CARACTER', 'BOOLEANO'].includes(data.input.type)) throw new Error('Invalid input request');
-        addMessage(`Esperando Leer ${data.input.name} (${data.input.type}).`);
-        const value = window.prompt(`Leer ${data.input.name} (${data.input.type}). Escribe el dato sin comillas. Cancelar detiene el programa.`);
-        if (value === null) {
-          addMessage('Ejecución detenida: entrada cancelada.');
-          break;
-        }
+        const value = await requestConsoleInput(data.input, controller.signal);
+        if (revision !== submittedRevision || pending !== controller || value === null) return;
         if (value.length > 65536) {
           addMessage('Entrada demasiado larga. Ejecución detenida; el código se conserva.', true);
           break;
         }
         inputs.push(value);
+        entries.push({ after: data.results.length, value });
+        consoleLine(`> ${value}`);
       }
     } catch {
       if (revision !== submittedRevision || pending !== controller) return;
-      showMessage(timedOut
+      addMessage(timedOut
         ? 'El servidor no respondió en 8 segundos. Puedes volver a enviar; el código se conserva.'
         : 'No se pudo obtener una respuesta válida del backend. Comprueba el servidor local y vuelve a enviar; el código se conserva.', true);
     } finally {
