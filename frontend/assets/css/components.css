@@ -163,7 +163,8 @@
 .main-stage {
   display: grid;
   min-width: 0;
-  grid-template-rows: minmax(30rem, 2fr) minmax(15.2rem, 1fr);
+  grid-template-rows: 30rem minmax(15.2rem, auto);
+  align-content: start;
   gap: var(--space-2);
 }
 
