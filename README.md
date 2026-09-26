@@ -19,12 +19,10 @@ el código como `programa-nexia.txt`. Aumentar texto amplía código y resultado
 en pasos de 25 % hasta 200 %; el siguiente clic vuelve al 100 %.
 Escuchar sigue pendiente; no se añadieron botones.
 Leer solicita datos dentro de la terminal; Enter o Enviar confirma. Escape o Detener
-interrumpen la ejecución. Consulta los ejemplos y límites en
-[`docs/tecnica/runtime.md`](docs/tecnica/runtime.md).
+interrumpen la ejecución.
 
 La nueva etapa funcional se desarrolla en `back`. El backend cuenta con una
-infraestructura local en Node.js conectada al editor y las tres fases de análisis. Consulta
-[`backend/README.md`](backend/README.md) para iniciarlo y conocer sus límites.
+infraestructura local en Node.js conectada al editor y las tres fases de análisis.
 
 ## Estructura principal
 
@@ -53,8 +51,7 @@ Comp_Nexia/
 - Acceso al repositorio de GitHub para obtener el código.
 
 No requiere paquetes externos, base de datos, Python, framework, archivo .env
-ni compilación previa. **No es necesario ejecutar npm install**. El PDF A5
-no se distribuye con Git y no hace falta para iniciar la aplicación.
+ni compilación previa. **No es necesario ejecutar npm install**.
 
 ### Descargar e iniciar en Windows
 
@@ -106,7 +103,6 @@ Invoke-RestMethod http://127.0.0.1:3000/api/health
 ```
 
 Check comprueba la sintaxis de los módulos; no sustituye pruebas funcionales.
-Consulta [las verificaciones](docs/pruebas/verification.md) y [los límites del motor](docs/tecnica/runtime.md).
 Para apagar el servidor, pulsa **Ctrl+C en la terminal donde ejecutaste start**.
 
 ### Problemas habituales
@@ -128,15 +124,3 @@ Para apagar el servidor, pulsa **Ctrl+C en la terminal donde ejecutaste start**.
 
 Los cambios de `front` y `back` se revisarán mediante Pull Requests hacia
 `main`. El método de integración acordado es **Squash and merge**.
-
-## Documentación
-
-Consulta el [índice de documentación](docs/README.md) para navegar por tema.
-
-- [`docs/pruebas/verification.md`](docs/pruebas/verification.md): verificación en PC y pendientes reales del punto 10.
-- [`docs/tecnica/semantic-analysis.md`](docs/tecnica/semantic-analysis.md): ámbitos, tipos, inicialización y controles pendientes de ejecución.
-- [`docs/tecnica/syntax-analysis.md`](docs/tecnica/syntax-analysis.md): gramática aprobada, AST y límites del punto 8.
-- [`docs/proyecto/plan.md`](docs/proyecto/plan.md): plan histórico de la maqueta visual.
-- [`docs/proyecto/design-guide.md`](docs/proyecto/design-guide.md): decisiones visuales y adaptables.
-- [`docs/contexto/CONTEXTO.md`](docs/contexto/CONTEXTO.md): estado breve para continuar el trabajo.
-- [`GUIA_GIT.md`](GUIA_GIT.md): guía de colaboración.
