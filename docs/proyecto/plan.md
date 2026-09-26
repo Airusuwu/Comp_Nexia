@@ -37,9 +37,9 @@ entrega de hoy utiliza HTML y CSS; no incluye lógica funcional ni backend.
 
 ### 4. Crear la documentación
 
-- Registrar este plan en `docs/plan.md`.
-- Definir las decisiones visuales en `docs/design-guide.md`.
-- Mantener el estado de continuidad en `docs/CONTEXTO.md`.
+- Registrar este plan en `docs/proyecto/plan.md`.
+- Definir las decisiones visuales en `docs/proyecto/design-guide.md`.
+- Mantener el estado de continuidad en `docs/contexto/CONTEXTO.md`.
 - Explicar el proyecto y su revisión en `README.md`.
 
 ### 5. Crear la guía de Git
@@ -79,7 +79,7 @@ entrega de hoy utiliza HTML y CSS; no incluye lógica funcional ni backend.
 ### 10. Guardar y entregar
 
 - Guardar el trabajo en `front` y subirlo a GitHub.
-- Actualizar `docs/CONTEXTO.md`.
+- Actualizar `docs/contexto/CONTEXTO.md`.
 - Dejar un Pull Request hacia `main` listo para revisión, sin integrarlo.
 - Resumir implementación, validaciones, pendientes y forma de abrir la maqueta.
 

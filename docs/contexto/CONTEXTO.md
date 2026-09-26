@@ -1,5 +1,36 @@
 # Contexto de Nexia
 
+## Organización documental — 2026-09-25
+
+- La documentación se agrupa por proyecto, contexto, guías, técnica, pruebas,
+  sprints y referencias. El índice de entrada está en docs/README.md.
+- Para continuar en otro chat, leer primero este archivo; las secciones antiguas
+  se conservan como historia y deben contrastarse con el estado actual de Git.
+- El PDF A5 se mueve a docs/referencias/ y permanece ignorado por Git.
+- Se actualizaron enlaces y rutas sin modificar el funcionamiento del sistema.
+
+## Documentación del backend para el equipo — 2026-09-11
+
+- Se añade backend/GUIA_CODIGO.md con mapa de archivos, recorrido HTTP/análisis/
+  ejecución, tabla de símbolos, reglas, estados, Leer y límites.
+- Se añaden comentarios en los 14 módulos JavaScript del backend a petición del
+  usuario, sin modificar la lógica ni el frontend.
+- La guía de programación y la corrección visual pendientes se conservan aparte.
+- Validación: npm.cmd --prefix backend run check y git diff --check satisfactorios;
+  los cambios en src/ son únicamente líneas de comentarios añadidas.
+
+## Corrección del espacio vacío al ejecutar — 2026-09-11
+
+- Reproducido en Edge PC con un programa de 8 líneas y 15 salidas: la numeración
+  permanecía en 8, pero el editor crecía de 486 a 1554 px aproximadamente.
+- Causa: las filas 2fr/1fr del contenedor sin altura fija vinculaban la altura
+  del editor al tamaño de los resultados.
+- Se independiza la fila del editor (30rem) y se deja crecer la terminal según
+  su contenido, con alineación superior. No se modifica el código del usuario.
+- Verificado en Edge PC después del cambio: editor de 480 px y comienzo de la
+  terminal en 575.2 px antes y después de ejecutar las 15 salidas; las 8 líneas
+  permanecen intactas. Revisión visual y git diff --check satisfactorios.
+
 ## Restauración de Guardar y Aumentar texto — 2026-09-11
 
 - Por solicitud del usuario se habilitan los dos botones existentes, sin añadir
@@ -48,13 +79,13 @@
 - No hay botones nuevos ni rediseño. Salidas parciales se conservan ante error;
   el éxito se distingue de espera de datos y error runtime.
 - Límites técnicos, precisión REAL aproximada, ENTERO seguro y formato de
-  entrada están explícitos en docs/runtime.md; no se atribuyen al PDF.
+  entrada están explícitos en docs/tecnica/runtime.md; no se atribuyen al PDF.
 - 93 aserciones aprobadas, check satisfactorio. Edge PC: suma/resta/producto/
   división, Leer 4.5 con resultado 9 y cancelación del diálogo verificados.
 - Sin suite persistente, auditoría con lector de pantalla ni pruebas móviles.
   Guardar/Aumentar texto e inserción de estructuras siguen pendientes.
 - Muestra antigua del editor permanece inválida (← y Escribir y); usar ejemplo
-  de docs/runtime.md. El código del usuario no se corrige automáticamente.
+  de docs/tecnica/runtime.md. El código del usuario no se corrige automáticamente.
 - Servidor actualizado en http://127.0.0.1:55962/. Rama back; commit local sin
   push ni integración a main. Los estados anteriores se conservan como historia.
 
@@ -68,7 +99,7 @@
   63 y marca de error en línea 62. Sin pruebas móviles ni cambios de interfaz.
 - Se verificó desconexión real sin pérdida de código y recuperación al reiniciar
   el servidor. Queda activo en http://127.0.0.1:55962/ para revisión del usuario.
-- docs/verification.md registra evidencia, casos repetibles y límites. No se
+- docs/pruebas/verification.md registra evidencia, casos repetibles y límites. No se
   presenta el árbol accesible como una prueba real con lector de pantalla.
 - Pendientes de validación: NVDA/Narrador, selector .txt real y pruebas de
   latencia/timeout. No se afirma que todo el criterio del punto 10 esté cumplido.
@@ -100,7 +131,7 @@
   inicialización posterior. Los ámbitos hijos no filtran declaraciones.
 - Cero conocido se diagnostica; valores desconocidos y Leer registran controles
   runtime. Propagación exacta limitada y conservadora, detallada en
-  docs/semantic-analysis.md; no se impone precisión numérica al futuro motor.
+  docs/tecnica/semantic-analysis.md; no se impone precisión numérica al futuro motor.
 - API: analyzed/200 o semantic_error/422; semántica skipped si falla una fase
   previa. Incluye symbols y runtimeChecks; executed false, results vacío.
 - Solo cambian contrato y mensajes del frontend, sin nuevos elementos visuales.
@@ -129,7 +160,7 @@
   visuales. La muestra antigua con ← se conserva y sigue requiriendo <-.
 - 397 aserciones de parser/AST/API aprobadas y comprobación de sintaxis.
   Sin nuevas dependencias, pruebas móviles ni auditoría nueva de navegador.
-- docs/syntax-analysis.md documenta gramática, AST, decisiones técnicas,
+- docs/tecnica/syntax-analysis.md documenta gramática, AST, decisiones técnicas,
   pruebas y pendientes. No hay suite persistente ni recuperación múltiple.
 - Rama back; conservar GUIA_GIT.md ajeno al commit, sin push ni integración.
   Siguiente: punto 9, semántica y símbolos. Motor de ejecución aún pendiente.
@@ -150,7 +181,7 @@
 - Se conectaron esos estados a la terminal existente cambiando solo mensajes
   y aceptación del contrato; sin botones, rediseño ni pruebas móviles.
 - 102 aserciones de lexer/API y comprobación de sintaxis satisfactorias.
-  `docs/lexical-analysis.md` detalla alcance, posiciones, convenciones técnicas,
+  `docs/tecnica/lexical-analysis.md` detalla alcance, posiciones, convenciones técnicas,
   recuperación, palabras todavía sin gramática y validaciones.
 - La muestra previa conserva ←: el lexer indica reemplazarla por <- según A5.
   No se corrige automáticamente el código del usuario.
@@ -162,7 +193,7 @@
 
 - Se leyó el PDF A5 completo mediante extracción de texto y se contrastaron
   las 15 reglas numeradas con los ejemplos. No se modificó ni añadió el PDF
-  a Git. Las tablas no se verificaron visualmente; véase `docs/type-rules.md`.
+  a Git. Las tablas no se verificaron visualmente; véase `docs/tecnica/type-rules.md`.
 - Implementados `backend/src/types/compatibility.js`, `guards.js` y
   `literals.js`: cinco tipos, matriz de operadores, asignación, entrada/salida
   tipadas, condiciones, agrupación y controles de estado y divisor.
@@ -376,7 +407,7 @@ El punto 2 abarca revisión y documentación; el punto 3 no se ha iniciado.
    resultados y diagnósticos (mensaje, etapa, línea y columna cuando corresponda).
    Conservar código ante errores y comunicar vacío, procesamiento y fallos de
    conexión. Señalar errores con inversión de colores y texto accesible.
-4. Punto 6: solicitar la lectura del PDF local `docs/A5 Reglas de tipos de datos.pdf`
+4. Punto 6: solicitar la lectura del PDF local `docs/referencias/A5 Reglas de tipos de datos.pdf`
    en ese momento, contrastarlo con el plan y centralizar compatibilidad de tipos.
    El PDF está excluido de Git y NO se ha leído; otro equipo deberá recibirlo
    por separado. No estará disponible al clonar el repositorio.
@@ -428,7 +459,7 @@ de las ramas.
 - Se revisaron las instrucciones disponibles, este contexto y el estado local.
   Al iniciar, la rama era `front` y el único archivo no rastreado era el PDF A5;
   no había modificaciones en archivos rastreados.
-- Se excluyó `/docs/A5 Reglas de tipos de datos.pdf` mediante `.gitignore`.
+- Se excluyó `/docs/referencias/A5 Reglas de tipos de datos.pdf` mediante `.gitignore`.
   El PDF permanece local y no se ha leído: su análisis queda para el punto 6.
 - Se actualizaron las referencias mediante `git fetch origin`. Se comprobó
   que `origin/main` contiene el frontend de `front` sin diferencias, en el

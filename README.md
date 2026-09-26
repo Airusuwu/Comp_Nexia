@@ -20,7 +20,7 @@ en pasos de 25 % hasta 200 %; el siguiente clic vuelve al 100 %.
 Escuchar sigue pendiente; no se añadieron botones.
 Leer solicita datos dentro de la terminal; Enter o Enviar confirma. Escape o Detener
 interrumpen la ejecución. Consulta los ejemplos y límites en
-[`docs/runtime.md`](docs/runtime.md).
+[`docs/tecnica/runtime.md`](docs/tecnica/runtime.md).
 
 La nueva etapa funcional se desarrolla en `back`. El backend cuenta con una
 infraestructura local en Node.js conectada al editor y las tres fases de análisis. Consulta
@@ -106,7 +106,7 @@ Invoke-RestMethod http://127.0.0.1:3000/api/health
 ```
 
 Check comprueba la sintaxis de los módulos; no sustituye pruebas funcionales.
-Consulta [las verificaciones](docs/verification.md) y [los límites del motor](docs/runtime.md).
+Consulta [las verificaciones](docs/pruebas/verification.md) y [los límites del motor](docs/tecnica/runtime.md).
 Para apagar el servidor, pulsa **Ctrl+C en la terminal donde ejecutaste start**.
 
 ### Problemas habituales
@@ -131,10 +131,12 @@ Los cambios de `front` y `back` se revisarán mediante Pull Requests hacia
 
 ## Documentación
 
-- [`docs/verification.md`](docs/verification.md): verificación en PC y pendientes reales del punto 10.
-- [`docs/semantic-analysis.md`](docs/semantic-analysis.md): ámbitos, tipos, inicialización y controles pendientes de ejecución.
-- [`docs/syntax-analysis.md`](docs/syntax-analysis.md): gramática aprobada, AST y límites del punto 8.
-- [`docs/plan.md`](docs/plan.md): plan histórico de la maqueta visual.
-- [`docs/design-guide.md`](docs/design-guide.md): decisiones visuales y adaptables.
-- [`docs/CONTEXTO.md`](docs/CONTEXTO.md): estado breve para continuar el trabajo.
+Consulta el [índice de documentación](docs/README.md) para navegar por tema.
+
+- [`docs/pruebas/verification.md`](docs/pruebas/verification.md): verificación en PC y pendientes reales del punto 10.
+- [`docs/tecnica/semantic-analysis.md`](docs/tecnica/semantic-analysis.md): ámbitos, tipos, inicialización y controles pendientes de ejecución.
+- [`docs/tecnica/syntax-analysis.md`](docs/tecnica/syntax-analysis.md): gramática aprobada, AST y límites del punto 8.
+- [`docs/proyecto/plan.md`](docs/proyecto/plan.md): plan histórico de la maqueta visual.
+- [`docs/proyecto/design-guide.md`](docs/proyecto/design-guide.md): decisiones visuales y adaptables.
+- [`docs/contexto/CONTEXTO.md`](docs/contexto/CONTEXTO.md): estado breve para continuar el trabajo.
 - [`GUIA_GIT.md`](GUIA_GIT.md): guía de colaboración.
