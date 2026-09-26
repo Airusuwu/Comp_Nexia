@@ -1,5 +1,122 @@
 # Contexto de Nexia
 
+## Regla para el README público — 2026-09-26
+
+- En el README de la raíz, no mencionar documentos de contexto, pasos internos,
+  tareas para asistentes ni trabajo con IA. Presentar únicamente el proyecto,
+  sus funciones y cómo iniciarlo.
+- Los README de frontend y backend conservan su función de aportar contexto
+  técnico; no modificarlos para aplicar esta regla al README de la raíz.
+
+## Estado vigente para continuar en un chat nuevo — 2026-09-25
+
+**Leer esta sección primero.** El resto del archivo conserva la historia de cada
+etapa; menciones antiguas de trabajo pendiente, ramas o servidores no sustituyen
+el estado indicado aquí. Antes de actuar en otro chat, comprobar `git status`,
+la rama actual y las referencias remotas porque pueden haber cambiado.
+
+### Proyecto y repositorio
+
+- Nexia es un entorno educativo de pseudocódigo orientado a personas con baja
+  visión o ceguera. La primera versión permite escribir, analizar y ejecutar
+  programas básicos en un navegador de PC.
+- Repositorio: `https://github.com/Airusuwu/Comp_Nexia.git`.
+- Rama actual al preparar este resumen: `main`, sincronizada con `origin/main`
+  en `90e05a0`. El árbol estaba limpio antes de editar este contexto.
+- `back` está publicada en `origin/back` hasta `63110da`; `front` está publicada
+  en `origin/front` hasta `c40667d`. No eliminar ramas ni reescribir historial.
+- Integraciones realizadas: PR #2, primera versión (`4d25887`); PR #3,
+  documentación de Sprint 0, comentarios y Guardar/Zoom (`d29bfc9`); PR #4,
+  corrección de la altura del editor desde `front` (`90e05a0`). Los tres se
+  fusionaron mediante **Squash and merge**. En `main` están los cambios de ambos
+  frentes; no queda un PR de esta secuencia pendiente de integración.
+
+### Funcionalidad disponible
+
+- Frontend en `frontend/`: editor multilínea con numeración, diagnósticos
+  accesibles, terminal de resultados y los botones existentes de acciones.
+- Ejecutar o `Ctrl+Enter` analiza y ejecuta mediante el backend local. Detener
+  cancela una ejecución en curso. `Leer` solicita datos dentro de la terminal,
+  con Enter/Enviar y Escape/Detener. El código se conserva ante errores.
+- Guardar descarga `programa-nexia.txt`; `Ctrl+O` abre un `.txt` UTF-8 de hasta
+  64 KiB con confirmación antes de reemplazar código. Aumentar texto modifica
+  código y resultados en pasos de 25 % de 100 a 200 %, y luego vuelve a 100 %.
+- La corrección del PR #4 mantiene fija la altura del editor cuando crecen las
+  salidas; la terminal aparece inmediatamente debajo del editor.
+- Backend Node.js 24 sin dependencias externas: lexer, parser con AST, análisis
+  semántico, tabla de símbolos, reglas de tipos e intérprete básico. Rutas:
+  `GET /api/health`, `POST /api/analyze` y `POST /api/execute`.
+- Lenguaje actual: `Inicio`/`Fin`, `Definir`, asignación `<-`, cinco tipos,
+  expresiones aritméticas y booleanas, `Si`/`Sino`, `Mientras`, `Leer` y
+  `Escribir`. Declaraciones múltiples usan comas; las palabras reservadas no
+  distinguen mayúsculas. `Escribir "Resultado: ", c` muestra texto y valor.
+- El motor distingue `analyzed`, `completed`, `waiting_input`, errores y
+  cancelación. La ejecución tiene límites y precisión REAL aproximada.
+
+### Verificación y entorno
+
+- La secuencia de integración pasó `npm.cmd --prefix backend run check` y
+  `git diff --check`. La verificación de 64 enlaces locales de documentación
+  terminó sin enlaces rotos antes de abrir los PR.
+- La corrección visual se reprodujo en Edge PC con 15 salidas: después del
+  ajuste el editor permaneció en 480 px y la terminal en la misma posición.
+  No se repitió esa prueba visual después de fusionar el PR #4; el código
+  integrado corresponde al commit que se verificó.
+- Al redactar este resumen hay un servidor local activo en
+  `http://127.0.0.1:3000/`; `GET /api/health` respondió `status: ok` con análisis
+  y ejecución disponibles. Ese proceso puede dejar de existir en otro chat.
+  Para iniciarlo desde la raíz: `npm.cmd --prefix backend start`. No requiere
+  `npm install`, `.env`, Python ni base de datos.
+- Las comprobaciones funcionales históricas están en
+  `docs/pruebas/verification.md` y `docs/tecnica/runtime.md`; no existe una
+  suite persistente. Aún falta auditoría real con lector de pantalla. Se
+  priorizó PC y no se hicieron pruebas móviles en esta etapa.
+
+### Documentación y Sprint 1
+
+- Índice documental: `docs/README.md`. Primer entregable:
+  `docs/sprints/Sprint 0.md`. Guía de lenguaje:
+  `docs/guias/guia-programacion.md`. Guía del código:
+  `backend/GUIA_CODIGO.md`.
+- El documento Sprint 0 es un registro histórico redactado antes de los PR #3
+  y #4; su tabla de «ajustes posteriores» menciona pendientes que **ya están
+  integrados**. Esta sección del contexto contiene el estado actualizado.
+- El PDF A5 está en `docs/referencias/A5 Reglas de tipos de datos.pdf`, ignorado
+  por Git. Las reglas aplicadas están documentadas en `docs/tecnica/`.
+- Para Sprint 1 aún no hay alcance aprobado. Acordar primero qué funciones
+  nuevas implementar y sus criterios de aceptación. `Para`, `Repetir`, funciones,
+  inserción desde los botones de estructuras y Escuchar resultado siguen sin
+  implementarse. No presentar ejemplos conceptuales de Para/Repetir como sintaxis
+  ejecutable. Revisar gramática y reglas antes de ampliar el lenguaje.
+- Flujo de trabajo acordado: conservar cambios locales, desarrollar en la rama
+  correspondiente, verificar en PC, registrar el avance y crear PR hacia
+  `main`; integrar mediante Squash and merge tras revisión. Al terminar cada
+  etapa, actualizar este contexto sin borrar las decisiones anteriores.
+
+## Próximos pasos vigentes — 2026-09-26
+
+1. Antes de abrir otro chat, conservar esta actualización de contexto. Al
+   redactar esta sección, `docs/contexto/CONTEXTO.md` es el único archivo
+   modificado localmente y todavía no tiene commit ni push. Si se publica,
+   comprobar el flujo de ramas y PR acordado; no asumir que ya está en GitHub.
+2. Revisar con el equipo el resultado de Sprint 0 en `main` y definir el objetivo,
+   las funciones y los criterios de aceptación de Sprint 1. No hay alcance de
+   Sprint 1 aprobado todavía.
+3. Registrar el plan de Sprint 1 en `docs/sprints/` antes de implementar. Si se
+   seleccionan `Para` o `Repetir`, acordar su sintaxis y sus reglas; después
+   ampliar lexer, parser, semántica, intérprete, ejemplos y mensajes de error.
+4. Para cada función aprobada, trabajar en la rama correspondiente, preservar
+   cambios ajenos y verificar el recorrido completo en PC. Añadir pruebas
+   repetibles donde corresponda; la auditoría con lector de pantalla real sigue
+   pendiente.
+5. Actualizar este contexto y la documentación del sprint con los resultados
+   reales. Proponer los cambios terminados mediante PR hacia `main` y fusionar
+   con Squash and merge tras revisión.
+
+Los «siguientes pasos» de las secciones anteriores son registros de decisiones
+tomadas durante Sprint 0. No son tareas activas si contradicen esta lista o el
+estado vigente del repositorio.
+
 ## Organización documental — 2026-09-25
 
 - La documentación se agrupa por proyecto, contexto, guías, técnica, pruebas,
@@ -536,7 +653,11 @@ incluye JavaScript funcional ni backend.
 - La revisión confirmó 0 scripts y un backend reservado únicamente con `.gitkeep`.
 - La revisión de navegador se realizó en Edge/Chromium; no se ejecutaron pruebas en Firefox o Safari ni una auditoría WCAG completa.
 
-## Próximos pasos
+## Próximos pasos de la maqueta inicial — histórico
+
+La siguiente lista corresponde al trabajo anterior a la integración del
+frontend y del backend. Los PR indicados ya se fusionaron; consulta los
+«Próximos pasos vigentes» al inicio de este archivo.
 
 1. Recopilar e implementar las mejoras adicionales indicadas por el usuario en `front`.
 2. Repetir las validaciones visuales y técnicas después de los cambios.
