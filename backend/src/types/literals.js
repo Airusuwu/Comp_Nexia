@@ -1,5 +1,6 @@
 import { TYPES, TypeRuleError } from './compatibility.js';
 
+// Clasifica la escritura de un literal sin convertirla todavía en un valor de ejecución.
 export function literalType(lexeme) {
   if (typeof lexeme !== 'string') throw new TypeError('El literal debe proporcionarse como texto original.');
   if (lexeme === 'VERDADERO' || lexeme === 'FALSO') return TYPES.BOOLEANO;
@@ -15,6 +16,7 @@ export function literalType(lexeme) {
       throw new TypeRuleError('UNSPECIFIED_LITERAL_FORMAT', 'El PDF no define escapes, comillas internas ni literales multilínea.');
     }
     if (quote === '"') return TYPES.TEXTO;
+    // Cuenta puntos de código Unicode, no grafemas compuestos ni unidades UTF-16.
     const symbols = Array.from(content);
     if (symbols.length !== 1) {
       throw new TypeRuleError('INVALID_CHARACTER', 'Un literal CARACTER debe contener un solo símbolo entre comillas simples.');

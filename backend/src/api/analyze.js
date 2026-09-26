@@ -6,6 +6,7 @@ import { execute } from '../runtime/execute.js';
 const maxBodyBytes = 512 * 1024;
 const maxCodeBytes = 64 * 1024;
 
+// Error del contrato HTTP, distinto de un error en el pseudocódigo del usuario.
 export class RequestError extends Error {
   constructor(statusCode, code, message) {
     super(message);
@@ -14,6 +15,7 @@ export class RequestError extends Error {
   }
 }
 
+// Acumula los fragmentos recibidos con un límite en bytes para acotar la memoria.
 function readBody(request) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -39,6 +41,7 @@ function readBody(request) {
   });
 }
 
+// Valida JSON y coordina las fases. run=false analiza; run=true también interpreta.
 export async function analyzeRequest(request, { run = false, signal } = {}) {
   const mediaType = request.headers['content-type']?.split(';')[0].trim().toLowerCase();
   if (mediaType !== 'application/json') {
@@ -66,6 +69,7 @@ export async function analyzeRequest(request, { run = false, signal } = {}) {
     throw new RequestError(400, 'INVALID_INPUTS', 'inputs debe ser una lista de hasta 100 textos de máximo 65536 unidades cada uno.');
   }
 
+  // Cada fase necesita una salida válida de la anterior; no ejecutamos un AST con errores.
   const lexical = tokenize(payload.code);
   const failed = lexical.diagnostics.length > 0;
   const syntax = failed ? null : parse(lexical.tokens);
@@ -88,6 +92,7 @@ export async function analyzeRequest(request, { run = false, signal } = {}) {
       severity: 'info', stage: 'service', line: null, column: null
     }]
   };
+  // El resultado del motor reemplaza status/results: analizar no equivale a ejecutar.
   if (!run || analysis.status !== 'analyzed') return analysis;
   return { ...analysis, ...await execute(syntax.ast, inputs, { signal }) };
 }

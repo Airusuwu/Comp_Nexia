@@ -6,6 +6,9 @@
   const stopButton = document.getElementById('stop-program');
   const output = document.getElementById('terminal-output');
   const fileInput = document.getElementById('open-program');
+  const saveButton = document.getElementById('save-program');
+  const increaseButton = document.getElementById('increase-text');
+  let readingPercent = 100;
   const inputForm = document.getElementById('terminal-input');
   const inputField = document.getElementById('terminal-value');
   const inputLabel = document.getElementById('terminal-input-label');
@@ -240,6 +243,35 @@
     }
   }
 
+  saveButton.addEventListener('click', () => {
+    let downloadUrl;
+    const link = document.createElement('a');
+    try {
+      downloadUrl = URL.createObjectURL(new Blob([editor.value], { type: 'text/plain;charset=utf-8' }));
+      link.href = downloadUrl;
+      link.download = 'programa-nexia.txt';
+      link.hidden = true;
+      document.body.append(link);
+      link.click();
+    } catch {
+      addMessage('No se pudo preparar la descarga. El código se conserva.', true);
+    } finally {
+      link.remove();
+      if (downloadUrl) setTimeout(() => URL.revokeObjectURL(downloadUrl), 30000);
+    }
+  });
+  increaseButton.addEventListener('click', () => {
+    readingPercent = readingPercent === 200 ? 100 : readingPercent + 25;
+    document.documentElement.style.setProperty('--reading-scale', readingPercent / 100);
+    increaseButton.title = readingPercent === 200
+      ? 'Tamaño actual: 200 %. Pulsa para volver al 100 %'
+      : `Tamaño actual: ${readingPercent} %. Aumentar en 25 %`;
+    increaseButton.setAttribute('aria-label', increaseButton.title);
+    updateNumbers();
+  });
+  saveButton.setAttribute('aria-disabled', 'false');
+  increaseButton.setAttribute('aria-disabled', 'false');
+
   editor.addEventListener('input', codeChanged);
   editor.addEventListener('scroll', () => { gutter.scrollTop = editor.scrollTop; });
   editor.addEventListener('click', highlightPosition);
@@ -279,7 +311,7 @@
         showMessage('El código cambió mientras se leía el archivo. Vuelve a abrirlo si deseas reemplazarlo.', true);
         return;
       }
-      if (editor.value && !window.confirm('¿Reemplazar el código actual por el archivo? Los cambios actuales se perderán; Guardar todavía no está habilitado.')) return;
+      if (editor.value && !window.confirm('¿Reemplazar el código actual por el archivo? Guarda primero los cambios que quieras conservar.')) return;
       editor.value = contents;
       codeChanged();
       editor.setSelectionRange(0, 0);

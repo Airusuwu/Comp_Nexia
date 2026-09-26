@@ -1,3 +1,4 @@
+// A mayor número, mayor prioridad: multiplicar se agrupa antes que sumar.
 const precedence = new Map([
   ['O', 1], ['Y', 2], ['==', 3], ['!=', 3], ['<', 3], ['>', 3], ['<=', 3], ['>=', 3],
   ['+', 4], ['-', 4], ['*', 5], ['/', 5], ['%', 5]
@@ -18,6 +19,7 @@ class ParseError extends Error {
   }
 }
 
+// Segunda fase: tokens -> AST (árbol de instrucciones y expresiones), sin ejecutarlo.
 export function parse(tokens) {
   if (!Array.isArray(tokens) || tokens.at(-1)?.category !== 'EOF') {
     throw new TypeError('El parser requiere tokens léxicos válidos terminados en EOF.');
@@ -35,6 +37,7 @@ export function parse(tokens) {
     if (!matches(value)) fail(`Se esperaba ${value}; se encontró ${current().lexeme || 'fin de archivo'}.`);
     return take();
   }
+  // Cada nodo conserva su ubicación para que las fases siguientes puedan señalar errores.
   function node(kind, start, fields = {}, children = []) {
     const depth = 1 + Math.max(0, ...children.map((child) => depths.get(child)));
     if (depth > 128) fail('El AST supera la profundidad técnica de 128 niveles.', 'SYNTAX_LIMIT');
@@ -49,6 +52,7 @@ export function parse(tokens) {
     depths.set(result, depth);
     return result;
   }
+  // Límite técnico para evitar desbordamientos de pila con código muy anidado.
   function nested(action) {
     nesting += 1;
     if (nesting > 64) fail('Se superó el límite técnico de anidamiento (64).', 'SYNTAX_LIMIT');
@@ -72,6 +76,7 @@ export function parse(tokens) {
     take();
     return node('Identifier', start, { name: start.lexeme });
   }
+  // Ascenso de precedencia: priority + 1 hace asociativos a la izquierda los binarios.
   function expression(minimum = 1) {
     return nested(() => {
       const start = current();
@@ -118,6 +123,7 @@ export function parse(tokens) {
       return body;
     });
   }
+  // Cada alternativa reconoce una instrucción y construye su nodo correspondiente.
   function statement() {
     const start = current();
     if (matches('Definir')) {

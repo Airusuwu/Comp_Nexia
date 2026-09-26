@@ -1,5 +1,9 @@
 # Backend de Nexia
 
+Para entender cada módulo y explicar el recorrido del código al equipo, consulta
+[la guía del código del backend](GUIA_CODIGO.md). Los módulos de `src/` incluyen
+comentarios sobre responsabilidades, validaciones y decisiones de implementación.
+
 ## Estado con ejecución básica
 
 Editor conectado al servidor, con tres fases de análisis y ejecución del AST.
@@ -9,12 +13,12 @@ ubicados. Nunca devuelve resultados de ejecución ficticios.
 
 `POST /api/execute` analiza y ejecuta; `/api/analyze` sigue siendo solo análisis.
 Contrato de entrada, salidas, cancelación y límites en
-[`docs/runtime.md`](../docs/runtime.md).
+[`docs/tecnica/runtime.md`](../docs/tecnica/runtime.md).
 
 Ya existe un módulo independiente de compatibilidad de tipos, basado en el
 PDF A5, con controles auxiliares de declaración, inicialización y divisor.
 La compatibilidad se aplica al AST durante el análisis semántico. Véase
-[`docs/type-rules.md`](../docs/type-rules.md) para reglas, límites y validaciones.
+[`docs/tecnica/type-rules.md`](../docs/tecnica/type-rules.md) para reglas, límites y validaciones.
 
 ## Decisión técnica
 
@@ -95,17 +99,17 @@ Respuesta sin errores de análisis (HTTP 200, extracto sin tokens, AST ni símbo
 La respuesta también incluye `tokens`, `ast`, `symbols`, `runtimeChecks`, `truncated` y `analysis` con el estado
 lexical, syntactic y semantic. Los errores léxicos devuelven HTTP 422,
 `status: "lexical_error"` y diagnósticos ubicados. Documentación detallada en
-[`docs/lexical-analysis.md`](../docs/lexical-analysis.md).
+[`docs/tecnica/lexical-analysis.md`](../docs/tecnica/lexical-analysis.md).
 
 Los errores sintácticos devuelven HTTP 422, `syntactic_error`, `ast: null`
 y el primer diagnóstico de etapa parser. Si falla el lexer, sintaxis queda
 skipped. Sin errores las tres fases quedan completed. Gramática y AST en
-[`docs/syntax-analysis.md`](../docs/syntax-analysis.md).
+[`docs/tecnica/syntax-analysis.md`](../docs/tecnica/syntax-analysis.md).
 
 Errores semánticos: HTTP 422, semantic_error, primer diagnóstico ubicado.
 Si falla una fase previa, semantic queda skipped. Ámbitos, inicialización y
 controles que requieren valores reales se describen en
-[`docs/semantic-analysis.md`](../docs/semantic-analysis.md).
+[`docs/tecnica/semantic-analysis.md`](../docs/tecnica/semantic-analysis.md).
 
 Errores de solicitud: 400 para JSON/UTF-8 inválido, campo code inválido o
 texto vacío; 413 para exceso de tamaño; 415 para formato distinto de JSON;
@@ -158,7 +162,7 @@ Los cambios visuales y los eventos del editor permanecerán en `frontend/`.
 
 El punto 10 registró 140 aserciones de integración (26 programas), pruebas
 reales en Edge PC y recuperación ante desconexión. Véase
-[`docs/verification.md`](../docs/verification.md) para evidencia y pendientes;
+[`docs/pruebas/verification.md`](../docs/pruebas/verification.md) para evidencia y pendientes;
 no constituye una auditoría completa con lector de pantalla.
 
 ```powershell

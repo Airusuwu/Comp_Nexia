@@ -608,7 +608,7 @@ Edita únicamente archivos del backend y su documentación. Después:
 ```bash
 git status --short
 git diff
-git add backend docs/CONTEXTO.md
+git add backend docs/contexto/CONTEXTO.md
 git diff --staged
 git commit -m "feat: agregar validación inicial del pseudocódigo"
 git push origin back
