@@ -1,5 +1,6 @@
 import { requireDeclared, requireNewDeclaration } from '../types/guards.js';
 
+// Pila de ámbitos: el primero es global y el último es el bloque actualmente activo.
 export class SymbolTable {
   constructor(frames = [new Map()]) {
     this.frames = frames;
@@ -12,6 +13,7 @@ export class SymbolTable {
     frame.set(key, { name, type, location, initialized: false, constant: undefined });
   }
 
+  // Busca desde el ámbito más cercano; los identificadores no distinguen mayúsculas.
   resolve(name) {
     const key = name.toUpperCase();
     for (let index = this.frames.length - 1; index >= 0; index -= 1) {
@@ -20,6 +22,7 @@ export class SymbolTable {
     return requireDeclared(name, undefined);
   }
 
+  // Copia el estado de símbolos para analizar caminos sin modificar el original.
   clone() {
     return new SymbolTable(this.frames.map((frame) => new Map(
       Array.from(frame, ([key, value]) => [key, { ...value }])
@@ -35,6 +38,7 @@ export class SymbolTable {
     }
   }
 
+  // Tras Si/Sino, una variable solo está inicializada si lo está en ambos caminos.
   merge(left, right) {
     this.frames.forEach((frame, index) => {
       for (const [key, symbol] of frame) {

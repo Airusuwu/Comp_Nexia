@@ -12,6 +12,7 @@ const literalCategories = {
 const wordStart = /[\p{L}_]/u;
 const wordPart = /[\p{L}\p{M}\p{N}_]/u;
 
+// Primera fase: texto -> tokens ubicados. No verifica tipos de operaciones ni declaraciones.
 export function tokenize(source, { caseSensitive = false } = {}) {
   if (typeof source !== 'string') throw new TypeError('El código debe ser texto.');
   if (typeof caseSensitive !== 'boolean') throw new TypeError('caseSensitive debe ser booleano.');
@@ -23,6 +24,7 @@ export function tokenize(source, { caseSensitive = false } = {}) {
 
   const current = () => offset < source.length ? String.fromCodePoint(source.codePointAt(offset)) : '';
   const position = () => ({ offset, line, column });
+  // Las posiciones usan unidades UTF-16; CRLF cuenta como un único salto de línea.
   function advance() {
     const character = current();
     if (character === '\r' || character === '\n') {
@@ -34,6 +36,7 @@ export function tokenize(source, { caseSensitive = false } = {}) {
       column += character.length;
     }
   }
+  // lexeme conserva lo escrito; canonical normaliza palabras reservadas y operadores.
   function addToken(category, start, canonical) {
     const token = {
       category, lexeme: source.slice(start.offset, offset), ...start,
@@ -121,6 +124,7 @@ export function tokenize(source, { caseSensitive = false } = {}) {
       if (!matched) addToken('IDENTIFIER', start);
       continue;
     }
+    // Reconocer primero dos símbolos evita dividir <- o <= en tokens incorrectos.
     const pair = source.slice(offset, offset + 2);
     if (symbolicOperators.has(pair)) {
       advance();

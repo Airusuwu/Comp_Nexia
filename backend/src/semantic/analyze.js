@@ -5,6 +5,8 @@ import {
 } from '../types/compatibility.js';
 import { requireInitialized, checkDivisor } from '../types/guards.js';
 
+// Propagación conservadora: solo conserva números enteros representables con exactitud.
+// undefined significa que el análisis no conoce el valor, no que la variable esté vacía.
 function literalConstant(node) {
   if (!['ENTERO', 'REAL'].includes(node.literalType)) return undefined;
   if (!/^\d+(?:\.0+)?$/.test(node.raw)) return undefined;
@@ -27,12 +29,14 @@ function numericConstant(operator, left, right) {
   return Number.isSafeInteger(number) ? number : undefined;
 }
 
+// Tercera fase: valida tipos y uso de variables; no solicita entradas ni produce salidas.
 export function analyzeSemantics(ast) {
   if (ast?.kind !== 'Program') throw new TypeError('Se requiere un AST Program válido.');
   const table = new SymbolTable();
   const runtimeChecks = [];
   let activeNode = ast;
 
+  // Recuerda qué nodo originará el diagnóstico si una regla lanza TypeRuleError.
   function at(node, action) {
     activeNode = node;
     return action();
@@ -105,12 +109,15 @@ export function analyzeSemantics(ast) {
       } else if (node.kind === 'IfStatement') {
         const condition = expression(node.condition, symbols);
         at(node.condition, () => requireBooleanCondition(condition.type));
+        // Se verifican ambas ramas, sin asumir cuál ocurrirá durante la ejecución.
         const consequent = symbols.clone();
         const alternate = symbols.clone();
         block(node.consequent, consequent);
         if (node.alternate) block(node.alternate, alternate);
         symbols.merge(consequent, alternate);
       } else if (node.kind === 'WhileStatement') {
+        // Mientras puede ejecutarse cero veces; su cuerpo no garantiza inicialización posterior.
+        // Se descartan constantes porque las iteraciones pueden cambiar los valores.
         const loop = symbols.clone();
         loop.forgetConstants();
         const condition = expression(node.condition, loop);

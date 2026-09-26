@@ -1,3 +1,4 @@
+// Reglas compartidas por análisis y ejecución; no dependen de conversiones de JavaScript.
 export const TYPES = Object.freeze({
   ENTERO: 'ENTERO', REAL: 'REAL', TEXTO: 'TEXTO', CARACTER: 'CARACTER', BOOLEANO: 'BOOLEANO'
 });
@@ -21,6 +22,7 @@ export function requireType(type) {
   return type;
 }
 
+// Recibe tipos, no valores: determina si la operación existe y qué tipo produce.
 export function binaryResultType(operator, leftType, rightType) {
   requireType(leftType);
   requireType(rightType);
@@ -49,6 +51,7 @@ export function unaryResultType(operator, operandType) {
   throw new TypeRuleError('INCOMPATIBLE_OPERAND', `El operador ${operator} no admite ${operandType}.`);
 }
 
+// Única promoción permitida al asignar: ENTERO hacia REAL; nunca a la inversa.
 export function assignmentResultType(targetType, sourceType) {
   requireType(targetType);
   requireType(sourceType);

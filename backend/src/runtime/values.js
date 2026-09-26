@@ -1,6 +1,7 @@
 import { TypeRuleError, binaryResultType, unaryResultType, readResultType } from '../types/compatibility.js';
 import { checkDivisor } from '../types/guards.js';
 
+// Representación interna { type, value }; comprueba límites de números y textos.
 export function valueOf(type, value) {
   if (['ENTERO', 'REAL'].includes(type) && (!Number.isFinite(value) || (type === 'ENTERO' && !Number.isSafeInteger(value)))) {
     throw new TypeRuleError('NUMERIC_LIMIT', 'El valor excede los límites numéricos del motor básico.');
@@ -19,6 +20,7 @@ export function literalValue(node) {
   return valueOf(node.literalType, value);
 }
 
+// Leer recibe texto del navegador; valida su formato antes de convertirlo al tipo declarado.
 export function inputValue(text, type) {
   if (type === 'TEXTO') return valueOf(type, text);
   if (type === 'CARACTER') {
@@ -45,6 +47,7 @@ export function unaryValue(operator, operand) {
 export function binaryValue(operator, left, right) {
   const type = binaryResultType(operator, left.type, right.type);
   if (['/', '%'].includes(operator)) checkDivisor(operator, right.type, right.value);
+  // BigInt evita redondeos intermedios; valueOf rechaza resultados fuera del rango seguro.
   if (type === 'ENTERO') {
     const first = BigInt(left.value);
     const second = BigInt(right.value);
@@ -71,6 +74,7 @@ export function binaryValue(operator, left, right) {
   return valueOf(type, result);
 }
 
+// Presentación del lenguaje: booleanos en español y textos sin comillas.
 export function formatValue(typed) {
   return typed.type === 'BOOLEANO' ? (typed.value ? 'VERDADERO' : 'FALSO') : String(typed.value);
 }

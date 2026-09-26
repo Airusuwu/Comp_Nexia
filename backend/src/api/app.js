@@ -3,15 +3,18 @@ import { analyzeRequest, RequestError } from './analyze.js';
 import { serveFrontend } from './static.js';
 import { diagnosticResponse } from '../diagnostics/response.js';
 
+// Centraliza la serialización HTTP; payload contiene el resultado del compilador.
 function sendJson(response, statusCode, payload) {
   response.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8' });
   response.end(JSON.stringify(payload));
 }
 
+// Crea el servidor sin abrir un puerto: server.js decide dónde escuchar.
 export function createApp() {
   return createServer({ requestTimeout: 10000, headersTimeout: 10000 }, async (request, response) => {
     response.setHeader('Cache-Control', 'no-store');
     try {
+      // Defensa adicional al enlace local: rechaza Host ajenos a localhost.
       const host = request.headers.host ?? '';
       if (!/^(127\.0\.0\.1|localhost)(:\d+)?$/.test(host)) {
         throw new RequestError(403, 'LOCAL_ONLY', 'Este servidor solo admite acceso local.');
@@ -37,6 +40,7 @@ export function createApp() {
         if (request.headers.origin && request.headers.origin !== `http://${host}`) {
           throw new RequestError(403, 'ORIGIN_NOT_ALLOWED', 'Abre Nexia desde este servidor local para enviar el código.');
         }
+        // Si el cliente cierra la conexión, el motor puede cancelar cooperativamente.
         const controller = new AbortController();
         const cancel = () => controller.abort();
         response.once('close', cancel);
@@ -52,6 +56,7 @@ export function createApp() {
       throw new RequestError(404, 'NOT_FOUND', 'Ruta no disponible.');
     } catch (error) {
       if (response.destroyed || response.writableEnded) return;
+      // Los errores internos no se exponen al navegador con sus detalles técnicos.
       const knownError = error instanceof RequestError;
       sendJson(response, knownError ? error.statusCode : 500, diagnosticResponse(
         knownError ? 'invalid_request' : 'error',

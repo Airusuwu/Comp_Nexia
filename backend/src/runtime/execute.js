@@ -4,10 +4,13 @@ import { requireInitialized } from '../types/guards.js';
 import { SymbolTable } from '../symbols/table.js';
 import { literalValue, inputValue, unaryValue, binaryValue, valueOf, formatValue } from './values.js';
 
+// Señal interna de pausa lógica: se transforma en waiting_input, no en un error del programa.
 class NeedInput extends Error {
   constructor(input) { super('Entrada pendiente'); this.input = input; }
 }
 
+// Interpreta un AST ya validado. Cada llamada empieza desde cero con su propia tabla.
+// Para Leer, el cliente reenvía las entradas acumuladas y se repite el recorrido.
 export async function execute(ast, inputs = [], { signal } = {}) {
   const symbols = new SymbolTable();
   const results = [];
@@ -17,6 +20,7 @@ export async function execute(ast, inputs = [], { signal } = {}) {
   let outputSize = 0;
   const started = performance.now();
 
+  // Cede periódicamente el turno a Node para atender HTTP/cancelaciones y limita recursos.
   async function tick(node) {
     activeNode = node;
     steps += 1;
@@ -42,6 +46,7 @@ export async function execute(ast, inputs = [], { signal } = {}) {
       return unaryValue(node.operator, argument);
     }
     if (node.kind === 'BinaryExpression') {
+      // Ambos operandos se evalúan incluso para Y/O: esta versión no usa cortocircuito.
       const left = await expression(node.left);
       const right = await expression(node.right);
       activeNode = ['/', '%'].includes(node.operator) ? node.right : node;
@@ -89,6 +94,7 @@ export async function execute(ast, inputs = [], { signal } = {}) {
           if (outputSize + lineSize > 65536) throw new TypeRuleError('OUTPUT_LIMIT', 'Se excedió el límite de salida de 65536 unidades UTF-16.');
           values.push(text);
         }
+        // Escribir concatena representaciones sin agregar espacios entre argumentos.
         const text = values.join('');
         outputSize += text.length;
         activeNode = node;
@@ -113,6 +119,8 @@ export async function execute(ast, inputs = [], { signal } = {}) {
     await statements(ast.body);
     return { status: 'completed', executed: true, results, diagnostics: [], steps };
   } catch (error) {
+    // executed=true indica que el motor comenzó; solo completed confirma que terminó.
+    // Las salidas anteriores se conservan también al pedir datos o encontrar un error.
     if (error instanceof NeedInput) return { status: 'waiting_input', executed: true, results, diagnostics: [], input: error.input, steps };
     if (!(error instanceof TypeRuleError)) throw error;
     return {

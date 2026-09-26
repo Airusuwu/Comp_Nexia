@@ -1,5 +1,6 @@
 import { TYPES, TypeRuleError, requireType } from './compatibility.js';
 
+// Guardas reutilizables: comprueban existencia, redeclaración e inicialización.
 export function requireDeclared(name, declaration) {
   if (declaration === undefined || declaration === null) {
     throw new TypeRuleError('UNDECLARED_VARIABLE', `La variable "${name}" debe declararse antes de utilizarse.`);
@@ -22,6 +23,8 @@ export function requireInitialized(name, initialized) {
   }
 }
 
+// undefined significa valor desconocido en análisis: exige comprobarlo al ejecutar.
+// Un cero conocido falla inmediatamente tanto para división como para residuo.
 export function checkDivisor(operator, type, value = undefined) {
   requireType(type);
   if (!['/', '%'].includes(operator)) throw new TypeError('El control de divisor solo admite / y %.');
