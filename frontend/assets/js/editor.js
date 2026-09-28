@@ -5,6 +5,10 @@
   const runButton = document.getElementById('run-program');
   const stopButton = document.getElementById('stop-program');
   const output = document.getElementById('terminal-output');
+  const terminal = document.getElementById('terminal-panel');
+  const terminalToggle = document.getElementById('minimize-terminal');
+  const mainStage = document.querySelector('.main-stage');
+  const workspace = document.querySelector('.workspace');
   const fileInput = document.getElementById('open-program');
   const saveButton = document.getElementById('save-program');
   const increaseButton = document.getElementById('increase-text');
@@ -21,22 +25,49 @@
   let pending = null;
   const errorLines = new Set();
 
+  function revealTerminal() {
+    if (terminal.hidden) {
+      terminal.hidden = false;
+      mainStage.classList.remove('main-stage--terminal-hidden');
+      workspace.classList.remove('workspace--terminal-hidden');
+      terminalToggle.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  terminalToggle.addEventListener('click', () => {
+    if (!inputForm.hidden) return;
+    terminal.hidden = true;
+    mainStage.classList.add('main-stage--terminal-hidden');
+    workspace.classList.add('workspace--terminal-hidden');
+    terminalToggle.setAttribute('aria-expanded', 'false');
+    runButton.focus();
+  });
+
   function addMessage(message, error = false) {
+  if (error) {
     const row = document.createElement('div');
-    row.className = `result-row result-row--${error ? 'error' : 'success'}`;
+    row.className = 'result-row result-row--error';
     const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    icon.setAttribute('class', `result-row__icon ${error ? 'error-icon' : 'terminal-icon'}`);
+    icon.setAttribute('class', 'result-row__icon error-icon');
     icon.setAttribute('aria-hidden', 'true');
     const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-    use.setAttribute('href', error ? '#icon-error' : '#icon-terminal');
+    use.setAttribute('href', '#icon-error');
     icon.append(use);
-    const divider = document.createElement('span');
-    divider.className = 'result-row__divider';
-    divider.setAttribute('aria-hidden', 'true');
     const text = document.createElement('p');
     text.textContent = message;
-    row.append(icon, divider, text);
+    row.append(icon, text);
     output.append(row);
+    return;
+  }
+  let block = output.querySelector('.result-row--success');
+  if (!block) {
+    block = document.createElement('div');
+    block.className = 'result-row result-row--success';
+    output.append(block);
+  }
+  const text = document.createElement('p');
+    text.textContent = message;
+    block.append(text);
   }
 
   function showMessage(message, error = false) {
@@ -102,10 +133,15 @@
   }
 
   function consoleLine(text) {
+    let block = output.querySelector('.result-row--success');
+    if (!block) {
+      block = document.createElement('div');
+      block.className = 'result-row result-row--success';
+      output.append(block);
+    }
     const line = document.createElement('p');
-    line.className = 'console-line';
     line.textContent = text;
-    output.append(line);
+    block.append(line);
   }
 
   function requestConsoleInput(input, signal) {
@@ -114,11 +150,15 @@
       inputLabel.textContent = `Leer ${input.name} (${input.type})`;
       inputField.value = '';
       inputForm.hidden = false;
+      terminalToggle.disabled = true;
+      terminalToggle.title = 'Completa o cancela la entrada antes de minimizar la terminal';
       function finish(value) {
         inputForm.removeEventListener('submit', submit);
         inputField.removeEventListener('keydown', keydown);
         signal.removeEventListener('abort', cancel);
         inputForm.hidden = true;
+        terminalToggle.disabled = false;
+        terminalToggle.title = 'Minimizar terminal';
         inputField.value = '';
         resolve(value);
       }
@@ -176,6 +216,7 @@
 
   async function sendCode() {
     if (pending) return;
+    revealTerminal();
     const code = editor.value;
     if (!code.trim()) {
       showMessage('El editor está vacío. Escribe código antes de enviarlo.', true);

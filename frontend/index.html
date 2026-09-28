@@ -39,31 +39,6 @@
           <path class="icon-fill" d="M7 2h18l10 10v34H7z" />
           <path class="icon-cut" d="M25 2v11h10M13 23h16M13 30h16M13 37h12" />
         </symbol>
-        <symbol id="icon-cube" viewBox="0 0 48 48">
-          <path class="icon-fill" d="m24 2 19 10-19 10L5 12zm-20 13 18 10v21L4 36zm40 0v21L26 46V25z" />
-        </symbol>
-        <symbol id="icon-branch" viewBox="0 0 48 48">
-          <circle class="icon-fill" cx="24" cy="7" r="5" />
-          <circle class="icon-fill" cx="10" cy="39" r="5" />
-          <circle class="icon-fill" cx="38" cy="39" r="5" />
-          <path d="M24 12v10M10 34v-5c0-4 3-7 7-7h14c4 0 7 3 7 7v5" />
-        </symbol>
-        <symbol id="icon-cycle" viewBox="0 0 48 48">
-          <path d="M39 19A16 16 0 0 0 11 12L6 17M9 29a16 16 0 0 0 28 7l5-5" />
-          <path class="icon-fill" d="M5 7v12h12zM43 41V29H31z" />
-        </symbol>
-        <symbol id="icon-while" viewBox="0 0 48 48">
-          <path d="M33 10a16 16 0 1 0 7 12" />
-          <path class="icon-fill" d="m32 3 11 5-9 8z" />
-        </symbol>
-        <symbol id="icon-repeat" viewBox="0 0 48 48">
-          <path d="M12 15a16 16 0 1 1-2 16" />
-          <path class="icon-fill" d="M4 12h13v13z" />
-        </symbol>
-        <symbol id="icon-define" viewBox="0 0 48 48">
-          <path d="M16 7h-5v34h5M32 7h5v34h-5" />
-          <path d="m20 18 9 13M29 18l-9 13" />
-        </symbol>
         <symbol id="icon-terminal" viewBox="0 0 48 48">
           <rect class="icon-fill" x="2" y="4" width="44" height="40" rx="6" />
           <path class="icon-cut" d="m10 15 8 8-8 8M23 33h13" />
@@ -82,14 +57,29 @@
     <main class="app-shell" aria-labelledby="app-title">
       <header class="topbar clay-panel">
         <div class="brand">
-          <svg class="brand__icon" aria-hidden="true"><use href="#icon-code" /></svg>
+          <svg class="brand__icon" viewBox="0 0 94 56" aria-hidden="true">
+  <path d="M0 35.2735V27.8371L18.8975 18.6035V26.4118L6.85798 31.4933L7.06118 31.1215V31.9891L6.85798 31.6173L18.8975 36.6989V44.5071L0 35.2735Z" fill="#F5A624"/>
+  <path d="M94 35.2735L75.1025 44.5071V36.6989L87.142 31.6173L86.9388 31.9891V31.1215L87.142 31.4933L75.1025 26.4118V18.6035L94 27.8371V35.2735Z" fill="#F5A624"/>
+  <rect width="56.1344" height="12.6527" rx="6.32633" transform="matrix(0.539325 0.842098 -0.723883 0.689922 35.4989 0)" fill="url(#logoGrad)"/>
+  <rect x="27.4607" y="1.05664" width="10.2819" height="54.5339" rx="5.14094" fill="#7D2EBF"/>
+  <rect x="55.6156" y="1.36328" width="10.2819" height="54.5339" rx="5.14094" fill="#7D2EBF"/>
+  <ellipse cx="46.779" cy="29.0055" rx="5.58798" ry="6.81674" fill="white"/>
+  <ellipse cx="46.8797" cy="28.6646" rx="3.57631" ry="4.36271" fill="#F5A624"/>
+  <defs>
+    <linearGradient id="logoGrad" x1="0" y1="6.32633" x2="56.1344" y2="6.32633" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4D1A8C"/>
+      <stop offset="0.5" stop-color="#7D2EBF"/>
+      <stop offset="1" stop-color="#9952E0"/>
+    </linearGradient>
+  </defs>
+</svg>
           <h1 id="app-title" class="brand__name">Nexia</h1>
           <span class="brand__divider" aria-hidden="true"></span>
           <p class="brand__tagline">Programar también es para todos</p>
         </div>
       </header>
 
-      <div class="workspace">
+      <div class="workspace workspace--terminal-hidden">
         <aside class="side-panel side-panel--actions clay-panel" aria-labelledby="actions-title">
           <h2 class="panel-title" id="actions-title">Acciones</h2>
           <div class="control-list">
@@ -116,14 +106,13 @@
           </div>
         </aside>
 
-        <section class="main-stage" aria-label="Área de edición y resultados">
+        <section class="main-stage main-stage--terminal-hidden" aria-label="Área de edición y resultados">
           <section class="editor clay-panel" aria-labelledby="editor-title">
             <header class="section-heading section-heading--editor">
               <div class="section-heading__title">
                 <svg class="section-heading__icon file-icon" aria-hidden="true"><use href="#icon-file" /></svg>
                 <h2 id="editor-title">Editor de código</h2>
               </div>
-              <p>Escribe tu programa aquí</p>
             </header>
 
             <div class="code-window">
@@ -145,19 +134,22 @@ Fin</textarea>
             <input id="open-program" type="file" accept=".txt,text/plain" hidden>
           </section>
 
-          <section class="terminal clay-panel" aria-labelledby="terminal-title">
+          <section class="terminal clay-panel" id="terminal-panel" aria-labelledby="terminal-title" hidden>
             <header class="section-heading section-heading--terminal">
               <div class="section-heading__title">
                 <svg class="section-heading__icon terminal-icon" aria-hidden="true"><use href="#icon-terminal" /></svg>
-                <h2 id="terminal-title">Terminal de resultados y lista de errores</h2>
+                <h2 id="terminal-title">Terminal</h2>
               </div>
+              <button id="minimize-terminal" class="terminal-minimize" type="button" aria-label="Minimizar terminal" title="Minimizar terminal" aria-controls="terminal-panel" aria-expanded="true">
+                <span aria-hidden="true">—</span>
+                 </button>
             </header>
 
+            <div class="terminal-body" id="terminal-body">
             <p class="demo-note" id="editor-help">Control más Enter o Ejecutar analiza y ejecuta el código. Leer solicita datos en la terminal: Enter envía; Escape o Detener cancela. Control más O abre un archivo .txt en UTF-8. Tab permite salir del editor.</p>
             <div class="terminal-output" id="terminal-output" role="status" aria-live="polite" aria-atomic="true">
-              <div class="result-row result-row--success">
+              <div class="result-row result-row--welcome">
                 <svg class="result-row__icon success-icon" aria-hidden="true"><use href="#icon-check" /></svg>
-                <span class="result-row__divider" aria-hidden="true"></span>
                 <p>Listo para analizar y ejecutar. Usa Escribir para mostrar resultados y Leer para introducir datos.</p>
               </div>
             </div>
@@ -169,41 +161,9 @@ Fin</textarea>
               </div>
               <p id="terminal-input-help">Escribe el dato sin comillas. Enter envía; Escape o Detener cancela.</p>
             </form>
+            </div>
           </section>
         </section>
-
-        <aside class="side-panel side-panel--structures clay-panel" aria-labelledby="structures-title">
-          <h2 class="panel-title panel-title--icon" id="structures-title">
-            <svg aria-hidden="true"><use href="#icon-cube" /></svg>
-            <span>Estructuras</span>
-          </h2>
-          <div class="control-list">
-            <button class="structure-card" type="button" aria-disabled="true" title="Disponible próximamente">
-              <svg aria-hidden="true"><use href="#icon-branch" /></svg>
-              <span>Si — Entonces</span>
-            </button>
-            <button class="structure-card" type="button" aria-disabled="true" title="Disponible próximamente">
-              <svg aria-hidden="true"><use href="#icon-cycle" /></svg>
-              <span>Para</span>
-            </button>
-            <button class="structure-card" type="button" aria-disabled="true" title="Disponible próximamente">
-              <svg aria-hidden="true"><use href="#icon-while" /></svg>
-              <span>Mientras</span>
-            </button>
-            <button class="structure-card" type="button" aria-disabled="true" title="Disponible próximamente">
-              <svg aria-hidden="true"><use href="#icon-repeat" /></svg>
-              <span>Repetir</span>
-            </button>
-            <button class="structure-card" type="button" aria-disabled="true" title="Disponible próximamente">
-              <svg aria-hidden="true"><use href="#icon-define" /></svg>
-              <span>Definir</span>
-            </button>
-            <button class="structure-card structure-card--function" type="button" aria-disabled="true" title="Disponible próximamente">
-              <span class="function-symbol" aria-hidden="true">ƒ(x)</span>
-              <span>Función</span>
-            </button>
-          </div>
-        </aside>
       </div>
     </main>
   </body>
