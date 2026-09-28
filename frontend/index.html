@@ -57,7 +57,22 @@
     <main class="app-shell" aria-labelledby="app-title">
       <header class="topbar clay-panel">
         <div class="brand">
-          <svg class="brand__icon" aria-hidden="true"><use href="#icon-code" /></svg>
+          <svg class="brand__icon" viewBox="0 0 94 56" aria-hidden="true">
+  <path d="M0 35.2735V27.8371L18.8975 18.6035V26.4118L6.85798 31.4933L7.06118 31.1215V31.9891L6.85798 31.6173L18.8975 36.6989V44.5071L0 35.2735Z" fill="#F5A624"/>
+  <path d="M94 35.2735L75.1025 44.5071V36.6989L87.142 31.6173L86.9388 31.9891V31.1215L87.142 31.4933L75.1025 26.4118V18.6035L94 27.8371V35.2735Z" fill="#F5A624"/>
+  <rect width="56.1344" height="12.6527" rx="6.32633" transform="matrix(0.539325 0.842098 -0.723883 0.689922 35.4989 0)" fill="url(#logoGrad)"/>
+  <rect x="27.4607" y="1.05664" width="10.2819" height="54.5339" rx="5.14094" fill="#7D2EBF"/>
+  <rect x="55.6156" y="1.36328" width="10.2819" height="54.5339" rx="5.14094" fill="#7D2EBF"/>
+  <ellipse cx="46.779" cy="29.0055" rx="5.58798" ry="6.81674" fill="white"/>
+  <ellipse cx="46.8797" cy="28.6646" rx="3.57631" ry="4.36271" fill="#F5A624"/>
+  <defs>
+    <linearGradient id="logoGrad" x1="0" y1="6.32633" x2="56.1344" y2="6.32633" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4D1A8C"/>
+      <stop offset="0.5" stop-color="#7D2EBF"/>
+      <stop offset="1" stop-color="#9952E0"/>
+    </linearGradient>
+  </defs>
+</svg>
           <h1 id="app-title" class="brand__name">Nexia</h1>
           <span class="brand__divider" aria-hidden="true"></span>
           <p class="brand__tagline">Programar también es para todos</p>
@@ -98,7 +113,6 @@
                 <svg class="section-heading__icon file-icon" aria-hidden="true"><use href="#icon-file" /></svg>
                 <h2 id="editor-title">Editor de código</h2>
               </div>
-              <p>Escribe tu programa aquí</p>
             </header>
 
             <div class="code-window">
@@ -124,15 +138,17 @@ Fin</textarea>
             <header class="section-heading section-heading--terminal">
               <div class="section-heading__title">
                 <svg class="section-heading__icon terminal-icon" aria-hidden="true"><use href="#icon-terminal" /></svg>
-                <h2 id="terminal-title">Terminal de resultados y lista de errores</h2>
+                <h2 id="terminal-title">Terminal</h2>
               </div>
+              <button id="minimize-terminal" class="terminal-minimize" type="button" aria-label="Minimizar terminal" title="Minimizar terminal">
+                <span aria-hidden="true">—</span>
+                 </button>
             </header>
 
             <p class="demo-note" id="editor-help">Control más Enter o Ejecutar analiza y ejecuta el código. Leer solicita datos en la terminal: Enter envía; Escape o Detener cancela. Control más O abre un archivo .txt en UTF-8. Tab permite salir del editor.</p>
             <div class="terminal-output" id="terminal-output" role="status" aria-live="polite" aria-atomic="true">
-              <div class="result-row result-row--success">
+              <div class="result-row result-row--welcome">
                 <svg class="result-row__icon success-icon" aria-hidden="true"><use href="#icon-check" /></svg>
-                <span class="result-row__divider" aria-hidden="true"></span>
                 <p>Listo para analizar y ejecutar. Usa Escribir para mostrar resultados y Leer para introducir datos.</p>
               </div>
             </div>
