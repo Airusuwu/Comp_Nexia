@@ -79,7 +79,7 @@
         </div>
       </header>
 
-      <div class="workspace">
+      <div class="workspace workspace--terminal-hidden">
         <aside class="side-panel side-panel--actions clay-panel" aria-labelledby="actions-title">
           <h2 class="panel-title" id="actions-title">Acciones</h2>
           <div class="control-list">
@@ -106,7 +106,7 @@
           </div>
         </aside>
 
-        <section class="main-stage" aria-label="Área de edición y resultados">
+        <section class="main-stage main-stage--terminal-hidden" aria-label="Área de edición y resultados">
           <section class="editor clay-panel" aria-labelledby="editor-title">
             <header class="section-heading section-heading--editor">
               <div class="section-heading__title">
@@ -134,17 +134,18 @@ Fin</textarea>
             <input id="open-program" type="file" accept=".txt,text/plain" hidden>
           </section>
 
-          <section class="terminal clay-panel" aria-labelledby="terminal-title">
+          <section class="terminal clay-panel" id="terminal-panel" aria-labelledby="terminal-title" hidden>
             <header class="section-heading section-heading--terminal">
               <div class="section-heading__title">
                 <svg class="section-heading__icon terminal-icon" aria-hidden="true"><use href="#icon-terminal" /></svg>
                 <h2 id="terminal-title">Terminal</h2>
               </div>
-              <button id="minimize-terminal" class="terminal-minimize" type="button" aria-label="Minimizar terminal" title="Minimizar terminal">
+              <button id="minimize-terminal" class="terminal-minimize" type="button" aria-label="Minimizar terminal" title="Minimizar terminal" aria-controls="terminal-panel" aria-expanded="true">
                 <span aria-hidden="true">—</span>
                  </button>
             </header>
 
+            <div class="terminal-body" id="terminal-body">
             <p class="demo-note" id="editor-help">Control más Enter o Ejecutar analiza y ejecuta el código. Leer solicita datos en la terminal: Enter envía; Escape o Detener cancela. Control más O abre un archivo .txt en UTF-8. Tab permite salir del editor.</p>
             <div class="terminal-output" id="terminal-output" role="status" aria-live="polite" aria-atomic="true">
               <div class="result-row result-row--welcome">
@@ -160,6 +161,7 @@ Fin</textarea>
               </div>
               <p id="terminal-input-help">Escribe el dato sin comillas. Enter envía; Escape o Detener cancela.</p>
             </form>
+            </div>
           </section>
         </section>
       </div>

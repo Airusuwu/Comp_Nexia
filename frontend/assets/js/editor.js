@@ -5,6 +5,10 @@
   const runButton = document.getElementById('run-program');
   const stopButton = document.getElementById('stop-program');
   const output = document.getElementById('terminal-output');
+  const terminal = document.getElementById('terminal-panel');
+  const terminalToggle = document.getElementById('minimize-terminal');
+  const mainStage = document.querySelector('.main-stage');
+  const workspace = document.querySelector('.workspace');
   const fileInput = document.getElementById('open-program');
   const saveButton = document.getElementById('save-program');
   const increaseButton = document.getElementById('increase-text');
@@ -20,6 +24,24 @@
   let revision = 0;
   let pending = null;
   const errorLines = new Set();
+
+  function revealTerminal() {
+    if (terminal.hidden) {
+      terminal.hidden = false;
+      mainStage.classList.remove('main-stage--terminal-hidden');
+      workspace.classList.remove('workspace--terminal-hidden');
+      terminalToggle.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  terminalToggle.addEventListener('click', () => {
+    if (!inputForm.hidden) return;
+    terminal.hidden = true;
+    mainStage.classList.add('main-stage--terminal-hidden');
+    workspace.classList.add('workspace--terminal-hidden');
+    terminalToggle.setAttribute('aria-expanded', 'false');
+    runButton.focus();
+  });
 
   function addMessage(message, error = false) {
   if (error) {
@@ -128,11 +150,15 @@
       inputLabel.textContent = `Leer ${input.name} (${input.type})`;
       inputField.value = '';
       inputForm.hidden = false;
+      terminalToggle.disabled = true;
+      terminalToggle.title = 'Completa o cancela la entrada antes de minimizar la terminal';
       function finish(value) {
         inputForm.removeEventListener('submit', submit);
         inputField.removeEventListener('keydown', keydown);
         signal.removeEventListener('abort', cancel);
         inputForm.hidden = true;
+        terminalToggle.disabled = false;
+        terminalToggle.title = 'Minimizar terminal';
         inputField.value = '';
         resolve(value);
       }
@@ -190,6 +216,7 @@
 
   async function sendCode() {
     if (pending) return;
+    revealTerminal();
     const code = editor.value;
     if (!code.trim()) {
       showMessage('El editor está vacío. Escribe código antes de enviarlo.', true);

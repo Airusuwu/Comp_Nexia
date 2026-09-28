@@ -135,6 +135,10 @@
   gap: var(--space-2);
 }
 
+.main-stage--terminal-hidden {
+  grid-template-rows: minmax(30rem, 1fr);
+}
+
 .editor,
 .terminal {
   min-width: 0;
@@ -268,6 +272,10 @@
 
 .terminal {
   position: relative;
+}
+
+.terminal[hidden] {
+  display: none;
 }
 
 .terminal-icon {
@@ -438,6 +446,11 @@
   outline-offset: 0.18rem;
 }
 
+.terminal-minimize:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 @media (max-width: 74.99rem) {
   .app-shell {
     min-height: auto;
@@ -449,6 +462,12 @@
       "editor"
       "terminal";
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workspace--terminal-hidden {
+    grid-template-areas:
+      "actions"
+      "editor";
   }
 
   .main-stage {
