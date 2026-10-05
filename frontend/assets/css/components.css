@@ -23,7 +23,7 @@
 .brand__icon {
   width: 5rem;
   height: 3.6rem;
-  flex: contain;
+  flex: 0 0 auto;
   stroke: none;
 }
 
@@ -164,6 +164,23 @@
   align-items: center;
   gap: 1rem;
 }
+.error-counter {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.9rem;
+  margin-left: 0.5rem;
+  background: var(--color-error);
+  color: var(--color-primary);
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.error-counter[hidden] {
+  display: none;
+}
 
 .section-heading h2 {
   font-size: 1.65rem;
@@ -248,7 +265,6 @@
   overflow: auto;
   background: transparent;
   color: var(--color-text);
-  caret-color: var(--color-text);
 }
 
 .code-input::selection {
@@ -256,7 +272,48 @@
   color: var(--color-accent);
 }
 
-.line-numbers .is-active,
+.code-area {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.line-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  background: rgba(29, 11, 61, 0.12);
+  pointer-events: none;
+  z-index: 0;
+  transition: transform 80ms ease;
+}
+
+.block-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.55em;
+  height: 0;
+  background: var(--color-primary);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.code-area .code-input {
+  position: relative;
+  z-index: 2;
+  caret-color: transparent;
+  background: transparent;
+}
+
+.line-numbers .is-active {
+  background: rgba(29, 11, 61, 0.12);
+  color: var(--color-text);
+}
+
 .line-numbers .is-error {
   background: var(--color-primary);
   color: var(--color-accent);
@@ -413,6 +470,11 @@
   color: var(--color-error);
 }
 
+.result-row--error .result-row__icon {
+  width: 2.2rem;
+  height: 2.2rem;
+}
+
 .terminal-minimize {
   width: 2.2rem;
   height: 2.2rem;
@@ -421,14 +483,16 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  border-radius: 50%;
+  border-radius: 0.6rem;
   background: var(--color-primary);
   color: var(--color-accent);
-  font-size: 1.4rem;
-  font-weight: 900;
-  line-height: 1;
   cursor: pointer;
   transition: filter 160ms ease, transform 160ms ease;
+}
+
+.terminal-minimize__icon {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 .terminal-minimize:hover {

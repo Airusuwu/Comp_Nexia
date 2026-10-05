@@ -13,6 +13,10 @@
   const saveButton = document.getElementById('save-program');
   const increaseButton = document.getElementById('increase-text');
   let readingPercent = 100;
+  const blockCursor = document.querySelector('.block-cursor');
+  const lineHighlight = document.querySelector('.line-highlight');
+  let charWidth = 0;
+  const errorCounter = document.getElementById('error-counter');
   const inputForm = document.getElementById('terminal-input');
   const inputField = document.getElementById('terminal-value');
   const inputLabel = document.getElementById('terminal-input-label');
@@ -75,11 +79,57 @@
     output.replaceChildren();
     addMessage(message, error);
   }
+  function updateErrorCounter(count) {
+  if (count > 0) {
+    errorCounter.textContent = count === 1 ? '1 error' : `${count} errores`;
+    errorCounter.hidden = false;
+   } else {
+    errorCounter.hidden = true;
+   }
+  }
+
+  function measureCharWidth() {
+  const test = document.createElement('span');
+  test.style.font = getComputedStyle(editor).font;
+  test.style.position = 'absolute';
+  test.style.visibility = 'hidden';
+  test.style.whiteSpace = 'pre';
+  test.textContent = 'X'.repeat(50);
+  document.body.appendChild(test);
+  const width = test.getBoundingClientRect().width / 50;
+  document.body.removeChild(test);
+  return width;
+  }
+
+  function updateOverlays() {
+  if (!charWidth) charWidth = measureCharWidth();
+
+  const textBefore = editor.value.slice(0, editor.selectionStart);
+  const lines = textBefore.split('\n');
+  const lineIndex = lines.length - 1;
+  const column = lines[lineIndex].length;
+
+  const style = getComputedStyle(editor);
+  const lineHeight = parseFloat(style.lineHeight);
+  const paddingTop = parseFloat(style.paddingTop);
+  const paddingLeft = parseFloat(style.paddingLeft);
+
+  const x = paddingLeft + column * charWidth - editor.scrollLeft;
+  const y = paddingTop + lineIndex * lineHeight - editor.scrollTop;
+
+  blockCursor.style.transform = `translate(${x}px, ${y}px)`;
+  blockCursor.style.width = `${charWidth}px`;
+  blockCursor.style.height = `${lineHeight}px`;
+
+  lineHighlight.style.transform = `translateY(${y}px)`;
+  lineHighlight.style.height = `${lineHeight}px`;
+  }
 
   function highlightPosition() {
-    const activeLine = editor.value.slice(0, editor.selectionStart).split('\n').length;
-    numbers.querySelector('.is-active')?.classList.remove('is-active');
-    numbers.children[activeLine - 1]?.classList.add('is-active');
+  const activeLine = editor.value.slice(0, editor.selectionStart).split('\n').length;
+  numbers.querySelector('.is-active')?.classList.remove('is-active');
+  numbers.children[activeLine - 1]?.classList.add('is-active');
+  updateOverlays();
   }
 
   function updateNumbers() {
@@ -98,6 +148,7 @@
     });
     gutter.scrollTop = editor.scrollTop;
     highlightPosition();
+    updateOverlays();
   }
 
   function setBusy(busy) {
@@ -191,6 +242,7 @@
     editor.removeAttribute('aria-invalid');
     editor.removeAttribute('aria-errormessage');
     output.replaceChildren();
+      let errorCount = 0;
     for (const diagnostic of data.diagnostics) {
       const location = diagnostic.line === null ? ''
         : `, línea ${diagnostic.line}${diagnostic.column === null ? '' : `, columna ${diagnostic.column}`}`;
@@ -199,8 +251,10 @@
         editor.setAttribute('aria-invalid', 'true');
         editor.setAttribute('aria-errormessage', 'terminal-output');
         if (diagnostic.line !== null) errorLines.add(diagnostic.line);
+        errorCount += 1;
       }
     }
+    updateErrorCounter(errorCount);
     for (let index = 0; index <= data.results.length; index += 1) {
       for (const entry of entries) {
         if (entry.after === index) consoleLine(`> ${entry.value}`);
@@ -308,13 +362,17 @@
       ? 'Tamaño actual: 200 %. Pulsa para volver al 100 %'
       : `Tamaño actual: ${readingPercent} %. Aumentar en 25 %`;
     increaseButton.setAttribute('aria-label', increaseButton.title);
+    charWidth = 0;
     updateNumbers();
   });
   saveButton.setAttribute('aria-disabled', 'false');
   increaseButton.setAttribute('aria-disabled', 'false');
 
   editor.addEventListener('input', codeChanged);
-  editor.addEventListener('scroll', () => { gutter.scrollTop = editor.scrollTop; });
+  editor.addEventListener('scroll', () => {
+  gutter.scrollTop = editor.scrollTop;
+  updateOverlays();
+  });  
   editor.addEventListener('click', highlightPosition);
   editor.addEventListener('keyup', highlightPosition);
   editor.addEventListener('select', highlightPosition);

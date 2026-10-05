@@ -47,9 +47,13 @@
           <circle class="icon-fill" cx="24" cy="24" r="22" />
           <path class="icon-cut" d="m13 24 8 8 15-17" />
         </symbol>
-        <symbol id="icon-error" viewBox="0 0 48 48">
+       <symbol id="icon-error" viewBox="0 0 48 48">
           <circle class="icon-fill" cx="24" cy="24" r="22" />
           <path class="icon-cut" d="m16 16 16 16M32 16 16 32" />
+        </symbol>
+        <symbol id="icon-chevron-down" viewBox="0 0 24 24">
+          <path d="M 4 8 L 12 15 L 20 8" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 4 14 L 12 21 L 20 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
         </symbol>
       </defs>
     </svg>
@@ -116,8 +120,11 @@
             </header>
 
             <div class="code-window">
-              <div class="line-gutter" aria-hidden="true"><ol class="line-numbers" id="line-numbers"></ol></div>
-              <textarea id="code-editor" class="code-input" aria-labelledby="editor-title" aria-describedby="editor-help" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off">// Nuevas líneas añadidas para demostrar espacio
+             <div class="line-gutter" aria-hidden="true"><ol class="line-numbers" id="line-numbers"></ol></div>
+              <div class="code-area">
+               <div class="line-highlight" aria-hidden="true"></div>
+                <div class="block-cursor" aria-hidden="true"></div> 
+                <textarea id="code-editor" class="code-input" aria-labelledby="editor-title" aria-describedby="editor-help" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off">// Nuevas líneas añadidas para demostrar espacio
 Inicio
 Definir a, b, resultado Como Entero
 Escribir y
@@ -132,6 +139,7 @@ FinSi
 Fin</textarea>
             </div>
             <input id="open-program" type="file" accept=".txt,text/plain" hidden>
+             </div>
           </section>
 
           <section class="terminal clay-panel" id="terminal-panel" aria-labelledby="terminal-title" hidden>
@@ -139,9 +147,10 @@ Fin</textarea>
               <div class="section-heading__title">
                 <svg class="section-heading__icon terminal-icon" aria-hidden="true"><use href="#icon-terminal" /></svg>
                 <h2 id="terminal-title">Terminal</h2>
+                    <span id="error-counter" class="error-counter" hidden></span>
               </div>
               <button id="minimize-terminal" class="terminal-minimize" type="button" aria-label="Minimizar terminal" title="Minimizar terminal" aria-controls="terminal-panel" aria-expanded="true">
-                <span aria-hidden="true">—</span>
+                <svg class="terminal-minimize__icon" aria-hidden="true"><use href="#icon-chevron-down" /></svg>
                  </button>
             </header>
 
