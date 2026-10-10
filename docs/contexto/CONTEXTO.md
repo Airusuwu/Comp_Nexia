@@ -8,6 +8,18 @@
 - Los README de frontend y backend conservan su función de aportar contexto
   técnico; no modificarlos para aplicar esta regla al README de la raíz.
 
+## Registro de errores — 2026-10-09
+
+- Documentar los errores encontrados y sus correcciones en un único registro:
+  `docs/errores/Errores.md`.
+- Añadir cada hallazgo a ese archivo, indicando la fecha y la información
+  pertinente (problema, causa, corrección y verificación cuando aplique). No
+  crear un archivo separado por cada error.
+- Este documento es solo un registro de errores; no convertirlo en un README ni
+  en una guía de uso. Mantener el nombre `Errores.md`.
+- Al continuar el trabajo en otro chat, consultar y ampliar el registro existente
+  en vez de iniciar otra colección de archivos.
+
 ## Estado vigente para continuar en un chat nuevo — 2026-09-25
 
 **Leer esta sección primero.** El resto del archivo conserva la historia de cada

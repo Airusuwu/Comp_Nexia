@@ -16,6 +16,7 @@
   const blockCursor = document.querySelector('.block-cursor');
   const lineHighlight = document.querySelector('.line-highlight');
   let charWidth = 0;
+  let overlayMetricsFrame = 0;
   const errorCounter = document.getElementById('error-counter');
   const inputForm = document.getElementById('terminal-input');
   const inputField = document.getElementById('terminal-value');
@@ -80,12 +81,13 @@
     addMessage(message, error);
   }
   function updateErrorCounter(count) {
-  if (count > 0) {
-    errorCounter.textContent = count === 1 ? '1 error' : `${count} errores`;
-    errorCounter.hidden = false;
-   } else {
-    errorCounter.hidden = true;
-   }
+    if (count > 0) {
+      errorCounter.textContent = count === 1 ? '1 error' : `${count} errores`;
+      errorCounter.hidden = false;
+    } else {
+      errorCounter.textContent = '';
+      errorCounter.hidden = true;
+    }
   }
 
   function measureCharWidth() {
@@ -125,6 +127,21 @@
   lineHighlight.style.height = `${lineHeight}px`;
   }
 
+  function refreshOverlayMetrics() {
+    if (overlayMetricsFrame) cancelAnimationFrame(overlayMetricsFrame);
+    overlayMetricsFrame = requestAnimationFrame(() => {
+      overlayMetricsFrame = 0;
+      charWidth = 0;
+      updateOverlays();
+    });
+  }
+
+  window.addEventListener('resize', refreshOverlayMetrics, { passive: true });
+  if (document.fonts) {
+    document.fonts.ready.then(refreshOverlayMetrics);
+    document.fonts.addEventListener?.('loadingdone', refreshOverlayMetrics);
+  }
+
   function highlightPosition() {
   const activeLine = editor.value.slice(0, editor.selectionStart).split('\n').length;
   numbers.querySelector('.is-active')?.classList.remove('is-active');
@@ -148,7 +165,6 @@
     });
     gutter.scrollTop = editor.scrollTop;
     highlightPosition();
-    updateOverlays();
   }
 
   function setBusy(busy) {
@@ -164,6 +180,7 @@
     pending = null;
     setBusy(false);
     errorLines.clear();
+    updateErrorCounter(0);
     editor.removeAttribute('aria-invalid');
     editor.removeAttribute('aria-errormessage');
     updateNumbers();
