@@ -8,6 +8,38 @@
 - Los README de frontend y backend conservan su función de aportar contexto
   técnico; no modificarlos para aplicar esta regla al README de la raíz.
 
+## Registro de errores — 2026-10-09
+
+- Documentar los errores encontrados y sus correcciones en un único registro:
+  `docs/errores/Errores.md`.
+- Añadir cada hallazgo a ese archivo, indicando la fecha y la información
+  pertinente (problema, causa, corrección y verificación cuando aplique). No
+  crear un archivo separado por cada error.
+- Este documento es solo un registro de errores; no convertirlo en un README ni
+  en una guía de uso. Mantener el nombre `Errores.md`.
+- Al continuar el trabajo en otro chat, consultar y ampliar el registro existente
+  en vez de iniciar otra colección de archivos.
+
+## Sprint 1 — alto contraste y preferencias — 2026-10-09
+
+- Se implementan en `front` los puntos 8 y 9 de Ideas mejoras (Sprint 1), con
+  preferencias locales del navegador.
+- El control del encabezado alterna el tema monocromático negro y blanco.
+- `localStorage` recuerda el tema, el tamaño de texto (100–200 %, en pasos de
+  25 %) y si la terminal está minimizada. Una terminal minimizada sigue oculta
+  tras recargar; ejecutar la vuelve a mostrar y guarda ese estado.
+- El almacenamiento se limita al mismo navegador/perfil. Sincronizar preferencias
+  entre cuentas o dispositivos requeriría persistencia del lado del servidor.
+- La lógica de preferencias está integrada en el `editor.js` que ya sirve el
+  backend; no se importa un archivo JavaScript adicional ni se requiere cambiar
+  la lista estática de `back`.
+- Se añadieron cinco pruebas con `node:test` en `frontend/tests/` para valores
+  predeterminados, preferencias inválidas, almacenamiento no disponible y 12
+  restauraciones consecutivas de los estados visible y minimizado; pasan en Node
+  24.11.1. `npm.cmd --prefix backend run check` también pasó sin cambios en
+  archivos del backend. La comprobación visual en navegador queda pendiente; los
+  cambios aún no tienen commit.
+
 ## Estado vigente para continuar en un chat nuevo — 2026-09-25
 
 **Leer esta sección primero.** El resto del archivo conserva la historia de cada
@@ -38,9 +70,14 @@ la rama actual y las referencias remotas porque pueden haber cambiado.
 - Ejecutar o `Ctrl+Enter` analiza y ejecuta mediante el backend local. Detener
   cancela una ejecución en curso. `Leer` solicita datos dentro de la terminal,
   con Enter/Enviar y Escape/Detener. El código se conserva ante errores.
-- Guardar descarga `programa-nexia.txt`; `Ctrl+O` abre un `.txt` UTF-8 de hasta
-  64 KiB con confirmación antes de reemplazar código. Aumentar texto modifica
-  código y resultados en pasos de 25 % de 100 a 200 %, y luego vuelve a 100 %.
+- **Abrir archivo** carga un `.txt` UTF-8 de hasta 64 KiB y confirma antes de
+  reemplazar el código. Guardar descarga `programa-nexia.txt`. Reducir texto y
+  Aumentar texto ajustan código y resultados en pasos de 25 %, entre 100 % y 200 %.
+  Al cambiar el zoom, un aviso central muestra el porcentaje y el límite durante
+  3 segundos.
+- **Escuchar resultado** usa la voz disponible en el navegador para leer los
+  resultados y diagnósticos de la última ejecución. El mismo botón detiene la
+  lectura; requiere compatibilidad con Web Speech API y no necesita cambios en `back`.
 - La corrección del PR #4 mantiene fija la altura del editor cuando crecen las
   salidas; la terminal aparece inmediatamente debajo del editor.
 - Backend Node.js 24 sin dependencias externas: lexer, parser con AST, análisis
@@ -85,8 +122,8 @@ la rama actual y las referencias remotas porque pueden haber cambiado.
   por Git. Las reglas aplicadas están documentadas en `docs/tecnica/`.
 - Para Sprint 1 aún no hay alcance aprobado. Acordar primero qué funciones
   nuevas implementar y sus criterios de aceptación. `Para`, `Repetir`, funciones,
-  inserción desde los botones de estructuras y Escuchar resultado siguen sin
-  implementarse. No presentar ejemplos conceptuales de Para/Repetir como sintaxis
+  inserción desde los botones de estructuras siguen sin implementarse. No
+  presentar ejemplos conceptuales de Para/Repetir como sintaxis
   ejecutable. Revisar gramática y reglas antes de ampliar el lenguaje.
 - Flujo de trabajo acordado: conservar cambios locales, desarrollar en la rama
   correspondiente, verificar en PC, registrar el avance y crear PR hacia

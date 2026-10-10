@@ -13,11 +13,15 @@ realiza análisis léxico, sintáctico y semántico y ejecuta el programa si es 
 La terminal muestra las salidas de Escribir, el estado real
 de la solicitud y los errores, sin borrar el contenido del editor.
 
-Con el foco en el editor, `Ctrl+O` permite abrir un archivo `.txt` UTF-8 de
-hasta 64 KiB, con confirmación antes de reemplazar contenido. Guardar descarga
-el código como `programa-nexia.txt`. Aumentar texto amplía código y resultados
-en pasos de 25 % hasta 200 %; el siguiente clic vuelve al 100 %.
-Escuchar sigue pendiente; no se añadieron botones.
+El botón **Abrir archivo** permite seleccionar un `.txt` UTF-8 de hasta 64 KiB,
+con confirmación antes de reemplazar contenido. Guardar descarga
+el código como `programa-nexia.txt`. Los botones Reducir texto y Aumentar texto ajustan
+el tamaño de código y resultados en pasos de 25 %, entre 100 % y 200 %. El porcentaje
+Al cambiar el tamaño, aparece en el centro un mensaje con el porcentaje y los
+límites durante 3 segundos.
+Escuchar resultado lee en voz alta los resultados y diagnósticos de la última
+ejecución; vuelve a pulsar el botón para detener la lectura. Requiere que el
+navegador admita voz.
 Leer solicita datos dentro de la terminal; Enter o Enviar confirma. Escape o Detener
 interrumpen la ejecución.
 
