@@ -19,7 +19,9 @@ el código como `programa-nexia.txt`. Los botones Reducir texto y Aumentar texto
 el tamaño de código y resultados en pasos de 25 %, entre 100 % y 200 %. El porcentaje
 Al cambiar el tamaño, aparece en el centro un mensaje con el porcentaje y los
 límites durante 3 segundos.
-Escuchar sigue pendiente; no se añadieron botones.
+Escuchar resultado lee en voz alta los resultados y diagnósticos de la última
+ejecución; vuelve a pulsar el botón para detener la lectura. Requiere que el
+navegador admita voz.
 Leer solicita datos dentro de la terminal; Enter o Enviar confirma. Escape o Detener
 interrumpen la ejecución.
 

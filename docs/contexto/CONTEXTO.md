@@ -75,6 +75,9 @@ la rama actual y las referencias remotas porque pueden haber cambiado.
   Aumentar texto ajustan código y resultados en pasos de 25 %, entre 100 % y 200 %.
   Al cambiar el zoom, un aviso central muestra el porcentaje y el límite durante
   3 segundos.
+- **Escuchar resultado** usa la voz disponible en el navegador para leer los
+  resultados y diagnósticos de la última ejecución. El mismo botón detiene la
+  lectura; requiere compatibilidad con Web Speech API y no necesita cambios en `back`.
 - La corrección del PR #4 mantiene fija la altura del editor cuando crecen las
   salidas; la terminal aparece inmediatamente debajo del editor.
 - Backend Node.js 24 sin dependencias externas: lexer, parser con AST, análisis
@@ -119,8 +122,8 @@ la rama actual y las referencias remotas porque pueden haber cambiado.
   por Git. Las reglas aplicadas están documentadas en `docs/tecnica/`.
 - Para Sprint 1 aún no hay alcance aprobado. Acordar primero qué funciones
   nuevas implementar y sus criterios de aceptación. `Para`, `Repetir`, funciones,
-  inserción desde los botones de estructuras y Escuchar resultado siguen sin
-  implementarse. No presentar ejemplos conceptuales de Para/Repetir como sintaxis
+  inserción desde los botones de estructuras siguen sin implementarse. No
+  presentar ejemplos conceptuales de Para/Repetir como sintaxis
   ejecutable. Revisar gramática y reglas antes de ampliar el lenguaje.
 - Flujo de trabajo acordado: conservar cambios locales, desarrollar en la rama
   correspondiente, verificar en PC, registrar el avance y crear PR hacia

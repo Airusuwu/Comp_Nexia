@@ -5,6 +5,14 @@
   const runButton = document.getElementById('run-program');
   const stopButton = document.getElementById('stop-program');
   const output = document.getElementById('terminal-output');
+  const listenResultButton = document.getElementById('listen-result');
+  const listenResultLabel = document.getElementById('listen-result-label');
+  const speechSynthesis = window.speechSynthesis;
+  const SpeechUtterance = window.SpeechSynthesisUtterance;
+  const speechSupported = typeof speechSynthesis?.speak === 'function'
+    && typeof SpeechUtterance === 'function';
+  let latestResultText = '';
+  let activeUtterance = null;
   const terminal = document.getElementById('terminal-panel');
   const terminalToggle = document.getElementById('minimize-terminal');
   const mainStage = document.querySelector('.main-stage');
@@ -65,6 +73,65 @@
   let revision = 0;
   let pending = null;
   const errorLines = new Set();
+
+  function updateListenResultButton(active) {
+    const label = active ? 'Detener lectura' : 'Escuchar resultado';
+    listenResultLabel.textContent = label;
+    listenResultButton.setAttribute('aria-label', active ? 'Detener lectura del resultado' : label);
+    listenResultButton.title = active ? 'Detener lectura del resultado' : 'Escuchar resultado';
+  }
+
+  function stopResultSpeech() {
+    if (!activeUtterance) return;
+    activeUtterance = null;
+    try {
+      speechSynthesis.cancel();
+    } finally {
+      updateListenResultButton(false);
+    }
+  }
+
+  listenResultButton.setAttribute('aria-disabled', String(!speechSupported));
+  listenResultButton.disabled = !speechSupported;
+  listenResultButton.title = speechSupported
+    ? 'Escuchar resultado'
+    : 'La lectura por voz no está disponible en este navegador';
+  listenResultButton.addEventListener('click', () => {
+    if (!speechSupported) return;
+    if (activeUtterance) {
+      stopResultSpeech();
+      return;
+    }
+
+    const utterance = new SpeechUtterance(latestResultText || 'Aún no hay resultados para escuchar.');
+    utterance.lang = document.documentElement.lang || 'es-MX';
+    utterance.rate = 0.9;
+    let spanishVoice;
+    try {
+      spanishVoice = speechSynthesis.getVoices?.().find((voice) => /^es(?:-|_)/i.test(voice.lang));
+    } catch {
+      // Si no se puede consultar la lista, el navegador usará su voz predeterminada.
+    }
+    if (spanishVoice) utterance.voice = spanishVoice;
+    const finish = () => {
+      if (activeUtterance !== utterance) return;
+      activeUtterance = null;
+      updateListenResultButton(false);
+    };
+    utterance.onend = finish;
+    utterance.onerror = finish;
+    activeUtterance = utterance;
+    updateListenResultButton(true);
+    try {
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    } catch {
+      activeUtterance = null;
+      updateListenResultButton(false);
+      listenResultButton.title = 'No se pudo iniciar la lectura por voz';
+    }
+  });
+
   const preferenceElements = {
     root: document.documentElement,
     contrastToggle,
@@ -276,6 +343,8 @@
     revision += 1;
     pending?.abort();
     pending = null;
+    latestResultText = '';
+    stopResultSpeech();
     setBusy(false);
     errorLines.clear();
     updateErrorCounter(0);
@@ -353,6 +422,8 @@
   }
 
   function displayResponse(data, entries) {
+    stopResultSpeech();
+    const spokenParts = [];
     errorLines.clear();
     editor.removeAttribute('aria-invalid');
     editor.removeAttribute('aria-errormessage');
@@ -361,7 +432,9 @@
     for (const diagnostic of data.diagnostics) {
       const location = diagnostic.line === null ? ''
         : `, línea ${diagnostic.line}${diagnostic.column === null ? '' : `, columna ${diagnostic.column}`}`;
-      addMessage(`${stages[diagnostic.stage]}${location}: ${diagnostic.message}`, diagnostic.severity === 'error');
+      const diagnosticText = `${stages[diagnostic.stage]}${location}: ${diagnostic.message}`;
+      addMessage(diagnosticText, diagnostic.severity === 'error');
+      spokenParts.push(diagnosticText);
       if (diagnostic.severity === 'error' && ['lexer', 'parser', 'semantic', 'runtime'].includes(diagnostic.stage)) {
         editor.setAttribute('aria-invalid', 'true');
         editor.setAttribute('aria-errormessage', 'terminal-output');
@@ -372,19 +445,33 @@
     updateErrorCounter(errorCount);
     for (let index = 0; index <= data.results.length; index += 1) {
       for (const entry of entries) {
-        if (entry.after === index) consoleLine(`> ${entry.value}`);
+        if (entry.after === index) {
+          consoleLine(`> ${entry.value}`);
+          spokenParts.push(`Dato ingresado: ${entry.value}`);
+        }
       }
-      if (index < data.results.length) consoleLine(data.results[index]);
+      if (index < data.results.length) {
+        consoleLine(data.results[index]);
+        spokenParts.push(data.results[index]);
+      }
     }
-    if (data.status === 'completed') addMessage('Ejecución finalizada.');
+    if (data.status === 'completed') {
+      addMessage('Ejecución finalizada.');
+      spokenParts.push('Ejecución finalizada.');
+    }
     if (!output.children.length && data.status !== 'waiting_input') {
-      showMessage(data.executed ? 'Ejecución finalizada sin salidas.' : 'El programa no se ha ejecutado.');
+      const summary = data.executed ? 'Ejecución finalizada sin salidas.' : 'El programa no se ha ejecutado.';
+      showMessage(summary);
+      spokenParts.push(summary);
     }
+    latestResultText = spokenParts.join('. ');
     updateNumbers();
   }
 
   async function sendCode() {
     if (pending) return;
+    latestResultText = '';
+    stopResultSpeech();
     revealTerminal();
     const code = editor.value;
     if (!code.trim()) {
