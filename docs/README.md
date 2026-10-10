@@ -15,6 +15,10 @@ terminal se interpretan desde la raíz del repositorio, salvo indicación contra
 | `sprints/` | Entregables, resultados y pendientes de cada sprint. |
 | `referencias/` | Imagen de referencia y PDF A5 local, excluido de Git. |
 
+## Registro de errores
+
+- [Registro de errores del front](errores/Errores.md).
+
 ## Proyecto
 
 - [Plan inicial de la maqueta](proyecto/plan.md): documento histórico, no el alcance funcional actual.

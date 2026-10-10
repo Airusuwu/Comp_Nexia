@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&family=Hack:wght@400;700&display=swap');
 :root {
   color-scheme: light;
   --color-bg: #1e0d42;
@@ -12,8 +13,8 @@
   --color-error: #f75947;
   --color-focus: #ffffff;
 
-  --font-ui: "Arial Rounded MT Bold", "Trebuchet MS", Arial, sans-serif;
-  --font-code: Consolas, "Cascadia Mono", "Courier New", monospace;
+  --font-ui: "Lexend", "Trebuchet MS", Arial, sans-serif;
+  --font-code: "Hack", Consolas, "Courier New", monospace;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -38,6 +39,25 @@
     0 0.28rem 0.45rem rgb(46 10 72 / 25%);
 }
 
+html[data-contrast="high"] {
+  color-scheme: dark;
+  --color-bg: #000000;
+  --color-surface: #000000;
+  --color-surface-deep: #000000;
+  --color-primary: #ffffff;
+  --color-primary-soft: #ffffff;
+  --color-primary-deep: #000000;
+  --color-text: #ffffff;
+  --color-text-inverse: #000000;
+  --color-accent: #000000;
+  --color-error: #ffffff;
+  --color-focus: #ffffff;
+  --border-thin: 0.125rem solid #ffffff;
+  --border-strong: 0.25rem solid #ffffff;
+  --shadow-panel: none;
+  --shadow-control: none;
+}
+
 *,
 *::before,
 *::after {
@@ -59,6 +79,10 @@ body {
   font-family: var(--font-ui);
   font-size: 16px;
   line-height: 1.4;
+}
+
+html[data-contrast="high"] body {
+  background: #000000;
 }
 
 button,

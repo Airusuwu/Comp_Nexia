@@ -138,6 +138,8 @@ con salida 9 y Cancelar/Escape sin pérdida del código. No se realizó auditor�
 con lector de pantalla, pruebas móviles ni prueba cronometrada del botón
 Detener desde el navegador (sí se comprobó la cancelación del motor).
 
-Guardar/Aumentar texto, inserción de estructuras y voz siguen sin implementar.
+Guardar/Aumentar texto e inserción de estructuras siguen sin implementar. La
+lectura por voz del resultado se implementa en el frontend mediante la API del
+navegador.
 La muestra antigua del editor conserva ← y Escribir y: no es un programa válido
 de prueba; reemplazarla por el ejemplo. No se altera código del usuario.
