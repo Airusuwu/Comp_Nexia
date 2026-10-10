@@ -12,7 +12,39 @@
   const fileInput = document.getElementById('open-program');
   const saveButton = document.getElementById('save-program');
   const increaseButton = document.getElementById('increase-text');
-  let readingPercent = 100;
+  const contrastToggle = document.getElementById('contrast-toggle');
+  const preferenceKey = 'nexia.preferences.v1';
+  const validReadingPercents = [100, 125, 150, 175, 200];
+  let preferenceStorage = null;
+  try {
+    preferenceStorage = window.localStorage;
+  } catch {
+    // La aplicación puede iniciar con valores predeterminados si el almacenamiento no está disponible.
+  }
+  function loadPreferences(storage) {
+    try {
+      const value = JSON.parse(storage?.getItem(preferenceKey) ?? '{}');
+      const stored = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+      return {
+        highContrast: stored.highContrast === true,
+        readingPercent: validReadingPercents.includes(stored.readingPercent) ? stored.readingPercent : 100,
+        terminalMinimized: typeof stored.terminalMinimized === 'boolean' ? stored.terminalMinimized : true
+      };
+    } catch {
+      return { highContrast: false, readingPercent: 100, terminalMinimized: true };
+    }
+  }
+  function savePreferences(storage, current, update) {
+    const next = { ...current, ...update };
+    try {
+      storage?.setItem(preferenceKey, JSON.stringify(next));
+    } catch {
+      // Las preferencias siguen vigentes en memoria aunque no puedan persistirse.
+    }
+    return next;
+  }
+  let preferences = loadPreferences(preferenceStorage);
+  let readingPercent = preferences.readingPercent;
   const blockCursor = document.querySelector('.block-cursor');
   const lineHighlight = document.querySelector('.line-highlight');
   let charWidth = 0;
@@ -29,23 +61,59 @@
   let revision = 0;
   let pending = null;
   const errorLines = new Set();
+  const preferenceElements = {
+    root: document.documentElement,
+    contrastToggle,
+    terminal,
+    mainStage,
+    workspace,
+    terminalToggle
+  };
+
+  function persistPreferences(update) {
+    preferences = savePreferences(preferenceStorage, preferences, update);
+  }
+
+  function applyContrast(root, toggle, enabled) {
+    if (enabled) root.setAttribute('data-contrast', 'high');
+    else root.removeAttribute('data-contrast');
+    toggle.setAttribute('aria-pressed', String(enabled));
+    toggle.textContent = `Alto contraste: ${enabled ? 'activado' : 'desactivado'}`;
+  }
+
+  function setTerminalVisibility(elements, visible) {
+    elements.terminal.hidden = !visible;
+    elements.mainStage.classList.toggle('main-stage--terminal-hidden', !visible);
+    elements.workspace.classList.toggle('workspace--terminal-hidden', !visible);
+    elements.terminalToggle.setAttribute('aria-expanded', String(visible));
+  }
+
+  function applyPreferences(saved, elements) {
+    applyContrast(elements.root, elements.contrastToggle, saved.highContrast);
+    elements.root.style.setProperty('--reading-scale', saved.readingPercent / 100);
+    setTerminalVisibility(elements, !saved.terminalMinimized);
+  }
+
+  applyPreferences(preferences, preferenceElements);
 
   function revealTerminal() {
     if (terminal.hidden) {
-      terminal.hidden = false;
-      mainStage.classList.remove('main-stage--terminal-hidden');
-      workspace.classList.remove('workspace--terminal-hidden');
-      terminalToggle.setAttribute('aria-expanded', 'true');
+      setTerminalVisibility(preferenceElements, true);
+      persistPreferences({ terminalMinimized: false });
     }
   }
 
   terminalToggle.addEventListener('click', () => {
     if (!inputForm.hidden) return;
-    terminal.hidden = true;
-    mainStage.classList.add('main-stage--terminal-hidden');
-    workspace.classList.add('workspace--terminal-hidden');
-    terminalToggle.setAttribute('aria-expanded', 'false');
+    setTerminalVisibility(preferenceElements, false);
+    persistPreferences({ terminalMinimized: true });
     runButton.focus();
+  });
+
+  contrastToggle.addEventListener('click', () => {
+    const enabled = contrastToggle.getAttribute('aria-pressed') !== 'true';
+    applyContrast(document.documentElement, contrastToggle, enabled);
+    persistPreferences({ highContrast: enabled });
   });
 
   function addMessage(message, error = false) {
@@ -375,6 +443,7 @@
   increaseButton.addEventListener('click', () => {
     readingPercent = readingPercent === 200 ? 100 : readingPercent + 25;
     document.documentElement.style.setProperty('--reading-scale', readingPercent / 100);
+    persistPreferences({ readingPercent });
     increaseButton.title = readingPercent === 200
       ? 'Tamaño actual: 200 %. Pulsa para volver al 100 %'
       : `Tamaño actual: ${readingPercent} %. Aumentar en 25 %`;

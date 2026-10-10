@@ -20,6 +20,26 @@
 - Al continuar el trabajo en otro chat, consultar y ampliar el registro existente
   en vez de iniciar otra colección de archivos.
 
+## Sprint 1 — alto contraste y preferencias — 2026-10-09
+
+- Se implementan en `front` los puntos 8 y 9 de Ideas mejoras (Sprint 1), con
+  preferencias locales del navegador.
+- El control del encabezado alterna el tema monocromático negro y blanco.
+- `localStorage` recuerda el tema, el tamaño de texto (100–200 %, en pasos de
+  25 %) y si la terminal está minimizada. Una terminal minimizada sigue oculta
+  tras recargar; ejecutar la vuelve a mostrar y guarda ese estado.
+- El almacenamiento se limita al mismo navegador/perfil. Sincronizar preferencias
+  entre cuentas o dispositivos requeriría persistencia del lado del servidor.
+- La lógica de preferencias está integrada en el `editor.js` que ya sirve el
+  backend; no se importa un archivo JavaScript adicional ni se requiere cambiar
+  la lista estática de `back`.
+- Se añadieron cinco pruebas con `node:test` en `frontend/tests/` para valores
+  predeterminados, preferencias inválidas, almacenamiento no disponible y 12
+  restauraciones consecutivas de los estados visible y minimizado; pasan en Node
+  24.11.1. `npm.cmd --prefix backend run check` también pasó sin cambios en
+  archivos del backend. La comprobación visual en navegador queda pendiente; los
+  cambios aún no tienen commit.
+
 ## Estado vigente para continuar en un chat nuevo — 2026-09-25
 
 **Leer esta sección primero.** El resto del archivo conserva la historia de cada

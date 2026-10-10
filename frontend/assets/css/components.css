@@ -10,7 +10,7 @@
   display: flex;
   min-height: 4.45rem;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   padding: 0.55rem 1.15rem;
 }
 
@@ -44,6 +44,27 @@
 .brand__tagline {
   font-size: clamp(1rem, 1.4vw, 1.35rem);
   font-weight: 700;
+}
+
+.contrast-toggle {
+  flex: 0 0 auto;
+  padding: 0.7rem 0.95rem;
+  border: var(--border-thin);
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-accent);
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.contrast-toggle:hover {
+  filter: brightness(1.12);
+}
+
+.contrast-toggle:focus-visible {
+  outline: 0.2rem solid var(--color-focus);
+  outline-offset: 0.18rem;
 }
 
 .workspace {
@@ -515,6 +536,56 @@
   opacity: 0.65;
 }
 
+html[data-contrast="high"] .clay-panel {
+  background: #000000;
+  box-shadow: none;
+}
+
+html[data-contrast="high"] .brand__icon path,
+html[data-contrast="high"] .brand__icon rect,
+html[data-contrast="high"] .brand__icon ellipse {
+  fill: #ffffff !important;
+}
+
+html[data-contrast="high"] .action-card,
+html[data-contrast="high"] .contrast-toggle,
+html[data-contrast="high"] .terminal-minimize,
+html[data-contrast="high"] .terminal-input button {
+  border: 0.125rem solid #ffffff;
+  background: #000000;
+  box-shadow: none;
+  color: #ffffff;
+}
+
+html[data-contrast="high"] .error-counter {
+  border: 0.125rem solid #ffffff;
+  background: #ffffff;
+  color: #000000;
+}
+
+html[data-contrast="high"] .line-gutter {
+  border-color: #ffffff;
+}
+
+html[data-contrast="high"] .line-highlight {
+  border-block: 0.08rem solid #ffffff;
+  background: transparent;
+}
+
+html[data-contrast="high"] .line-numbers .is-active,
+html[data-contrast="high"] .line-numbers .is-error {
+  background: #ffffff;
+  color: #000000;
+}
+
+html[data-contrast="high"] .result-row--success,
+html[data-contrast="high"] .result-row--error {
+  border-color: #ffffff;
+  background: #000000;
+  box-shadow: none;
+  color: #ffffff;
+}
+
 @media (max-width: 74.99rem) {
   .app-shell {
     min-height: auto;
@@ -577,13 +648,21 @@
 
   .topbar {
     min-height: auto;
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: var(--space-3);
     padding: 0.75rem 0.9rem;
   }
 
+  .contrast-toggle {
+    margin-left: 0;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.85rem;
+  }
+
   .brand {
     min-width: 0;
+    flex: 1 1 100%;
     flex-wrap: wrap;
     gap: 0.45rem 0.75rem;
   }
