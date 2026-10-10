@@ -35,6 +35,8 @@ class FakeElement {
   scrollTop = 0;
   scrollLeft = 0;
   selectionStart = 0;
+  files = [];
+  clickCount = 0;
   append(...items) { this.children.push(...items); }
   appendChild(item) { this.append(item); return item; }
   removeChild(item) { this.children = this.children.filter((child) => child !== item); }
@@ -51,6 +53,8 @@ class FakeElement {
   removeAttribute(name) { this.attributes.delete(name); }
   querySelector() { return null; }
   focus() { this.focused = true; }
+  click() { this.clickCount += 1; }
+  setSelectionRange(start, end) { this.selectionStart = start; this.selectionEnd = end; }
   scrollIntoView() {}
   getBoundingClientRect() { return { width: 500 }; }
 }
@@ -68,7 +72,7 @@ function createStorage(initialValue = null) {
 function bootEditor(storage, { storageUnavailable = false } = {}) {
   const ids = new Map([
     'code-editor', 'line-numbers', 'run-program', 'stop-program', 'terminal-output',
-    'terminal-panel', 'minimize-terminal', 'open-program', 'save-program',
+    'terminal-panel', 'minimize-terminal', 'open-program', 'open-program-button', 'save-program',
     'increase-text', 'contrast-toggle', 'error-counter', 'terminal-input',
     'terminal-value', 'terminal-input-label'
   ].map((id) => [id, new FakeElement()]));
@@ -102,11 +106,13 @@ function bootEditor(storage, { storageUnavailable = false } = {}) {
     get localStorage() {
       if (storageUnavailable) throw new Error('Storage disabled');
       return storage;
-    }
+    },
+    confirm() { return true; }
   };
   const context = {
     document,
     window,
+    TextDecoder,
     getComputedStyle() {
       return { font: '16px monospace', lineHeight: '24px', paddingTop: '8px', paddingLeft: '12px' };
     },
@@ -123,6 +129,12 @@ function bootEditor(storage, { storageUnavailable = false } = {}) {
       const listener = element.listeners.get('click')?.[0];
       assert.ok(listener, `expected a click handler for ${id}`);
       await listener({ preventDefault() {} });
+    },
+    change: async (id) => {
+      const element = ids.get(id);
+      const listener = element.listeners.get('change')?.[0];
+      assert.ok(listener, `expected a change handler for ${id}`);
+      await listener({});
     }
   };
 }
@@ -187,4 +199,56 @@ test('still initializes and toggles the interface when storage is unavailable', 
   assertRestored(view, { highContrast: false, readingScale: 1, terminalVisible: false });
   await view.click('contrast-toggle');
   assertRestored(view, { highContrast: true, readingScale: 1, terminalVisible: false });
+});
+
+test('opens the file picker from the visible open button and loads a saved text file', async () => {
+  const view = bootEditor(createStorage());
+  const openButton = view.ids.get('open-program-button');
+  assert.equal(openButton.getAttribute('aria-disabled'), 'false');
+
+  await view.click('open-program-button');
+  assert.equal(view.ids.get('open-program').clickCount, 1);
+
+  const contents = 'Inicio\nEscribir "Hola"\nFin';
+  const bytes = new TextEncoder().encode(contents);
+  view.ids.get('open-program').files = [{
+    name: 'saludo.txt',
+    size: bytes.length,
+    arrayBuffer: async () => bytes.buffer
+  }];
+  await view.change('open-program');
+
+  assert.equal(view.ids.get('code-editor').value, contents);
+  assert.equal(view.ids.get('open-program').value, '');
+  assert.equal(view.ids.get('terminal-output').children.at(-1).children[0].textContent,
+    'Archivo abierto: saludo.txt. No se ha analizado ni ejecutado. Control + Enter envía el código.');
+});
+
+test('does not open the file picker from a keyboard shortcut', () => {
+  const view = bootEditor(createStorage());
+  let prevented = false;
+  const keydown = view.ids.get('code-editor').listeners.get('keydown')[0];
+
+  keydown({
+    isComposing: false,
+    ctrlKey: true,
+    metaKey: false,
+    key: 'o',
+    preventDefault() { prevented = true; }
+  });
+
+  assert.equal(prevented, false);
+  assert.equal(view.ids.get('open-program').clickCount, 0);
+});
+
+test('keeps the current code when the selected file is not a supported text file', async () => {
+  const view = bootEditor(createStorage());
+  const original = view.ids.get('code-editor').value;
+  view.ids.get('open-program').files = [{ name: 'programa.js', size: 8 }];
+
+  await view.change('open-program');
+
+  assert.equal(view.ids.get('code-editor').value, original);
+  assert.equal(view.ids.get('terminal-output').children.at(-1).children[1].textContent,
+    'Selecciona un archivo .txt en UTF-8 de hasta 64 KiB. No se modificó el editor.');
 });

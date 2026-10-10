@@ -39,6 +39,10 @@
           <path class="icon-fill" d="M7 2h18l10 10v34H7z" />
           <path class="icon-cut" d="M25 2v11h10M13 23h16M13 30h16M13 37h12" />
         </symbol>
+        <symbol id="icon-open" viewBox="0 0 48 48">
+          <path d="M5 14V9h14l5 5h19v7M5 14h38l-4 25H5z" fill="none" stroke="currentColor" stroke-width="3.5" />
+          <path d="M24 20v12m-6-6 6 6 6-6" fill="none" stroke="currentColor" stroke-width="3.5" />
+        </symbol>
         <symbol id="icon-terminal" viewBox="0 0 48 48">
           <rect class="icon-fill" x="2" y="4" width="44" height="40" rx="6" />
           <path class="icon-cut" d="m10 15 8 8-8 8M23 33h13" />
@@ -106,6 +110,10 @@
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-zoom" /></svg>
               <span>Aumentar<br>texto</span>
             </button>
+            <button id="open-program-button" class="action-card" type="button" aria-disabled="true" title="Abrir un programa guardado en archivo .txt">
+              <svg class="action-card__icon" aria-hidden="true"><use href="#icon-open" /></svg>
+              <span>Abrir<br>archivo</span>
+            </button>
             <button id="save-program" class="action-card" type="button" aria-disabled="true" title="Descargar código como archivo .txt">
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-save" /></svg>
               <span>Guardar</span>
@@ -158,7 +166,7 @@ Fin</textarea>
             </header>
 
             <div class="terminal-body" id="terminal-body">
-            <p class="demo-note" id="editor-help">Control más Enter o Ejecutar analiza y ejecuta el código. Leer solicita datos en la terminal: Enter envía; Escape o Detener cancela. Control más O abre un archivo .txt en UTF-8. Tab permite salir del editor.</p>
+            <p class="demo-note" id="editor-help">Control más Enter o Ejecutar analiza y ejecuta el código. Leer solicita datos en la terminal: Enter envía; Escape o Detener cancela. Tab permite salir del editor.</p>
             <div class="terminal-output" id="terminal-output" role="status" aria-live="polite" aria-atomic="true">
               <div class="result-row result-row--welcome">
                 <svg class="result-row__icon success-icon" aria-hidden="true"><use href="#icon-check" /></svg>

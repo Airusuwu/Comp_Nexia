@@ -70,8 +70,8 @@ la rama actual y las referencias remotas porque pueden haber cambiado.
 - Ejecutar o `Ctrl+Enter` analiza y ejecuta mediante el backend local. Detener
   cancela una ejecución en curso. `Leer` solicita datos dentro de la terminal,
   con Enter/Enviar y Escape/Detener. El código se conserva ante errores.
-- Guardar descarga `programa-nexia.txt`; `Ctrl+O` abre un `.txt` UTF-8 de hasta
-  64 KiB con confirmación antes de reemplazar código. Aumentar texto modifica
+- **Abrir archivo** carga un `.txt` UTF-8 de hasta 64 KiB y confirma antes de
+  reemplazar el código. Guardar descarga `programa-nexia.txt`. Aumentar texto modifica
   código y resultados en pasos de 25 % de 100 a 200 %, y luego vuelve a 100 %.
 - La corrección del PR #4 mantiene fija la altura del editor cuando crecen las
   salidas; la terminal aparece inmediatamente debajo del editor.

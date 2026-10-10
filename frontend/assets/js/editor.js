@@ -10,6 +10,7 @@
   const mainStage = document.querySelector('.main-stage');
   const workspace = document.querySelector('.workspace');
   const fileInput = document.getElementById('open-program');
+  const openButton = document.getElementById('open-program-button');
   const saveButton = document.getElementById('save-program');
   const increaseButton = document.getElementById('increase-text');
   const contrastToggle = document.getElementById('contrast-toggle');
@@ -452,6 +453,7 @@
     updateNumbers();
   });
   saveButton.setAttribute('aria-disabled', 'false');
+  openButton.setAttribute('aria-disabled', 'false');
   increaseButton.setAttribute('aria-disabled', 'false');
 
   editor.addEventListener('input', codeChanged);
@@ -463,6 +465,7 @@
   editor.addEventListener('keyup', highlightPosition);
   editor.addEventListener('select', highlightPosition);
   runButton.addEventListener('click', sendCode);
+  openButton.addEventListener('click', () => fileInput.click());
   stopButton.addEventListener('click', () => {
     if (!pending) return;
     pending.abort();
@@ -475,10 +478,6 @@
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
       event.preventDefault();
       sendCode();
-    }
-    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'o') {
-      event.preventDefault();
-      fileInput.click();
     }
   });
   fileInput.addEventListener('change', async () => {
