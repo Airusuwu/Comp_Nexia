@@ -46,6 +46,7 @@ No deben tomarse como el estado actual sin contrastarlas con el código y Git.
 - [Análisis léxico](tecnica/lexical-analysis.md).
 - [Análisis sintáctico y AST](tecnica/syntax-analysis.md).
 - [Análisis semántico](tecnica/semantic-analysis.md).
+- [Generación de código intermedio](tecnica/intermediate-code.md).
 - [Motor de ejecución](tecnica/runtime.md).
 - [Cómo se detectan los errores](tecnica/errores-lexicos-semanticos.md).
 - [Guía del código del backend](../backend/GUIA_CODIGO.md).

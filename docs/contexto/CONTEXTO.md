@@ -27,6 +27,25 @@
   pendiente de publicarse en `origin/back`.
 - La rama `back` queda como base para continuar el desarrollo del compilador.
 
+## Generación de código intermedio — 2026-10-10
+
+- Implementada localmente en `back` como cuarta fase, después de semántica.
+  `generateIntermediate(ast)` genera cuádruplos deterministas con tipos,
+  ámbitos, IDs internos y ubicaciones; cubre todo el lenguaje vigente.
+- `/api/analyze` y `/api/execute` añaden `intermediateCode` y
+  `analysis.intermediate`; `/api/health` añade la capacidad `intermediate`.
+  Con errores previos, la generación queda omitida y el campo es `null`.
+- El motor mantiene la ejecución del AST. La consulta del código intermedio
+  es por API, sin cambios de frontend ni optimización.
+- Pasan 36 pruebas persistentes: las 11 de ciclos y 25 nuevas de generador/API.
+  También pasan el chequeo de sintaxis y `git diff --check`.
+  El contrato se documenta en `docs/tecnica/intermediate-code.md` y la guía
+  del backend incluye el nuevo recorrido. La implementación se guarda en
+  `back`; su publicación en el remoto queda pendiente.
+- Servidor local reiniciado en `http://127.0.0.1:3000/`: health confirma
+  `intermediate: true`; se verificó generación completa y salida `14` para
+  `2 + 3 * 4`. El PID observado al reiniciar es `25856`.
+
 ## Compilador: alcance aprobado (2026-10-10)
 
 - `Para` y `Repetir` quedaron implementados localmente en el compilador de `back`.

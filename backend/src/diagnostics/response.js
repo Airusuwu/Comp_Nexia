@@ -4,6 +4,7 @@ export function diagnosticResponse(status, code, message, severity = 'error') {
     status,
     executed: false,
     results: [],
+    intermediateCode: null,
     diagnostics: [{ code, message, severity, stage: 'request', line: null, column: null }]
   };
 }

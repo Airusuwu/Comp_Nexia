@@ -20,6 +20,7 @@ Editor del frontend
     -> Lexer: texto a tokens
     -> Parser: tokens a AST
     -> Semántica: comprobación de tipos y variables
+    -> Generación: AST validado a cuádruplos
     -> Motor: ejecución del AST (solo /api/execute)
     -> Respuesta JSON con resultados, estado y diagnósticos
     -> Terminal del frontend
@@ -37,11 +38,12 @@ Todas las rutas siguientes son relativas a `backend/`.
 | `package.json` | Declara módulos ES, versión de Node y comandos de arranque/comprobación. |
 | `src/server.js` | Crea la aplicación y escucha en `127.0.0.1:3000`. Informa errores de arranque. |
 | `src/api/app.js` | Enruta las solicitudes, valida método/host/origen, responde JSON y conecta la cancelación. |
-| `src/api/analyze.js` | Lee y valida el cuerpo HTTP; coordina lexer, parser, semántica y ejecución. |
+| `src/api/analyze.js` | Lee y valida el cuerpo HTTP; coordina lexer, parser, semántica, generación y ejecución. |
 | `src/api/static.js` | Entrega únicamente los archivos del frontend incluidos en una lista permitida. |
 | `src/lexer/tokenize.js` | Reconoce palabras, literales, operadores, delimitadores y posiciones. |
 | `src/parser/parse.js` | Reconoce la gramática y construye el árbol de sintaxis abstracta. |
 | `src/semantic/analyze.js` | Recorre el árbol para verificar tipos, declaraciones e inicialización. |
+| `src/intermediate/generate.js` | Convierte el AST validado a cuádruplos con tipos, ámbitos y ubicaciones. |
 | `src/symbols/table.js` | Administra variables por ámbitos y combina estados del análisis. |
 | `src/types/compatibility.js` | Define los cinco tipos y las combinaciones válidas de operadores/asignaciones. |
 | `src/types/guards.js` | Comprueba declaración, redeclaración, inicialización y divisores. |
@@ -49,7 +51,7 @@ Todas las rutas siguientes son relativas a `backend/`.
 | `src/runtime/values.js` | Convierte entradas y literales en valores tipados, calcula operaciones y formatea salidas. |
 | `src/runtime/execute.js` | Ejecuta instrucciones y bloques; controla entradas, salidas y límites. |
 | `src/diagnostics/response.js` | Construye respuestas uniformes para errores de solicitud. |
-| `tests/README.md` | Describe el estado de las pruebas; no es una suite automatizada. |
+| `tests/README.md` | Describe las suites persistentes de ciclos y código intermedio. |
 
 ## 3. Comunicación y validaciones HTTP
 
@@ -115,7 +117,8 @@ Assignment
     right: Literal(ENTERO, 2)
 ```
 
-`statement` reconoce declaraciones, asignaciones, Leer, Escribir, Si y Mientras.
+`statement` reconoce declaraciones, asignaciones, Leer, Escribir, Si, Mientras,
+Para y Repetir.
 `expression` aplica precedencias y paréntesis. `block` lee instrucciones hasta
 el cierre correspondiente. `node` añade ubicación y controla profundidad.
 
@@ -167,7 +170,26 @@ Las operaciones enteras utilizan BigInt como cálculo intermedio, pero el rango
 aceptado sigue siendo el de enteros seguros de Number. REAL utiliza aproximación
 binaria: no debe prometerse precisión decimal exacta.
 
-## 8. Ejecución y entrada de datos
+## 8. Generación de código intermedio
+
+`generateIntermediate(ast)` se llama después de la semántica. Traduce las
+expresiones a operaciones con temporales y las condiciones/ciclos a etiquetas
+y saltos. `Para` conserva un avance privado separado de su contador visible;
+`Repetir` coloca su condición después del cuerpo.
+
+Cada instrucción tiene `op`, `arg1`, `arg2`, `result` y `location`. Los operandos
+distinguen literales, variables, temporales y etiquetas. Los metadatos conservan
+tipos, ámbitos y nombres originales; un homónimo local tiene un ID distinto.
+Los literales guardan su escritura original y no se calculan en esta fase.
+
+La API añade `intermediateCode` y `analysis.intermediate`. Con errores previos,
+el código intermedio es `null` y la fase queda `skipped`. Un fallo interno del
+generador impide ejecutar y usa la respuesta HTTP 500 existente.
+
+La generación se consulta por API; la ejecución continúa usando `execute(ast)`.
+Contrato y ejemplos en [intermediate-code.md](../docs/tecnica/intermediate-code.md).
+
+## 9. Ejecución y entrada de datos
 
 `execute(ast, inputs, { signal })` recorre el árbol con funciones asíncronas.
 `expression` obtiene valores; `statements` ejecuta instrucciones; `block` abre y
@@ -193,7 +215,7 @@ que revisarlo antes de incorporar archivos, reloj u otros efectos.
 Hay además límites de 100 entradas, 1000 líneas y 65536 unidades UTF-16 de salida.
 Los operadores Y/O evalúan ambos operandos: no hay cortocircuito.
 
-## 9. Estados y diagnósticos
+## 10. Estados y diagnósticos
 
 | Estado | Significado |
 | --- | --- |
@@ -213,10 +235,10 @@ corresponde. Los errores de solicitud llevan línea y columna `null`, porque no
 representan una instrucción incorrecta. No todos los tipos de respuesta incluyen
 tokens, AST y símbolos: la respuesta mínima de solicitud solo incluye el diagnóstico.
 
-## 10. Cómo explicar y mantener el proyecto
+## 11. Cómo explicar y mantener el proyecto
 
 Para una exposición, seguir este orden: servidor y rutas, lexer, parser, semántica,
-tabla de símbolos, reglas y finalmente motor/Leer. Usar una suma como ejemplo y
+tabla de símbolos, reglas, cuádruplos y finalmente motor/Leer. Usar una suma como ejemplo y
 después mostrar una variable sin inicializar para distinguir análisis de ejecución.
 
 Desde la raíz del repositorio:
@@ -224,14 +246,15 @@ Desde la raíz del repositorio:
 ```powershell
 npm.cmd --prefix backend start
 npm.cmd --prefix backend run check
+npm.cmd --prefix backend test
 ```
 
-El primer comando inicia el servidor; el segundo comprueba sintaxis, no sustituye
-pruebas funcionales. Actualmente no existe una suite persistente. Las verificaciones
+El primer comando inicia el servidor; el segundo comprueba sintaxis; el tercero
+ejecuta las suites persistentes del backend. Las verificaciones
 anteriores y límites están en [verification.md](../docs/pruebas/verification.md) y
 [runtime.md](../docs/tecnica/runtime.md). Algunas secciones históricas describen etapas
 anteriores; para el contrato actual consultar también [README.md](README.md).
 
-Si se agrega una instrucción, revisar lexer, parser, semántica y motor. Si cambia
+Si se agrega una instrucción, revisar lexer, parser, semántica, generador y motor. Si cambia
 una regla de tipos, centralizarla en `types/` y comprobar análisis y ejecución.
 La interfaz y sus eventos pertenecen a `frontend/`, no a este backend.
