@@ -15,8 +15,10 @@ de la solicitud y los errores, sin borrar el contenido del editor.
 
 El botón **Abrir archivo** permite seleccionar un `.txt` UTF-8 de hasta 64 KiB,
 con confirmación antes de reemplazar contenido. Guardar descarga
-el código como `programa-nexia.txt`. Aumentar texto amplía código y resultados
-en pasos de 25 % hasta 200 %; el siguiente clic vuelve al 100 %.
+el código como `programa-nexia.txt`. Los botones Reducir texto y Aumentar texto ajustan
+el tamaño de código y resultados en pasos de 25 %, entre 100 % y 200 %. El porcentaje
+Al cambiar el tamaño, aparece en el centro un mensaje con el porcentaje y los
+límites durante 3 segundos.
 Escuchar sigue pendiente; no se añadieron botones.
 Leer solicita datos dentro de la terminal; Enter o Enviar confirma. Escape o Detener
 interrumpen la ejecución.

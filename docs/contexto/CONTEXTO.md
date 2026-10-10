@@ -71,8 +71,10 @@ la rama actual y las referencias remotas porque pueden haber cambiado.
   cancela una ejecución en curso. `Leer` solicita datos dentro de la terminal,
   con Enter/Enviar y Escape/Detener. El código se conserva ante errores.
 - **Abrir archivo** carga un `.txt` UTF-8 de hasta 64 KiB y confirma antes de
-  reemplazar el código. Guardar descarga `programa-nexia.txt`. Aumentar texto modifica
-  código y resultados en pasos de 25 % de 100 a 200 %, y luego vuelve a 100 %.
+  reemplazar el código. Guardar descarga `programa-nexia.txt`. Reducir texto y
+  Aumentar texto ajustan código y resultados en pasos de 25 %, entre 100 % y 200 %.
+  Al cambiar el zoom, un aviso central muestra el porcentaje y el límite durante
+  3 segundos.
 - La corrección del PR #4 mantiene fija la altura del editor cuando crecen las
   salidas; la terminal aparece inmediatamente debajo del editor.
 - Backend Node.js 24 sin dependencias externas: lexer, parser con AST, análisis

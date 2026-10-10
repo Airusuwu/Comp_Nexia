@@ -96,6 +96,77 @@
   margin-top: 1.4rem;
 }
 
+.zoom-controls {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.zoom-notice {
+  position: fixed;
+  z-index: 1000;
+  top: 50%;
+  left: 50%;
+  width: min(88vw, 38rem);
+  padding: 1.25rem 1.5rem;
+  transform: translate(-50%, -50%);
+  border: 0.25rem solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 48%), 0 0.5rem 1.5rem rgb(0 0 0 / 55%);
+  color: var(--color-accent);
+  font-size: clamp(1.7rem, 5vw, 2.5rem);
+  font-weight: 900;
+  line-height: 1.25;
+  text-align: center;
+  pointer-events: none;
+}
+
+.zoom-notice:not([hidden]) {
+  animation: zoom-notice-enter 180ms ease-out both;
+}
+
+.zoom-notice.zoom-notice--leaving {
+  animation: zoom-notice-exit 300ms ease-in forwards;
+}
+
+@keyframes zoom-notice-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes zoom-notice-exit {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.96);
+  }
+}
+
+.zoom-notice[hidden] {
+  display: none;
+}
+
+.zoom-controls__button[aria-disabled="true"] {
+  border: 0.25rem dashed currentColor;
+  box-shadow: none;
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
+.zoom-controls__button[aria-disabled="true"]:hover,
+.zoom-controls__button[aria-disabled="true"]:active {
+  box-shadow: none;
+  filter: none;
+  transform: none;
+}
+
 .action-card {
   display: grid;
   width: 100%;
@@ -557,6 +628,13 @@ html[data-contrast="high"] .terminal-input button {
   color: #ffffff;
 }
 
+html[data-contrast="high"] .zoom-notice {
+  border-color: #ffffff;
+  background: #000000;
+  box-shadow: none;
+  color: #ffffff;
+}
+
 html[data-contrast="high"] .error-counter {
   border: 0.125rem solid #ffffff;
   background: #ffffff;
@@ -628,6 +706,11 @@ html[data-contrast="high"] .result-row--error {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .zoom-controls {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .action-card {
     min-height: 4.9rem;
     grid-template-columns: 3.4rem 1fr;
@@ -652,6 +735,10 @@ html[data-contrast="high"] .result-row--error {
     align-items: flex-start;
     gap: var(--space-3);
     padding: 0.75rem 0.9rem;
+  }
+
+  .zoom-controls {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .contrast-toggle {
@@ -812,5 +899,10 @@ html[data-contrast="high"] .result-row--error {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .zoom-notice:not([hidden]),
+  .zoom-notice.zoom-notice--leaving {
+    animation: none !important;
   }
 }

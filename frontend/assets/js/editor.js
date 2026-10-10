@@ -12,7 +12,10 @@
   const fileInput = document.getElementById('open-program');
   const openButton = document.getElementById('open-program-button');
   const saveButton = document.getElementById('save-program');
+  const decreaseButton = document.getElementById('decrease-text');
   const increaseButton = document.getElementById('increase-text');
+  const zoomNotice = document.getElementById('zoom-notice');
+  let zoomNoticeTimer = null;
   const contrastToggle = document.getElementById('contrast-toggle');
   const preferenceKey = 'nexia.preferences.v1';
   const validReadingPercents = [100, 125, 150, 175, 200];
@@ -89,9 +92,35 @@
     elements.terminalToggle.setAttribute('aria-expanded', String(visible));
   }
 
+  function updateZoomControls() {
+    const atMinimum = readingPercent === validReadingPercents[0];
+    const atMaximum = readingPercent === validReadingPercents[validReadingPercents.length - 1];
+    decreaseButton.setAttribute('aria-disabled', String(atMinimum));
+    increaseButton.setAttribute('aria-disabled', String(atMaximum));
+    decreaseButton.title = atMinimum ? 'Tamaño mínimo: 100 %' : 'Reducir el texto en 25 %';
+    increaseButton.title = atMaximum ? 'Tamaño máximo: 200 %' : 'Aumentar el texto en 25 %';
+  }
+
+  function showZoomNotice(message) {
+    zoomNotice.textContent = message;
+    zoomNotice.hidden = false;
+    if (zoomNoticeTimer !== null) window.clearTimeout(zoomNoticeTimer);
+    zoomNotice.classList.remove('zoom-notice--leaving');
+    zoomNoticeTimer = window.setTimeout(() => {
+      zoomNotice.classList.add('zoom-notice--leaving');
+      zoomNoticeTimer = window.setTimeout(() => {
+        zoomNotice.hidden = true;
+        zoomNotice.classList.remove('zoom-notice--leaving');
+        zoomNotice.textContent = '';
+        zoomNoticeTimer = null;
+      }, 300);
+    }, 2700);
+  }
+
   function applyPreferences(saved, elements) {
     applyContrast(elements.root, elements.contrastToggle, saved.highContrast);
     elements.root.style.setProperty('--reading-scale', saved.readingPercent / 100);
+    updateZoomControls();
     setTerminalVisibility(elements, !saved.terminalMinimized);
   }
 
@@ -441,20 +470,30 @@
       if (downloadUrl) setTimeout(() => URL.revokeObjectURL(downloadUrl), 30000);
     }
   });
-  increaseButton.addEventListener('click', () => {
-    readingPercent = readingPercent === 200 ? 100 : readingPercent + 25;
+  function setReadingPercent(nextPercent) {
+    if (!validReadingPercents.includes(nextPercent)) {
+      showZoomNotice(readingPercent === validReadingPercents[0]
+        ? 'Tamaño mínimo: 100 %.'
+        : 'Tamaño máximo: 200 %.');
+      return;
+    }
+    readingPercent = nextPercent;
     document.documentElement.style.setProperty('--reading-scale', readingPercent / 100);
+    updateZoomControls();
     persistPreferences({ readingPercent });
-    increaseButton.title = readingPercent === 200
-      ? 'Tamaño actual: 200 %. Pulsa para volver al 100 %'
-      : `Tamaño actual: ${readingPercent} %. Aumentar en 25 %`;
-    increaseButton.setAttribute('aria-label', increaseButton.title);
     charWidth = 0;
     updateNumbers();
-  });
+    const limit = readingPercent === validReadingPercents[0]
+      ? ' Tamaño mínimo.'
+      : readingPercent === validReadingPercents[validReadingPercents.length - 1]
+        ? ' Tamaño máximo.'
+        : '';
+    showZoomNotice(`Tamaño del texto: ${readingPercent} %.${limit}`);
+  }
+  decreaseButton.addEventListener('click', () => setReadingPercent(readingPercent - 25));
+  increaseButton.addEventListener('click', () => setReadingPercent(readingPercent + 25));
   saveButton.setAttribute('aria-disabled', 'false');
   openButton.setAttribute('aria-disabled', 'false');
-  increaseButton.setAttribute('aria-disabled', 'false');
 
   editor.addEventListener('input', codeChanged);
   editor.addEventListener('scroll', () => {

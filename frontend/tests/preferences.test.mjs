@@ -73,7 +73,7 @@ function bootEditor(storage, { storageUnavailable = false } = {}) {
   const ids = new Map([
     'code-editor', 'line-numbers', 'run-program', 'stop-program', 'terminal-output',
     'terminal-panel', 'minimize-terminal', 'open-program', 'open-program-button', 'save-program',
-    'increase-text', 'contrast-toggle', 'error-counter', 'terminal-input',
+    'decrease-text', 'increase-text', 'zoom-notice', 'contrast-toggle', 'error-counter', 'terminal-input',
     'terminal-value', 'terminal-input-label'
   ].map((id) => [id, new FakeElement()]));
   const selectors = new Map([
@@ -86,6 +86,7 @@ function bootEditor(storage, { storageUnavailable = false } = {}) {
   const editor = ids.get('code-editor');
   editor.value = 'Inicio\nFin';
   ids.get('terminal-input').hidden = true;
+  ids.get('zoom-notice').hidden = true;
   const root = new FakeElement();
   const body = new FakeElement();
   const document = {
@@ -107,7 +108,9 @@ function bootEditor(storage, { storageUnavailable = false } = {}) {
       if (storageUnavailable) throw new Error('Storage disabled');
       return storage;
     },
-    confirm() { return true; }
+    confirm() { return true; },
+    setTimeout() { return 1; },
+    clearTimeout() {}
   };
   const context = {
     document,
