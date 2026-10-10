@@ -46,25 +46,10 @@
   font-weight: 700;
 }
 
-.contrast-toggle {
-  flex: 0 0 auto;
-  padding: 0.7rem 0.95rem;
+.action-card.contrast-toggle {
+  grid-column: 1 / -1;
   border: var(--border-thin);
-  border-radius: var(--radius-md);
-  background: var(--color-primary);
-  color: var(--color-accent);
-  font-size: 1rem;
-  font-weight: 900;
   cursor: pointer;
-}
-
-.contrast-toggle:hover {
-  filter: brightness(1.12);
-}
-
-.contrast-toggle:focus-visible {
-  outline: 0.2rem solid var(--color-focus);
-  outline-offset: 0.18rem;
 }
 
 .workspace {
@@ -739,12 +724,6 @@ html[data-contrast="high"] .result-row--error {
 
   .zoom-controls {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .contrast-toggle {
-    margin-left: 0;
-    padding: 0.55rem 0.7rem;
-    font-size: 0.85rem;
   }
 
   .brand {

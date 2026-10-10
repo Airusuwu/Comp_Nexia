@@ -73,7 +73,7 @@ function bootEditor(storage, { storageUnavailable = false } = {}) {
   const ids = new Map([
     'code-editor', 'line-numbers', 'run-program', 'stop-program', 'terminal-output', 'listen-result',
     'terminal-panel', 'minimize-terminal', 'open-program', 'open-program-button', 'save-program',
-    'decrease-text', 'increase-text', 'zoom-notice', 'contrast-toggle', 'error-counter', 'terminal-input',
+    'decrease-text', 'increase-text', 'zoom-notice', 'contrast-toggle', 'contrast-label', 'error-counter', 'terminal-input',
     'terminal-value', 'terminal-input-label', 'listen-result-label'
   ].map((id) => [id, new FakeElement()]));
   const selectors = new Map([

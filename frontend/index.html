@@ -24,6 +24,10 @@
         <symbol id="icon-stop" viewBox="0 0 48 48">
           <rect class="icon-fill" x="10" y="10" width="28" height="28" rx="2" />
         </symbol>
+        <symbol id="icon-contrast" viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="18" />
+          <path class="icon-fill" d="M24 6a18 18 0 0 1 0 36z" />
+        </symbol>
         <symbol id="icon-volume" viewBox="0 0 48 48">
           <path class="icon-fill" d="M5 19v10h8l11 9V10l-11 9z" />
           <path d="M30 17a10 10 0 0 1 0 14M35 12a17 17 0 0 1 0 24" />
@@ -89,9 +93,6 @@
           <span class="brand__divider" aria-hidden="true"></span>
           <p class="brand__tagline">Programar también es para todos</p>
         </div>
-        <button id="contrast-toggle" class="contrast-toggle" type="button" aria-pressed="false">
-          Alto contraste: desactivado
-        </button>
       </header>
       <div id="zoom-notice" class="zoom-notice" role="status" aria-live="polite" aria-atomic="true" hidden></div>
 
@@ -129,6 +130,10 @@
             <button id="save-program" class="action-card" type="button" aria-disabled="true" title="Descargar código como archivo .txt">
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-save" /></svg>
               <span>Guardar</span>
+            </button>
+            <button id="contrast-toggle" class="action-card contrast-toggle" type="button" aria-pressed="false">
+              <svg class="action-card__icon" aria-hidden="true"><use href="#icon-contrast" /></svg>
+              <span id="contrast-label">Alto contraste: desactivado</span>
             </button>
           </div>
         </aside>

@@ -25,6 +25,7 @@
   const zoomNotice = document.getElementById('zoom-notice');
   let zoomNoticeTimer = null;
   const contrastToggle = document.getElementById('contrast-toggle');
+  const contrastLabel = document.getElementById('contrast-label');
   const preferenceKey = 'nexia.preferences.v1';
   const validReadingPercents = [100, 125, 150, 175, 200];
   let preferenceStorage = null;
@@ -149,7 +150,7 @@
     if (enabled) root.setAttribute('data-contrast', 'high');
     else root.removeAttribute('data-contrast');
     toggle.setAttribute('aria-pressed', String(enabled));
-    toggle.textContent = `Alto contraste: ${enabled ? 'activado' : 'desactivado'}`;
+    contrastLabel.textContent = `Alto contraste: ${enabled ? 'activado' : 'desactivado'}`;
   }
 
   function setTerminalVisibility(elements, visible) {
