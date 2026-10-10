@@ -1,8 +1,8 @@
 # Motor básico de ejecución
 
-Estado: implementado el 2026-09-10 por solicitud de Uriel. El motor interpreta
-el AST existente; no genera código JavaScript, no usa eval/Function y no añade
-gramática para Para, Repetir o funciones.
+Estado: implementado el 2026-09-10. El motor interpreta el AST; no genera
+código JavaScript ni usa eval/Function. La gramática de `Para` y `Repetir` se
+añadió el 2026-10-10; las funciones siguen fuera del alcance.
 
 ## Funcionamiento
 
@@ -12,8 +12,8 @@ cualquier instrucción. POST /api/analyze conserva su uso de solo análisis.
 
 `src/runtime/execute.js` recorre el AST con una tabla de símbolos nueva por
 solicitud. Ejecuta declaraciones múltiples, asignaciones, Leer, Escribir,
-Si/Sino y Mientras. Cada entrada a un bloque crea su ámbito; al salir se
-descarta. Se conservan las reglas aprobadas de mayúsculas y tipos fijos.
+Si/Sino, Mientras, Para y Repetir. Cada entrada a un bloque crea su ámbito;
+al salir se descarta. Se conservan las reglas aprobadas de mayúsculas y tipos fijos.
 
 `src/runtime/values.js` representa cada valor con tipo y contenido separados.
 Usa las funciones de compatibilidad, entrada y divisor del punto 6, sin
@@ -26,6 +26,22 @@ automático: `Escribir "Edad: ", edad`. TEXTO/CARACTER salen sin comillas y
 BOOLEANO como VERDADERO/FALSO. La terminal recibe texto, nunca HTML ejecutable.
 Las salidas anteriores a un error runtime se conservan y no se muestra una
 finalización exitosa cuando la ejecución falla.
+
+## Ciclos Para y Repetir (2026-10-10)
+
+`Para i <- inicio Hasta Hacer límite ... FinPara` evalúa inicio y límite una
+vez al entrar; ambos son ENTERO. El contador `i` es local al ciclo, aumenta de
+uno en uno y el límite es inclusivo. Si inicio es mayor que límite no se ejecuta
+el cuerpo. No hay cláusula de paso. El contador avanza según el rango, aunque
+el cuerpo asigne otro valor a `i`. Cada iteración consume el presupuesto
+existente de pasos/tiempo; también se aplican cancelación y límites
+de salida.
+
+`Repetir ... Hasta Que condición` ejecuta el cuerpo antes de evaluar la
+condición BOOLEANO. El cuerpo ocurre al menos una vez. Las variables de la
+condición deben estar declaradas fuera del cuerpo; los ámbitos locales del
+cuerpo se descartan al terminar cada iteración. Leer sigue usando el mecanismo
+de replay con entradas acumuladas.
 
 ## Leer dentro de la terminal
 
@@ -119,6 +135,12 @@ Para entrada: `Definir dato Como REAL`, `Leer dato`, `Escribir dato * 2`
 entre Inicio/Fin. Introducir 4.5 produce 9.
 
 ## Validación y pendientes
+
+Actualización 2026-10-10: `npm.cmd --prefix backend test` ejecuta 11 casos
+persistentes de `Para` y `Repetir` a través de `/api/execute`; los 11 pasan.
+Incluyen límites y salidas reales, ámbito del contador, condición de salida,
+reglas de tipo y rechazo de variables locales fuera de ámbito. La suite queda en
+`backend/tests/loops.test.mjs`; su plan está en `backend/tests/README.md`.
 
 Cambio a entrada integrada: comprobado en Edge PC el recorrido de dos lecturas
 (3 y 4, suma 7), envío con Enter y botón, historial sin duplicados, Escape y

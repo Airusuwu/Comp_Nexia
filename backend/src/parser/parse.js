@@ -176,13 +176,35 @@ export function parse(tokens) {
       expect('FinMientras');
       return node('WhileStatement', start, { condition, body }, [condition, ...body]);
     }
+    if (matches('Para')) {
+      take();
+      const variable = identifier();
+      expect('<-');
+      const initial = expression();
+      expect('Hasta');
+      expect('Hacer');
+      const limit = expression();
+      endLine();
+      const body = block(['FinPara']);
+      expect('FinPara');
+      return node('ForStatement', start, { variable, initial, limit, body }, [variable, initial, limit, ...body]);
+    }
+    if (matches('Repetir')) {
+      take();
+      endLine();
+      const body = block(['Hasta']);
+      expect('Hasta');
+      expect('Que');
+      const condition = expression();
+      return node('RepeatUntilStatement', start, { body, condition }, [...body, condition]);
+    }
     if (start.category === 'IDENTIFIER') {
       const target = identifier();
       expect('<-');
       const value = expression();
       return node('Assignment', start, { target, value }, [target, value]);
     }
-    fail('Se esperaba una declaración, asignación, Leer, Escribir, Si o Mientras.');
+    fail('Se esperaba una declaración, asignación, Leer, Escribir, Si, Mientras, Para o Repetir.');
   }
 
   try {

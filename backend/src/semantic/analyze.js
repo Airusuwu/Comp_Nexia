@@ -124,6 +124,41 @@ export function analyzeSemantics(ast) {
         at(node.condition, () => requireBooleanCondition(condition.type));
         block(node.body, loop);
         symbols.forgetConstants();
+      } else if (node.kind === 'ForStatement') {
+        const initial = expression(node.initial, symbols);
+        if (initial.type !== 'ENTERO') {
+          at(node.initial, () => {
+            throw new TypeRuleError('FOR_INTEGER_REQUIRED', `El inicio de Para debe ser ENTERO, no ${initial.type}.`);
+          });
+        }
+        const limit = expression(node.limit, symbols);
+        if (limit.type !== 'ENTERO') {
+          at(node.limit, () => {
+            throw new TypeRuleError('FOR_INTEGER_REQUIRED', `El límite de Para debe ser ENTERO, no ${limit.type}.`);
+          });
+        }
+
+        // Para puede no ejecutarse; el cuerpo no garantiza inicializaciones posteriores.
+        const loop = symbols.clone();
+        loop.forgetConstants();
+        loop.enter();
+        at(node.variable, () => loop.declare(node.variable.name, 'ENTERO', node.variable.location));
+        const counter = loop.resolve(node.variable.name);
+        counter.initialized = true;
+        block(node.body, loop);
+        loop.leave();
+        symbols.forgetConstants();
+      } else if (node.kind === 'RepeatUntilStatement') {
+        // Repetir ejecuta el cuerpo al menos una vez, antes de validar la condición.
+        const repeated = symbols.clone();
+        repeated.forgetConstants();
+        block(node.body, repeated);
+        repeated.forgetConstants();
+        const condition = expression(node.condition, repeated);
+        at(node.condition, () => requireBooleanCondition(condition.type, 'Repetir requiere'));
+        // La primera iteración está garantizada; transfiere inicialización, no constantes.
+        symbols.merge(repeated, repeated);
+        symbols.forgetConstants();
       } else {
         throw new TypeError(`Instrucción desconocida: ${node.kind}.`);
       }

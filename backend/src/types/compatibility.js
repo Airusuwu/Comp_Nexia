@@ -59,10 +59,10 @@ export function assignmentResultType(targetType, sourceType) {
   throw new TypeRuleError('INCOMPATIBLE_ASSIGNMENT', `No se puede asignar ${sourceType} a ${targetType} mediante <-.`);
 }
 
-export function requireBooleanCondition(type) {
+export function requireBooleanCondition(type, requirement = 'Si y Mientras requieren') {
   requireType(type);
   if (type !== TYPES.BOOLEANO) {
-    throw new TypeRuleError('NON_BOOLEAN_CONDITION', `Si y Mientras requieren BOOLEANO, no ${type}.`);
+    throw new TypeRuleError('NON_BOOLEAN_CONDITION', `${requirement} BOOLEANO, no ${type}.`);
   }
   return type;
 }

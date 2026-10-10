@@ -16,7 +16,8 @@ compatibilidad entre operandos ni construye un AST.
   Los identificadores conservan su escritura; su igualdad entre ámbitos no
   queda decidida por esta regla de palabras reservadas.
 - Palabras reconocidas: Inicio, Fin, Definir, Como, Leer, Escribir, Si, Entonces,
-  Sino, FinSi y Mientras; los cinco tipos del PDF; VERDADERO/FALSO; Y/O/NO.
+  Sino, FinSi, Mientras, Hacer, FinMientras, Para, Hasta, FinPara, Repetir y Que;
+  los cinco tipos del PDF; VERDADERO/FALSO; Y/O/NO.
 - Se reconocen +, -, *, /, %, <-, <, >, <=, >=, == y !=, con prioridad de
   operadores de dos caracteres. Los signos son tokens separados de números.
 - Delimitadores documentados: paréntesis y coma. Los saltos son NEWLINE.
@@ -26,9 +27,9 @@ compatibilidad entre operandos ni construye un AST.
   seguido de letras, marcas combinantes, números o guion bajo. No normaliza
   Unicode. La gramática podrá acotar nombres en su etapa; esto no constituye
   una especificación completa del lenguaje aprobada por el PDF.
-- Para, Repetir y Función son etiquetas de la interfaz, pero no tienen sintaxis
-  completa acordada: por ahora se tokenizan como identificadores. No se inventan
-  cierres de bloques, funciones ni nuevas palabras basándose en los iconos.
+- Para, Hasta, FinPara, Repetir y Que son palabras reservadas de los ciclos
+  aprobados. Función sigue fuera de la gramática y se tokeniza como
+  identificador.
 
 ## Tokens y posiciones
 

@@ -9,6 +9,19 @@
   la misma variable. Se usa toUpperCase, como las palabras reservadas, sin
   normalizar Unicode; se conserva la escritura original para los mensajes.
 
+## Reglas de Para y Repetir (2026-10-10)
+
+- Para analiza inicio y límite antes de crear su contador local; ambos deben ser
+  ENTERO. El contador declarado en la cabecera es local al ciclo; si existe un
+  homonimo externo, vuelve a ser accesible al salir. Como el ciclo puede ejecutar
+  cero veces, sus asignaciones no garantizan inicializaciones externas. Se
+  descartan constantes.
+- Repetir analiza el cuerpo antes de la condición de salida. El cuerpo ocurre al
+  menos una vez: las inicializaciones garantizadas de variables externas se
+  conservan para comprobar la condicion y el codigo posterior. La condicion debe
+  ser BOOLEANO. Las variables declaradas dentro del cuerpo no son visibles en
+  Hasta Que. Se descartan constantes porque puede haber varias iteraciones.
+
 ## Módulos y comprobaciones
 
 `backend/src/symbols/table.js` administra ámbitos mediante Map, declaraciones,
@@ -81,7 +94,7 @@ La terminal existente muestra mensajes reales y líneas de error. No se
 añadieron controles ni se cambió el diseño. Un análisis exitoso indica el
 número de controles pendientes, no salidas de Escribir ni ejecución terminada.
 
-## Validación y siguiente etapa
+## Validación y siguiente etapa al cierre del punto 9 (2026-09-09)
 
 498 aserciones satisfactorias mediante script temporal eliminado: matriz de
 325 operadores/tipos, 25 asignaciones, ámbitos, mayúsculas, ocultamiento,
@@ -94,6 +107,7 @@ Sin nuevas dependencias, suite persistente, pruebas móviles ni auditoría nueva
 de navegador/lector de pantalla. El comando largo fue bloqueado por Windows;
 se ejecutaron las mismas pruebas desde un archivo temporal local.
 
-Siguiente: punto 10, verificación integral y registro de pendientes. Todavía
-no hay motor de ejecución, entrada interactiva, salidas ni detención real.
+En esa fecha, el siguiente paso era el punto 10 y todavía no había motor de
+ejecución, entrada interactiva, salidas ni detención real. El motor actual se
+documenta en [runtime.md](runtime.md).
 Los controles Guardar/Aumentar texto continúan pendientes según el contexto.

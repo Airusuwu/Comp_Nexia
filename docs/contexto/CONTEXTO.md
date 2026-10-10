@@ -27,6 +27,20 @@
   pendiente de publicarse en `origin/back`.
 - La rama `back` queda como base para continuar el desarrollo del compilador.
 
+## Compilador: alcance aprobado (2026-10-10)
+
+- `Para` y `Repetir` quedaron implementados localmente en el compilador de `back`.
+  `npm.cmd --prefix backend test` pasa 11 pruebas de ejecución por la API; también
+  pasan `npm.cmd --prefix backend run check` y `git diff --check`.
+- `Para` usa contador local ENTERO, límite inclusivo, incremento fijo de uno y cero
+  iteraciones cuando inicio supera el límite. La forma vigente es
+  `Para i <- inicio Hasta Hacer límite`; no tiene cláusula de paso.
+- `Repetir ... Hasta Que` evalúa una condición BOOLEANO al final; el cuerpo corre
+  al menos una vez. La condición solo accede a variables declaradas fuera del
+  cuerpo.
+- El front no forma parte de este cambio. Funciones y paso configurable siguen
+  fuera del alcance.
+
 ## Sprint 1 — alto contraste y preferencias — 2026-10-09
 
 - Se implementan en `front` los puntos 8 y 9 de Ideas mejoras (Sprint 1), con
@@ -48,7 +62,7 @@
   archivos del backend. La comprobación visual en navegador queda pendiente; los
   cambios aún no tienen commit.
 
-## Estado vigente para continuar en un chat nuevo — 2026-09-25
+## Estado de referencia previo - 2026-09-25 (historico)
 
 **Leer esta sección primero.** El resto del archivo conserva la historia de cada
 etapa; menciones antiguas de trabajo pendiente, ramas o servidores no sustituyen

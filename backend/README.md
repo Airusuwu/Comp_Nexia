@@ -20,6 +20,13 @@ PDF A5, con controles auxiliares de declaración, inicialización y divisor.
 La compatibilidad se aplica al AST durante el análisis semántico. Véase
 [`docs/tecnica/type-rules.md`](../docs/tecnica/type-rules.md) para reglas, límites y validaciones.
 
+## Ciclos disponibles
+
+El compilador analiza y ejecuta `Mientras`, `Para` y `Repetir`. `Para` usa un
+contador entero local, un límite inclusivo y paso fijo de uno. `Repetir` comprueba
+su condición booleana al final y ejecuta el cuerpo al menos una vez. Los límites
+de tiempo, pasos y cancelación del motor también aplican a estos ciclos.
+
 ## Decisión técnica
 
 Se utiliza JavaScript con módulos ES y Node.js 24.x (mínimo 24.11.1).

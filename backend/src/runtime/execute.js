@@ -111,6 +111,37 @@ export async function execute(ast, inputs = [], { signal } = {}) {
           if (!condition.value) break;
           await block(node.body);
         }
+      } else if (node.kind === 'ForStatement') {
+        const initial = await expression(node.initial);
+        const limit = await expression(node.limit);
+        if (initial.type !== 'ENTERO' || limit.type !== 'ENTERO') {
+          throw new TypeRuleError('FOR_INTEGER_REQUIRED', 'Para requiere un inicio y un límite ENTERO.');
+        }
+
+        symbols.enter();
+        try {
+          symbols.declare(node.variable.name, 'ENTERO', node.variable.location);
+          const counter = symbols.resolve(node.variable.name);
+          counter.initialized = true;
+          let current = initial.value;
+          counter.value = current;
+          while (current <= limit.value) {
+            await tick(node);
+            counter.value = current;
+            await block(node.body);
+            if (current >= limit.value) break;
+            current = valueOf('ENTERO', current + 1).value;
+          }
+        } finally {
+          symbols.leave();
+        }
+      } else if (node.kind === 'RepeatUntilStatement') {
+        while (true) {
+          await block(node.body);
+          const condition = await expression(node.condition);
+          requireBooleanCondition(condition.type, 'Repetir requiere');
+          if (condition.value) break;
+        }
       } else throw new TypeError('Instrucción desconocida.');
     }
   }
