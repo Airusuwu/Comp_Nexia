@@ -150,7 +150,7 @@
     if (enabled) root.setAttribute('data-contrast', 'high');
     else root.removeAttribute('data-contrast');
     toggle.setAttribute('aria-pressed', String(enabled));
-        contrastLabel.innerHTML = enabled ? 'Contraste:<br>ON' : 'Contraste:<br>OFF';
+        contrastLabel.innerHTML = enabled ? 'Alto Contraste:<br>ON' : 'Alto Contraste:<br>OFF';
 
   }
 
@@ -322,6 +322,7 @@
       overlayMetricsFrame = 0;
       charWidth = 0;
       updateOverlays();
+      renderErrorHighlight();
     });
   }
 
@@ -598,6 +599,7 @@
     persistPreferences({ readingPercent });
     charWidth = 0;
     updateNumbers();
+    renderErrorHighlight();
     const limit = readingPercent === validReadingPercents[0]
       ? ' Tamaño mínimo.'
       : readingPercent === validReadingPercents[validReadingPercents.length - 1]
