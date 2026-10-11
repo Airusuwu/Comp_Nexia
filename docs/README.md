@@ -17,7 +17,7 @@ terminal se interpretan desde la raíz del repositorio, salvo indicación contra
 
 ## Registro de errores
 
-- [Registro de errores del front](errores/Errores.md).
+- [Registro de errores de Nexia](errores/Errores.md).
 
 ## Proyecto
 
@@ -46,7 +46,7 @@ No deben tomarse como el estado actual sin contrastarlas con el código y Git.
 - [Análisis léxico](tecnica/lexical-analysis.md).
 - [Análisis sintáctico y AST](tecnica/syntax-analysis.md).
 - [Análisis semántico](tecnica/semantic-analysis.md).
-- [Generación de código intermedio](tecnica/intermediate-code.md).
+- [Código intermedio: generación, optimización y ejecución](tecnica/intermediate-code.md).
 - [Motor de ejecución](tecnica/runtime.md).
 - [Cómo se detectan los errores](tecnica/errores-lexicos-semanticos.md).
 - [Guía del código del backend](../backend/GUIA_CODIGO.md).
@@ -55,6 +55,7 @@ No deben tomarse como el estado actual sin contrastarlas con el código y Git.
 ## Pruebas y entregables
 
 - [Verificación integral](pruebas/verification.md).
+- [Verificación de ejecución de cuádruplos y optimización](pruebas/intermediate-runtime.md).
 - [Sprint 0 — Primer entregable](sprints/Sprint%200.md).
 
 Los futuros entregables se agregarán en `sprints/`, sin reemplazar los anteriores.

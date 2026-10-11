@@ -1,19 +1,19 @@
-# Generación de código intermedio
+# Código intermedio: generación, optimización y ejecución
 
-Implementada el 2026-10-10. La cuarta fase convierte un AST semánticamente válido
-en cuádruplos. La representación se consulta mediante la API; el motor actual
-continúa ejecutando el AST. Generar instrucciones no solicita entradas ni produce
-salidas de `Escribir`.
+Generación implementada el 2026-10-10; ejecución y optimización incorporadas
+el 2026-10-11. La cuarta fase convierte un AST semánticamente válido en
+cuádruplos. La API genera el perfil ejecutable de versión 2, lo optimiza por
+defecto y ejecuta esa representación. El motor ya no interpreta el AST.
+Generar u optimizar no solicita entradas ni produce salidas de `Escribir`.
 
 ```text
-Código → Lexer → Parser (AST) → Semántica → Generación (cuádruplos)
-                                               ↓
-                                     Ejecución del AST
+Código → Lexer → Parser (AST) → Semántica → Cuádruplos → Optimización → Máquina de cuádruplos
 ```
 
 ## Módulo y contrato
 
-`backend/src/intermediate/generate.js` expone `generateIntermediate(ast)`.
+`backend/src/intermediate/generate.js` expone
+`generateIntermediate(ast, { executable: true })` para el perfil que utiliza la API.
 No depende de HTTP ni del DOM. Su entrada debe haber superado el análisis
 semántico. No modifica el AST ni convierte los literales numéricos a `Number`.
 Cada llamada comienza con identificadores nuevos y genera el mismo resultado
@@ -23,12 +23,18 @@ La representación JSON contiene:
 
 | Campo | Contenido |
 | --- | --- |
-| `version` | `1`, versión del contrato. |
+| `version` | `2`, perfil ejecutable; `1` para la representación compacta de compatibilidad. |
 | `format` | `quadruples`. |
 | `quadruples` | Lista ordenada de instrucciones. Un programa vacío produce `[]`. |
 | `variables` | Metadatos `{id, name, type, scope, location}` de las variables, incluidas las locales. |
 | `temporaries` | Metadatos `{id, type, scope, location}` de los temporales. |
 | `scopes` | Ámbitos estáticos `{id, parent, location}`; `s1` es global y tiene `parent: null`. |
+| `executionMap` | Solo versión 2: una entrada `{location, name?}` por cuádruplo, con ubicación de diagnóstico y nombre de uso cuando corresponde. |
+
+`generateIntermediate(ast)` conserva por compatibilidad el perfil compacto de
+versión 1, sin `EVAL`, `TICK` ni `executionMap`. La máquina y el optimizador
+requieren versión 2 y rechazan la versión 1; la API utiliza siempre versión 2.
+La diferencia es de representación, no de gramática del lenguaje.
 
 Cada cuádruplo contiene exactamente `op`, `arg1`, `arg2`, `result` y `location`.
 Los operandos no usados son `null`. Las ubicaciones conservan los seis campos
@@ -43,6 +49,8 @@ Los operandos distinguen explícitamente sus clases:
 {"kind":"label","id":"L1"}
 {"kind":"literal","type":"ENTERO","raw":"3"}
 {"kind":"literal","type":"BOOLEANO","raw":"verdadero","canonical":"VERDADERO"}
+{"kind":"constant","type":"ENTERO","value":14}
+{"kind":"constant","type":"REAL","value":0,"negativeZero":true}
 ```
 
 Los identificadores internos se asignan en orden de generación: `v1`, `t1`,
@@ -51,12 +59,17 @@ antes de su definición. Su número indica orden de creación, no posición en l
 Los tipos se obtienen de las reglas compartidas de `types/compatibility.js`.
 `raw` conserva comillas, decimales y mayúsculas tal como se escribieron; los
 booleanos también guardan `canonical` para conocer su significado.
+`constant` se usa en el IR optimizado para guardar valores ya calculados con
+las reglas del motor. No reemplaza la escritura del IR original; ambos se
+devuelven por separado. `negativeZero` conserva el signo de cero al serializar JSON.
 
 ## Operaciones
 
 | `op` | `arg1` | `arg2` | `result` | Significado |
 | --- | --- | --- | --- | --- |
 | `DECLARE` | null | null | variable | Declara/reinicia una variable sin valor al visitar la instrucción. |
+| `TICK` | null | null | null | Solo versión 2: consume un paso de origen y comprueba límites/cancelación. |
+| `EVAL` | valor | null | temporal | Solo versión 2: materializa una hoja de expresión en el orden de evaluación. |
 | `ASSIGN` | valor | null | variable o temporal | Copia el valor; la asignación a variables respeta el tipo destino y la promoción ENTERO a REAL. |
 | `+`, `-`, `*`, `/`, `%` | valor izquierdo | valor derecho | temporal | Operación aritmética o concatenación válida según tipos. |
 | `<`, `>`, `<=`, `>=`, `==`, `!=`, `Y`, `O` | valor izquierdo | valor derecho | temporal BOOLEANO | Comparación u operación lógica. |
@@ -78,6 +91,9 @@ operaciones durante la generación.
 
 - Las expresiones se recorren de izquierda a derecha, respetando precedencia y
   asociatividad del AST. `Y/O` generan ambos operandos, sin cortocircuito.
+  En versión 2 las hojas se materializan con `EVAL` antes de continuar a la
+  siguiente expresión. Así un literal izquierdo fuera de rango falla antes
+  que una operación del lado derecho.
 - Cada declaración tiene un ID único. La resolución de nombres conserva la
   indiferencia a mayúsculas y permite ocultar variables externas en bloques hijos.
   Las declaraciones dentro de un ciclo quedan dentro del recorrido de su cuerpo,
@@ -93,10 +109,11 @@ operaciones durante la generación.
   antes de sumar uno, evitando un incremento innecesario al alcanzar el entero
   máximo. Modificar `i` en el cuerpo no altera la progresión del rango.
 - `WRITE_BEGIN/ARG/END` representan una salida agrupada: los argumentos no son
-  líneas separadas. Un futuro ejecutor deberá validar y completar el grupo antes
-  de publicarlo, como hace actualmente el motor con `Escribir`.
+  líneas separadas. La máquina valida y completa el grupo antes de publicarlo;
+  ante un error descarta la línea incompleta y conserva las anteriores.
 
-Ejemplo: para `a <- 2 + 3 * 4`, suponiendo que `a` ya se declaró como `v1`:
+Ejemplo compacto de versión 1 para `a <- 2 + 3 * 4`, suponiendo que `a` ya
+se declaró como `v1`:
 
 | Operación | Argumento 1 | Argumento 2 | Resultado |
 | --- | --- | --- | --- |
@@ -116,8 +133,55 @@ El primer cuádruplo, con ubicación de ejemplo, tiene esta forma real:
 }
 ```
 
+El perfil ejecutable añade las evaluaciones y pasos explícitos; por ello sus
+temporales y posiciones de instrucciones difieren de este ejemplo compacto.
 Los nombres, tipos y posiciones de las variables están en `variables`; las
 instrucciones usan sus IDs para evitar ambigüedades.
+
+## Optimización conservadora
+
+`optimizeIntermediate(code)` devuelve `{code, stats}` sin modificar el código
+recibido. Trabaja únicamente sobre el perfil ejecutable de versión 2:
+
+- Calcula operaciones cuyos operandos son constantes conocidas, usando
+  `literalValue`, `unaryValue`, `binaryValue` y las mismas reglas de tipos/límites.
+- Sustituye los resultados por constantes tipadas y propaga los temporales
+  conocidos dentro de un bloque lineal. Descarta el conocimiento en etiquetas
+  y saltos; no propaga valores de variables ni supone resultados de `Leer`.
+- Elimina asignaciones constantes a temporales que ya no se leen en ningún
+  cuádruplo. Conserva las definiciones necesarias para usos tras etiquetas/saltos.
+- Si calcular algo produce `TypeRuleError`, mantiene la operación para runtime.
+  No transforma un posible error de una rama no ejecutada en un error de análisis.
+- Conserva todos los `TICK`, las lecturas/escrituras, los saltos y la evaluación
+  estricta de `Y/O`. No aplica identidades como `x * 0` que ocultarían errores de `x`.
+
+Con `2 + 3 * 4`, los cálculos constantes se convierten en el valor tipado `14`.
+La asignación a la variable conserva su tipo destino y los pasos de origen
+siguen presentes. Esta versión no incluye optimización de ramas, ciclos,
+expresiones comunes ni generación de código nativo.
+
+`stats` informa `inputInstructions`, `outputInstructions`, `foldedExpressions`,
+`propagatedOperands` y `removedInstructions`. Son estadísticas estáticas del
+IR, no una medición de velocidad ni un conteo de vueltas de ciclos.
+
+## Máquina de cuádruplos
+
+`executeIntermediate(code, inputs, { signal })` no recibe un AST. Valida el IR,
+resuelve etiquetas y recorre instrucciones mediante un contador de programa.
+Los valores se almacenan por ID, con tipos fijos y promoción ENTERO a REAL.
+Cada solicitud tiene su propio estado; `Leer` conserva la espera y el replay.
+
+`TICK` representa los pasos que consumía el recorrido anterior: instrucciones,
+expresiones, grupos y declaraciones. El optimizador no los elimina, manteniendo
+el límite de 50000 pasos. Se conserva el límite de 2 segundos, la cancelación,
+100 entradas, 1000 líneas y 65536 unidades UTF-16 de salida. `steps` cuenta pasos
+de origen; `instructions` cuenta cuádruplos realmente despachados.
+
+`executionMap` conserva la ubicación de cada diagnóstico: por ejemplo, el
+divisor de `/` o `%`, el identificador de `Leer` y la instrucción de `Escribir`
+para límites de salida. La optimización filtra este mapa junto con los
+cuádruplos para mantener su correspondencia. Los errores de un programa no
+dependen de reconstruir ni recorrer el AST.
 
 ## API y fallos
 
@@ -126,6 +190,20 @@ instrucciones usan sus IDs para evitar ambigüedades.
 la representación está completa. Si falla lexer, parser o semántica, la fase
 es `skipped` y `intermediateCode` es `null`.
 
+Ambos endpoints admiten `optimize`, booleano opcional con valor predeterminado
+`true`. `false` desactiva la optimización; ningún valor permite regresar al
+intérprete del AST. Un campo de otro tipo, incluido `null`, responde HTTP 400.
+
+Campos adicionales:
+
+- `optimizedIntermediateCode`: IR que ejecutará la máquina si está habilitada
+  la optimización; `null` si se desactiva o falla una fase previa.
+- `optimization`: `enabled`, `status` (`completed` o `skipped`) y estadísticas.
+- `analysis.optimization`: `completed` al optimizar o `skipped` si se desactiva
+  o falla una fase previa.
+- `executionEngine`: `"quadruples"` si se inició el motor; `null` durante análisis
+  o ante errores que impiden iniciarlo.
+
 Se conservan los estados existentes (`analyzed`, `completed`, `waiting_input`,
 etc.) y los códigos HTTP. El análisis permanece con `executed: false` y
 `results: []`. La ejecución conserva el código intermedio incluso si espera
@@ -133,10 +211,12 @@ una entrada o encuentra un error runtime. El replay de `Leer` genera la misma
 representación, independientemente de las entradas.
 
 Los errores de solicitud e internos mantienen la respuesta mínima existente,
-añadiendo `intermediateCode: null`; no incluyen el objeto `analysis`. Un fallo
-inesperado del generador se propaga al manejador HTTP, que responde 500 y
-`status: error`, sin publicar datos parciales ni ejecutar el AST.
-`GET /api/health` añade `capabilities.intermediate: true`.
+añadiendo ambos campos de IR, `optimization` y `executionEngine` con `null`;
+no incluyen el objeto `analysis`. Un fallo inesperado del generador,
+optimizador o contrato ejecutable se propaga al manejador HTTP, que responde
+500 y `status: error`, sin publicar datos parciales ni iniciar un motor alternativo.
+`GET /api/health` declara `intermediate`, `intermediateExecution` y `optimization`
+con valor `true`, junto con las capacidades anteriores.
 
 Desde PowerShell, con el servidor iniciado:
 
@@ -144,11 +224,13 @@ Desde PowerShell, con el servidor iniciado:
 $payload = @{ code = "Inicio`nDefinir a Como ENTERO`na <- 2 + 3 * 4`nEscribir a`nFin" } | ConvertTo-Json
 $analysis = Invoke-RestMethod http://127.0.0.1:3000/api/analyze -Method Post -ContentType 'application/json' -Body $payload
 $analysis.intermediateCode | ConvertTo-Json -Depth 12
+$analysis.optimizedIntermediateCode | ConvertTo-Json -Depth 12
+$analysis.optimization
 ```
 
 Los límites existentes de tamaño de código y profundidad del AST acotan la
 generación, que recorre estructuras finitas. No se simulan vueltas de ciclos.
-Los controles runtime siguen siendo responsabilidad del motor actual:
+Los controles runtime siguen siendo responsabilidad de la máquina:
 divisores, entradas, rango numérico, salida, tiempo, pasos y cancelación.
 Por ejemplo, un literal entero fuera del rango seguro se conserva al generar;
 el motor puede rechazarlo después al ejecutar.
@@ -168,6 +250,12 @@ npm.cmd --prefix backend test
 npm.cmd --prefix backend run check
 ```
 
-La suite automatizada tiene 36 casos. No verifica una máquina virtual de
-cuádruplos ni una vista de código intermedio en navegador: esta etapa ofrece
-la generación y consulta por API.
+Actualización 2026-10-11: la suite completa pasa 160 casos, incluidos los 36
+anteriores y 124 nuevos de ejecución, optimización, contrato ejecutable y API.
+Los nuevos casos comparan AST, IR original e IR optimizado, incluyendo errores,
+ubicaciones, replay y pasos. También se prueban 80 programas con semilla fija,
+límites, cancelación, aislamiento e inyección de fallos internos.
+Pasan el chequeo de sintaxis y las ocho pruebas existentes del frontend.
+Plan en [pruebas del backend](../../backend/tests/README.md); evidencia en
+[verificación de cuádruplos](../pruebas/intermediate-runtime.md).
+No se ha añadido ni revisado visualmente una vista de código intermedio en el frontend.

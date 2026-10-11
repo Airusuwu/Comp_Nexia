@@ -10,7 +10,7 @@ No utiliza Express, base de datos ni paquetes externos. Sirve el frontend y
 procesa el pseudocódigo que recibe del editor.
 
 Aunque el proyecto se denomina compilador educativo, esta versión ejecuta mediante
-un **intérprete del AST**: no genera un ejecutable ni convierte el programa a
+una **máquina de cuádruplos**: no genera un ejecutable ni convierte el programa a
 JavaScript. No utiliza `eval` ni `Function` para ejecutar el texto del usuario.
 
 ```text
@@ -21,7 +21,8 @@ Editor del frontend
     -> Parser: tokens a AST
     -> Semántica: comprobación de tipos y variables
     -> Generación: AST validado a cuádruplos
-    -> Motor: ejecución del AST (solo /api/execute)
+    -> Optimización: constantes seguras (opcional)
+    -> Motor: ejecución de cuádruplos (solo /api/execute)
     -> Respuesta JSON con resultados, estado y diagnósticos
     -> Terminal del frontend
 ```
@@ -44,14 +45,17 @@ Todas las rutas siguientes son relativas a `backend/`.
 | `src/parser/parse.js` | Reconoce la gramática y construye el árbol de sintaxis abstracta. |
 | `src/semantic/analyze.js` | Recorre el árbol para verificar tipos, declaraciones e inicialización. |
 | `src/intermediate/generate.js` | Convierte el AST validado a cuádruplos con tipos, ámbitos y ubicaciones. |
+| `src/intermediate/format.js` | Valida el contrato ejecutable y las referencias de operandos/etiquetas. |
+| `src/intermediate/optimize.js` | Pliega constantes seguras, propaga temporales y elimina copias constantes sin lectores. |
 | `src/symbols/table.js` | Administra variables por ámbitos y combina estados del análisis. |
 | `src/types/compatibility.js` | Define los cinco tipos y las combinaciones válidas de operadores/asignaciones. |
 | `src/types/guards.js` | Comprueba declaración, redeclaración, inicialización y divisores. |
 | `src/types/literals.js` | Valida el formato escrito de un literal, sin calcular operaciones. |
 | `src/runtime/values.js` | Convierte entradas y literales en valores tipados, calcula operaciones y formatea salidas. |
-| `src/runtime/execute.js` | Ejecuta instrucciones y bloques; controla entradas, salidas y límites. |
+| `src/runtime/execute-intermediate.js` | Ejecuta los cuádruplos, sus saltos, entradas, salidas y límites. |
+| `src/runtime/execute.js` | Intérprete anterior del AST, conservado como referencia; no se usa en la API. |
 | `src/diagnostics/response.js` | Construye respuestas uniformes para errores de solicitud. |
-| `tests/README.md` | Describe las suites persistentes de ciclos y código intermedio. |
+| `tests/README.md` | Plan de las 160 pruebas de ciclos, generación, ejecución, optimización y API. |
 
 ## 3. Comunicación y validaciones HTTP
 
@@ -60,7 +64,8 @@ Todas las rutas siguientes son relativas a `backend/`.
 - `POST /api/execute`: analiza y, si no hay errores, ejecuta.
 
 Los POST reciben JSON con `code` como texto. Para ejecutar se puede incluir
-`inputs`, una lista de textos introducidos mediante `Leer`.
+`inputs`, una lista de textos introducidos mediante `Leer`. `optimize` es un
+booleano opcional: por defecto es `true`; `false` usa cuádruplos sin optimización.
 
 ```json
 {
@@ -136,8 +141,8 @@ cada bloque añade un ámbito temporal. `declare` registra una variable; `resolv
 busca desde el ámbito más cercano. Los nombres se comparan en mayúsculas.
 
 Durante el análisis cada símbolo registra tipo, ubicación, inicialización y,
-cuando se conoce con seguridad, una constante numérica. Durante la ejecución
-también contiene su valor real en `value`. Son tablas distintas: cada fase crea la suya.
+cuando se conoce con seguridad, una constante numérica. La máquina utiliza mapas
+independientes de valores, identificados por los IDs de variables y temporales.
 
 Para `Si/Sino`, se clona el estado y se analizan ambos caminos. `merge` considera
 una variable inicializada después del condicional solo si ambos caminos la inicializan.
@@ -172,7 +177,7 @@ binaria: no debe prometerse precisión decimal exacta.
 
 ## 8. Generación de código intermedio
 
-`generateIntermediate(ast)` se llama después de la semántica. Traduce las
+`generateIntermediate(ast, { executable: true })` se llama después de la semántica. Traduce las
 expresiones a operaciones con temporales y las condiciones/ciclos a etiquetas
 y saltos. `Para` conserva un avance privado separado de su contador visible;
 `Repetir` coloca su condición después del cuerpo.
@@ -182,19 +187,31 @@ distinguen literales, variables, temporales y etiquetas. Los metadatos conservan
 tipos, ámbitos y nombres originales; un homónimo local tiene un ID distinto.
 Los literales guardan su escritura original y no se calculan en esta fase.
 
-La API añade `intermediateCode` y `analysis.intermediate`. Con errores previos,
-el código intermedio es `null` y la fase queda `skipped`. Un fallo interno del
-generador impide ejecutar y usa la respuesta HTTP 500 existente.
+El perfil ejecutable es versión 2: `EVAL` materializa las hojas en orden y `TICK`
+conserva el presupuesto de pasos de origen. `executionMap` mantiene ubicaciones
+de diagnóstico, incluidos el divisor y el destino de `Leer`, sin consultar el AST.
+El perfil compacto de versión 1 sigue disponible para consultas independientes
+mediante `generateIntermediate(ast)`; no es la representación que ejecuta la API.
 
-La generación se consulta por API; la ejecución continúa usando `execute(ast)`.
+La API conserva `intermediateCode` y añade `optimizedIntermediateCode`,
+`optimization` y `analysis.optimization`. Un fallo previo omite las fases
+dependientes; un fallo interno del generador u optimizador impide ejecutar y
+usa la respuesta HTTP 500 existente.
+
+`optimizeIntermediate` calcula únicamente operaciones constantes que cumplen
+las mismas reglas y límites del motor. Propaga temporales dentro de un bloque
+lineal y elimina copias constantes sin lectores. Conserva `TICK`, los efectos
+de entrada/salida y las operaciones que puedan fallar. No propaga variables,
+no cambia ramas ni introduce cortocircuito.
 Contrato y ejemplos en [intermediate-code.md](../docs/tecnica/intermediate-code.md).
 
 ## 9. Ejecución y entrada de datos
 
-`execute(ast, inputs, { signal })` recorre el árbol con funciones asíncronas.
-`expression` obtiene valores; `statements` ejecuta instrucciones; `block` abre y
-cierra ámbitos. `Escribir` añade una línea a `results`, uniendo sus argumentos
-sin espacios automáticos.
+`executeIntermediate(code, inputs, { signal })` recibe únicamente cuádruplos.
+Un contador de programa selecciona la siguiente instrucción; los saltos usan
+una tabla de etiquetas. Los operandos resuelven valores tipados por ID. `DECLARE`
+reinicia cada variable local cuando se vuelve a entrar en su declaración.
+`Escribir` publica una línea al cerrar un grupo completo de argumentos.
 
 Cuando `Leer` necesita un dato que aún no está en `inputs`, `NeedInput` interrumpe
 el recorrido y se convierte en una respuesta `waiting_input`. No queda un proceso
@@ -210,8 +227,11 @@ El frontend reemplaza las salidas completas para no duplicarlas. Este modelo es
 adecuado para el lenguaje actual, sin efectos externos ni aleatoriedad; habría
 que revisarlo antes de incorporar archivos, reloj u otros efectos.
 
-`tick` cuenta pasos, comprueba cancelación y limita la ejecución a 50000 pasos o
-2 segundos por solicitud. Cada 128 pasos cede el turno al bucle de eventos de Node.
+`TICK` cuenta pasos de origen, comprueba cancelación y limita la ejecución a
+50000 pasos o 2 segundos por solicitud. La optimización conserva estas
+instrucciones; reducir operaciones no amplía el presupuesto de pasos.
+Cada 128 pasos o despachos se cede el turno al bucle de eventos de Node.
+`steps` cuenta pasos de origen e `instructions` cuenta cuádruplos despachados.
 Hay además límites de 100 entradas, 1000 líneas y 65536 unidades UTF-16 de salida.
 Los operadores Y/O evalúan ambos operandos: no hay cortocircuito.
 

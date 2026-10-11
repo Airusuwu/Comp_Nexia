@@ -20,14 +20,51 @@
 - Al continuar el trabajo en otro chat, consultar y ampliar el registro existente
   en vez de iniciar otra colección de archivos.
 
-## Estado de ramas — 2026-10-10
+## Ejecución de cuádruplos y optimización — 2026-10-11
+
+- El PR #7 de `back` hacia `main` se fusionó mediante squash en `6c2572a`.
+  Antes de esta etapa, ambas ramas tenían el mismo contenido; su historial
+  diverge por el squash. No se reescribieron commits ni se borraron ramas.
+- Se trabaja en `back`, conservando como referencia la entrega publicada en
+  `40ebe8a`. La implementación, sus pruebas y documentación se guardan en
+  un commit local de `back`; la publicación en el remoto queda pendiente.
+- La API genera el perfil ejecutable de cuádruplos versión 2 (`EVAL`, `TICK`
+  y `executionMap`), optimiza constantes por defecto y ejecuta ese IR mediante
+  `executeIntermediate`; no utiliza el AST para ejecutar. El perfil compacto
+  versión 1 sigue disponible por compatibilidad en el generador independiente.
+- `optimize: false` permite ejecutar cuádruplos sin optimizar. Se exponen IR
+  original y optimizado, estadísticas, `analysis.optimization` y
+  `executionEngine: "quadruples"` cuando inicia el motor. Health anuncia
+  `intermediateExecution` y `optimization` además de las capacidades anteriores.
+- La optimización calcula constantes seguras, propaga temporales dentro de
+  bloques lineales y elimina copias constantes sin lectores. Conserva errores,
+  evaluación estricta de Y/O, entradas/salidas, saltos y presupuesto de pasos.
+- Se mantiene el intérprete anterior en `runtime/execute.js` como referencia,
+  sin utilizarlo como fallback de la API. No se modifica el frontend.
+- La validación funcional pasa 160 pruebas de backend: las 36 previas y 124
+  nuevas (75 de motor, 26 de optimizador/contrato y 23 de API). Se comparan
+  resultados, diagnósticos, entrada y pasos entre AST, IR original e IR
+  optimizado; también se prueban 80 programas con semilla fija, límites,
+  cancelación, replay, aislamiento y fallos internos sin fallback.
+- Pasan ocho pruebas existentes de preferencias/apertura en frontend, el
+  chequeo de sintaxis y `git diff --check`. No se modifica código del frontend
+  ni se realiza revisión visual del navegador en esta etapa.
+- El plan reproducible está en `backend/tests/README.md` y los resultados en
+  `docs/pruebas/intermediate-runtime.md`. No se encontraron nuevos defectos
+  de producción con estos escenarios. El servidor de desarrollo no se reinició;
+  las pruebas HTTP usan y cierran puertos efímeros.
+- La limitación de evaluación/diagnósticos del perfil compacto está registrada
+  en `docs/errores/Errores.md`. El contrato actualizado se explica en
+  `docs/tecnica/intermediate-code.md` y `docs/tecnica/runtime.md`.
+
+## Estado de ramas — 2026-10-10 (histórico)
 
 - Se integraron localmente en `back` los cambios publicados de `main`,
   conservando el trabajo propio de ambas ramas. La sincronización está
   pendiente de publicarse en `origin/back`.
 - La rama `back` queda como base para continuar el desarrollo del compilador.
 
-## Generación de código intermedio — 2026-10-10
+## Generación de código intermedio — 2026-10-10 (histórico)
 
 - Implementada localmente en `back` como cuarta fase, después de semántica.
   `generateIntermediate(ast)` genera cuádruplos deterministas con tipos,

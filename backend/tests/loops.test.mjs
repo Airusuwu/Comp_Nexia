@@ -40,7 +40,7 @@ Fin`);
     assert.equal(httpStatus, 200);
     assert.equal(body.status, 'completed');
     assert.deepEqual(body.results, ['1', '2', '3']);
-    assert.deepEqual(body.analysis, { lexical: 'completed', syntactic: 'completed', semantic: 'completed', intermediate: 'completed' });
+    assert.deepEqual(body.analysis, { lexical: 'completed', syntactic: 'completed', semantic: 'completed', intermediate: 'completed', optimization: 'completed' });
   });
 
   it('no ejecuta el cuerpo si inicio supera el límite', async () => {

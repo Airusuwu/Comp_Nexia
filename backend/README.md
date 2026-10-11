@@ -7,7 +7,7 @@ comentarios sobre responsabilidades, validaciones y decisiones de implementació
 ## Estado con ejecución básica
 
 Editor conectado al servidor, con análisis léxico, sintáctico y semántico,
-generación de código intermedio y ejecución del AST.
+generación de código intermedio, optimización de constantes y ejecución de cuádruplos.
 `GET /api/health` indica disponibilidad del servidor. `POST /api/analyze`
 valida la solicitud y devuelve tokens, AST, símbolos, cuádruplos, controles runtime o errores
 ubicados. Nunca devuelve resultados de ejecución ficticios.
@@ -65,7 +65,7 @@ Respuesta esperada:
 {
   "status": "ok",
   "service": "nexia-backend",
-  "capabilities": { "analysis": true, "lexical": true, "syntactic": true, "semantic": true, "intermediate": true, "execution": true }
+  "capabilities": { "analysis": true, "lexical": true, "syntactic": true, "semantic": true, "intermediate": true, "intermediateExecution": true, "optimization": true, "execution": true }
 }
 ```
 
@@ -85,6 +85,8 @@ recibido ni acceso HTTP a docs, backend o archivos de Git.
 `POST /api/analyze`, con `Content-Type: application/json` y cuerpo
 `{"code":"Inicio\nFin"}`. El texto no se recorta; se convierte en tokens con ubicación.
 Límites técnicos: código de 64 KiB UTF-8 y cuerpo JSON de 512 KiB.
+Ambos POST admiten `optimize: false` para desactivar la optimización; por defecto
+es `true`. No se aceptan otros tipos ni `null` en ese campo.
 
 Respuesta sin errores de análisis (HTTP 200, extracto sin tokens, AST ni símbolos):
 
@@ -95,7 +97,7 @@ Respuesta sin errores de análisis (HTTP 200, extracto sin tokens, AST ni símbo
   "results": [],
   "diagnostics": [{
     "code": "ANALYSIS_COMPLETED",
-    "message": "Análisis léxico, sintáctico y semántico completados; código intermedio generado. El programa no se ha ejecutado. Controles pendientes de ejecución: 0.",
+    "message": "Análisis léxico, sintáctico y semántico completados; código intermedio generado y optimizado. El programa no se ha ejecutado. Controles pendientes de ejecución: 0.",
     "severity": "info",
     "stage": "service",
     "line": null,
@@ -105,14 +107,15 @@ Respuesta sin errores de análisis (HTTP 200, extracto sin tokens, AST ni símbo
 ```
 
 La respuesta también incluye `tokens`, `ast`, `symbols`, `runtimeChecks`,
-`intermediateCode`, `truncated` y `analysis` con el estado lexical, syntactic,
-semantic e intermediate. Los errores léxicos devuelven HTTP 422,
+`intermediateCode`, `optimizedIntermediateCode`, `optimization`, `executionEngine`,
+`truncated` y `analysis` con el estado lexical, syntactic, semantic, intermediate
+y optimization. Los errores léxicos devuelven HTTP 422,
 `status: "lexical_error"` y diagnósticos ubicados. Documentación detallada en
 [`docs/tecnica/lexical-analysis.md`](../docs/tecnica/lexical-analysis.md).
 
 Los errores sintácticos devuelven HTTP 422, `syntactic_error`, `ast: null`
 y el primer diagnóstico de etapa parser. Si falla el lexer, sintaxis queda
-skipped. Sin errores las cuatro fases quedan completed. Gramática y AST en
+skipped. Sin errores las fases habilitadas quedan completed. Gramática y AST en
 [`docs/tecnica/syntax-analysis.md`](../docs/tecnica/syntax-analysis.md).
 
 Errores semánticos: HTTP 422, semantic_error, primer diagnóstico ubicado.
@@ -123,7 +126,13 @@ controles que requieren valores reales se describen en
 La cuarta fase genera cuádruplos después de validar la semántica. Devuelve
 `intermediateCode` con versión, instrucciones y metadatos de variables,
 temporales y ámbitos. Ante errores previos, `analysis.intermediate` queda
-`skipped` y `intermediateCode` es `null`. El motor continúa ejecutando el AST.
+`skipped` y `intermediateCode` es `null`. La API genera el perfil ejecutable
+versión 2, con evaluaciones explícitas y metadatos de diagnóstico/pasos.
+El motor ejecuta `optimizedIntermediateCode` cuando la optimización está
+habilitada, o `intermediateCode` cuando se desactiva. No ejecuta el AST.
+`executionEngine: "quadruples"` indica que comenzó este motor; analizar no lo inicia.
+`optimization` informa expresiones plegadas, operandos propagados e instrucciones
+eliminadas. Se conservan tipos, controles runtime y el presupuesto de pasos de origen.
 Contrato, operaciones y ejemplo de consulta en
 [`docs/tecnica/intermediate-code.md`](../docs/tecnica/intermediate-code.md).
 
@@ -133,7 +142,9 @@ texto vacío; 413 para exceso de tamaño; 415 para formato distinto de JSON;
 `status: "invalid_request"`, `executed: false` y diagnósticos de etapa request.
 Los fallos internos devuelven 500 y `status: "error"`, sin detalles internos.
 Las respuestas mínimas de solicitud o error interno incluyen
-`intermediateCode: null`; no se ejecuta ni se entrega generación parcial.
+`intermediateCode: null` y `optimizedIntermediateCode: null`; no se ejecuta ni
+se entrega generación parcial. Fallos internos de optimización también bloquean
+la ejecución.
 
 Las ubicaciones son null cuando no corresponden, nunca líneas inventadas.
 Para las futuras fases serán índices desde 1; columnas en unidades UTF-16
@@ -152,12 +163,12 @@ como texto, no HTML. Ctrl+O abre un .txt local sin enviarlo automáticamente.
 | --- | --- | --- |
 | `src/server.js` | Arranque local y errores de escucha | Implementado |
 | `src/api/app.js` | Rutas, origen y errores HTTP | Implementado |
-| `src/api/analyze.js` | Validación y coordinación de las cuatro fases | Implementado |
+| `src/api/analyze.js` | Validación y coordinación del análisis, generación, optimización y ejecución | Implementado |
 | `src/api/static.js` | Lista permitida de recursos del frontend | Implementado |
 | `src/lexer/` | Tokens y ubicaciones originales | Implementado, punto 7 |
 | `src/parser/` | Gramática, precedencia y AST | Implementado, punto 8 |
 | `src/semantic/` | Validación estática del AST | Implementado, punto 9 |
-| `src/intermediate/` | Generación de cuádruplos tipados y ubicados | Implementado |
+| `src/intermediate/` | Generación, validación y optimización de cuádruplos | Implementado |
 | `src/types/` | Compatibilidad, literales básicos y controles auxiliares | Integrado con semántica y runtime |
 | `src/symbols/` | Declaraciones, tipos y ámbitos | Implementado, punto 9 |
 | `src/diagnostics/` | Esquema de respuesta y diagnósticos | Solicitudes implementadas |
@@ -168,7 +179,7 @@ Las carpetas reservadas no contienen implementaciones ficticias. Sus archivos
 `.gitkeep` solo permiten conservar la estructura en Git.
 
 La API coordina las fases; lexer, parser, semántica, generador, tipos y símbolos
-no dependen de HTTP ni del DOM. El motor recorre el AST validado, con un
+no dependen de HTTP ni del DOM. El motor recorre los cuádruplos validados, con un
 estado de ejecución separado por programa y controles de valores en ejecución.
 No se ejecutará el pseudocódigo como JavaScript mediante `eval` o `Function`,
 ni se heredarán conversiones implícitas del lenguaje anfitrión.
@@ -178,6 +189,12 @@ anterior no determina las reglas gramaticales a partir de la maqueta.
 Los cambios visuales y los eventos del editor permanecerán en `frontend/`.
 
 ## Verificación
+
+Actualización 2026-10-11: implementados el motor de cuádruplos y la optimización
+conservadora. Pasan 160 pruebas de backend, ocho pruebas existentes de frontend
+y el chequeo de sintaxis. El plan está en `tests/README.md` y la evidencia en
+[`verificación de cuádruplos`](../docs/pruebas/intermediate-runtime.md).
+Los resultados históricos descritos debajo corresponden a las etapas previas.
 
 El punto 10 registró 140 aserciones de integración (26 programas), pruebas
 reales en Edge PC y recuperación ante desconexión. Véase
@@ -192,8 +209,9 @@ npm.cmd --prefix backend test
 `run check` comprueba sintaxis de los módulos implementados, incluido el script
 del editor; `test` ejecuta las pruebas funcionales. Se realizaron 23 verificaciones HTTP
 con aserciones y se comprobó en Edge de PC el envío, la conservación del texto
-y el aviso de editor vacío. La suite persistente actual tiene 36 casos:
-11 de ciclos y 25 de generación/API. Su plan está en `tests/README.md`.
+y el aviso de editor vacío. La suite persistente actual tiene 160 casos:
+36 previos de ciclos/generación/API y 124 de motor, optimizador y nueva API.
+Su plan está en `tests/README.md`.
 En el punto 7 se añadieron 102 comprobaciones de lexer y HTTP satisfactorias.
 En el punto 8 se ejecutaron 397 aserciones de parser, AST, límites y API.
 En el punto 9 se ejecutaron 498 aserciones de símbolos, semántica y API.

@@ -2,7 +2,8 @@ import { tokenize } from '../lexer/tokenize.js';
 import { parse } from '../parser/parse.js';
 import { analyzeSemantics } from '../semantic/analyze.js';
 import { generateIntermediate } from '../intermediate/generate.js';
-import { execute } from '../runtime/execute.js';
+import { optimizeIntermediate } from '../intermediate/optimize.js';
+import { executeIntermediate } from '../runtime/execute-intermediate.js';
 
 const maxBodyBytes = 512 * 1024;
 const maxCodeBytes = 64 * 1024;
@@ -66,11 +67,15 @@ export async function analyzeRequest(request, { run = false, signal } = {}) {
     throw new RequestError(400, 'EMPTY_CODE', 'El editor está vacío. Escribe código antes de enviarlo.');
   }
   const inputs = payload.inputs ?? [];
+  const optimize = payload.optimize ?? true;
+  if (typeof optimize !== 'boolean' || payload.optimize === null) {
+    throw new RequestError(400, 'INVALID_OPTIMIZE', 'optimize debe ser true o false.');
+  }
   if (run && (!Array.isArray(inputs) || inputs.length > 100 || inputs.some(input => typeof input !== 'string' || input.length > 65536))) {
     throw new RequestError(400, 'INVALID_INPUTS', 'inputs debe ser una lista de hasta 100 textos de máximo 65536 unidades cada uno.');
   }
 
-  // Cada fase necesita una salida válida de la anterior; no ejecutamos un AST con errores.
+  // Cada fase necesita una salida válida de la anterior; no ejecutamos IR con errores.
   const lexical = tokenize(payload.code);
   const failed = lexical.diagnostics.length > 0;
   const syntax = failed ? null : parse(lexical.tokens);
@@ -78,7 +83,16 @@ export async function analyzeRequest(request, { run = false, signal } = {}) {
   const semantic = syntax?.ast ? analyzeSemantics(syntax.ast) : null;
   const semanticFailed = semantic?.diagnostics.length > 0;
   // Un fallo del generador se propaga al manejador HTTP; no se ejecuta ni se publica IR parcial.
-  const intermediateCode = semantic && !semanticFailed ? generateIntermediate(syntax.ast) : null;
+  const intermediateCode = semantic && !semanticFailed ? generateIntermediate(syntax.ast, { executable: true }) : null;
+  const optimized = intermediateCode && optimize ? optimizeIntermediate(intermediateCode) : null;
+  const optimization = {
+    enabled: optimize, status: optimized ? 'completed' : 'skipped',
+    ...(optimized?.stats ?? {
+      inputInstructions: intermediateCode?.quadruples.length ?? 0,
+      outputInstructions: intermediateCode?.quadruples.length ?? 0,
+      foldedExpressions: 0, propagatedOperands: 0, removedInstructions: 0
+    })
+  };
   const analysis = {
     status: failed ? 'lexical_error' : syntaxFailed ? 'syntactic_error' : semanticFailed ? 'semantic_error' : 'analyzed',
     executed: false,
@@ -87,9 +101,13 @@ export async function analyzeRequest(request, { run = false, signal } = {}) {
       lexical: failed ? 'error' : 'completed',
       syntactic: failed ? 'skipped' : syntaxFailed ? 'error' : 'completed',
       semantic: !semantic ? 'skipped' : semanticFailed ? 'error' : 'completed',
-      intermediate: intermediateCode ? 'completed' : 'skipped'
+      intermediate: intermediateCode ? 'completed' : 'skipped',
+      optimization: optimization.status
     },
     intermediateCode,
+    optimizedIntermediateCode: optimized?.code ?? null,
+    optimization,
+    executionEngine: null,
     symbols: semantic?.symbols ?? [],
     runtimeChecks: semantic?.runtimeChecks ?? [],
     tokens: lexical.tokens,
@@ -97,11 +115,14 @@ export async function analyzeRequest(request, { run = false, signal } = {}) {
     truncated: lexical.truncated || (syntax?.truncated ?? false),
     diagnostics: failed ? lexical.diagnostics : syntaxFailed ? syntax.diagnostics : semanticFailed ? semantic.diagnostics : [{
       code: 'ANALYSIS_COMPLETED',
-      message: `Análisis léxico, sintáctico y semántico completados; código intermedio generado. El programa no se ha ejecutado. Controles pendientes de ejecución: ${semantic.runtimeChecks.length}.`,
+      message: `Análisis léxico, sintáctico y semántico completados; código intermedio generado${optimized ? ' y optimizado' : ''}. El programa no se ha ejecutado. Controles pendientes de ejecución: ${semantic.runtimeChecks.length}.`,
       severity: 'info', stage: 'service', line: null, column: null
     }]
   };
   // El resultado del motor reemplaza status/results: analizar no equivale a ejecutar.
   if (!run || analysis.status !== 'analyzed') return analysis;
-  return { ...analysis, ...await execute(syntax.ast, inputs, { signal }) };
+  return {
+    ...analysis, executionEngine: 'quadruples',
+    ...await executeIntermediate(optimized?.code ?? intermediateCode, inputs, { signal })
+  };
 }
