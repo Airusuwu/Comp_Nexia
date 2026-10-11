@@ -151,6 +151,7 @@
     else root.removeAttribute('data-contrast');
     toggle.setAttribute('aria-pressed', String(enabled));
         contrastLabel.innerHTML = enabled ? 'Contraste:<br>ON' : 'Contraste:<br>OFF';
+
   }
 
   function setTerminalVisibility(elements, visible) {
@@ -315,7 +316,6 @@
     errorHighlight.append(fragment);
     errorHighlight.style.transform = `translateY(-${editor.scrollTop}px)`;
   }
-
   function refreshOverlayMetrics() {
     if (overlayMetricsFrame) cancelAnimationFrame(overlayMetricsFrame);
     overlayMetricsFrame = requestAnimationFrame(() => {

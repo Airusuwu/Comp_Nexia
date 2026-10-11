@@ -3,9 +3,9 @@
 ## Alcance
 
 Revisión de los cambios de frontend incorporados en `front` mediante el commit
-`b3f1c4b`. Los dos primeros hallazgos y sus correcciones corresponden al editor
-web. El tercer elemento registra un pendiente de entrega estática en el backend;
-esa corrección aún no se ha aplicado.
+`b3f1c4b`. Los tres hallazgos y sus correcciones corresponden al frontend. El
+problema de entrega del módulo de preferencias se resolvió en `front` al integrar
+esa lógica en `editor.js`, sin modificar el backend.
 
 ## Errores encontrados y correcciones
 

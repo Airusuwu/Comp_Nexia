@@ -154,6 +154,77 @@
   transform: none;
 }
 
+.zoom-controls {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.zoom-notice {
+  position: fixed;
+  z-index: 1000;
+  top: 50%;
+  left: 50%;
+  width: min(88vw, 38rem);
+  padding: 1.25rem 1.5rem;
+  transform: translate(-50%, -50%);
+  border: 0.25rem solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 48%), 0 0.5rem 1.5rem rgb(0 0 0 / 55%);
+  color: var(--color-accent);
+  font-size: clamp(1.7rem, 5vw, 2.5rem);
+  font-weight: 900;
+  line-height: 1.25;
+  text-align: center;
+  pointer-events: none;
+}
+
+.zoom-notice:not([hidden]) {
+  animation: zoom-notice-enter 180ms ease-out both;
+}
+
+.zoom-notice.zoom-notice--leaving {
+  animation: zoom-notice-exit 300ms ease-in forwards;
+}
+
+@keyframes zoom-notice-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes zoom-notice-exit {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.96);
+  }
+}
+
+.zoom-notice[hidden] {
+  display: none;
+}
+
+.zoom-controls__button[aria-disabled="true"] {
+  border: 0.25rem dashed currentColor;
+  box-shadow: none;
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
+.zoom-controls__button[aria-disabled="true"]:hover,
+.zoom-controls__button[aria-disabled="true"]:active {
+  box-shadow: none;
+  filter: none;
+  transform: none;
+}
+
 .action-card {
   display: grid;
   width: 100%;
@@ -370,7 +441,6 @@
   z-index: 0;
   transition: transform 80ms ease;
 }
-
 .error-highlight {
   position: absolute;
   top: 0;
@@ -402,6 +472,25 @@
   left: 0;
   width: 0.55em;
   height: 0;
+  background: var(--color-primary);
+  pointer-events: none;
+  z-index: 3;
+  animation: cursor-blink 1.06s steps(1) infinite ;
+}
+
+.code-area .code-input {
+  position: relative;
+  z-index: 2;
+  caret-color: transparent;
+  background: transparent;
+}
+
+.line-numbers .is-active {
+  background: rgba(29, 11, 61, 0.12);
+  color: var(--color-text);
+}
+
+.line-numbers .is-error {
   background: var(--color-primary);
   pointer-events: none;
   z-index: 3;
@@ -574,6 +663,11 @@
   color: var(--color-error);
 }
 
+.error-icon {
+  --icon-cut-color: var(--color-primary-deep);
+  color: var(--color-error);
+}
+
 html[data-contrast="high"] .error-icon {
   --icon-cut-color: #ffffff;
   color: #8b2a1f;
@@ -581,6 +675,11 @@ html[data-contrast="high"] .error-icon {
 
 .result-row--error .result-row__icon {
   width: 2.2rem;
+  height: 2.2rem;
+}
+
+.terminal-minimize {
+  width: 2.6rem;
   height: 2.2rem;
 }
 
@@ -650,6 +749,12 @@ html[data-contrast="high"] .brand__icon ellipse:first-of-type {
 html[data-contrast="high"] .brand__icon ellipse:last-of-type {
   fill: #000000;
   stroke: none;
+}
+
+html[data-contrast="high"] .brand__icon path,
+html[data-contrast="high"] .brand__icon rect,
+html[data-contrast="high"] .brand__icon ellipse {
+  fill: #ffffff !important;
 }
 
 html[data-contrast="high"] .action-card,
