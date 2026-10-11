@@ -1,19 +1,36 @@
 # Motor básico de ejecución
 
-Estado: implementado el 2026-09-10. El motor interpreta el AST; no genera
-código JavaScript ni usa eval/Function. La gramática de `Para` y `Repetir` se
-añadió el 2026-10-10; las funciones siguen fuera del alcance.
+Estado actualizado el 2026-10-11: la API ejecuta cuádruplos de versión 2,
+con optimización conservadora habilitada por defecto. No genera código
+JavaScript ni usa eval/Function. El intérprete del AST de 2026-09-10 permanece
+como referencia y ya no se utiliza en la API. La gramática de `Para` y `Repetir`
+se añadió el 2026-10-10; las funciones siguen fuera del alcance.
 
 ## Funcionamiento
 
 Ejecutar o Ctrl+Enter envía el código a POST /api/execute. Primero se realizan
-los tres análisis. Un error léxico, sintáctico o semántico impide ejecutar
-cualquier instrucción. POST /api/analyze conserva su uso de solo análisis.
+los tres análisis, la generación y, si está habilitada, la optimización. Un
+error de una fase previa impide ejecutar cualquier instrucción.
+POST /api/analyze genera/optimiza sin iniciar el motor ni solicitar entradas.
 
-`src/runtime/execute.js` recorre el AST con una tabla de símbolos nueva por
-solicitud. Ejecuta declaraciones múltiples, asignaciones, Leer, Escribir,
-Si/Sino, Mientras, Para y Repetir. Cada entrada a un bloque crea su ámbito;
-al salir se descarta. Se conservan las reglas aprobadas de mayúsculas y tipos fijos.
+`src/runtime/execute-intermediate.js` recibe solamente código intermedio.
+Utiliza un contador de programa, una tabla de etiquetas y mapas nuevos de
+valores por solicitud. Procesa declaraciones, asignaciones, operaciones, Leer,
+Escribir y saltos. Los saltos representan Si/Sino, Mientras, Para y Repetir.
+La resolución de ámbitos ya se realizó al generar IDs únicos; `DECLARE`
+reinicia la variable local en cada visita, sin exponerla fuera de su ámbito.
+Se conservan las reglas aprobadas de mayúsculas y tipos fijos.
+
+`EVAL` materializa los operandos en orden, antes de ejecutar sus operaciones.
+`executionMap` conserva posiciones de errores y nombres de uso; el motor
+no vuelve al AST para obtenerlos. Las salidas de `Escribir` se publican al
+cerrar el grupo, conservando completas únicamente las líneas anteriores si falla.
+
+La optimización pliega operaciones constantes seguras, propaga temporales
+dentro de un bloque lineal y elimina copias constantes que ya no se leen.
+Los errores numéricos, de texto o divisor se conservan para runtime, con su
+ubicación. No modifica lecturas, escrituras, ramas ni evaluación estricta de Y/O.
+Enviar `optimize: false` ejecuta cuádruplos sin optimizar; no retorna al AST.
 
 `src/runtime/values.js` representa cada valor con tipo y contenido separados.
 Usa las funciones de compatibilidad, entrada y divisor del punto 6, sin
@@ -88,8 +105,11 @@ Son límites de esta implementación, no nuevas reglas atribuidas al PDF:
   La aritmética REAL conserva las aproximaciones de esa representación.
 - % usa residuo con signo del dividendo. La precisión decimal definitiva y
   otras convenciones numéricas se pueden revisar en una ampliación posterior.
-- Máximo 50000 pasos de nodos/declaraciones o 2 segundos por solicitud.
-  El motor cede el control cada 128 pasos para atender cancelaciones y HTTP.
+- Máximo 50000 pasos de origen o 2 segundos por solicitud. Cada `TICK` representa
+  una visita del recorrido previo de nodos/declaraciones; la optimización nunca
+  lo elimina. `steps` cuenta este presupuesto e `instructions` los cuádruplos
+  despachados. El motor cede el control cada 128 pasos o despachos para atender
+  cancelaciones y HTTP. El tiempo se comprueba también al despachar operaciones.
 - Máximo 100 lecturas; 1000 líneas y 65536 unidades UTF-16 de salida total;
   65536 unidades por texto. La salida se limita antes de unir textos grandes.
 - Se conservan 64 KiB de código y 512 KiB por solicitud JSON. En el replay de
@@ -100,12 +120,12 @@ Son límites de esta implementación, no nuevas reglas atribuidas al PDF:
 ## Contrato HTTP
 
 ```json
-{"code":"Inicio\nEscribir 5 + 3\nFin","inputs":[]}
+{"code":"Inicio\nEscribir 5 + 3\nFin","inputs":[],"optimize":true}
 ```
 
 POST /api/execute devuelve los metadatos de análisis y, si se ejecutó:
 
-- completed, HTTP 200: results con salidas reales y steps.
+- completed, HTTP 200: results con salidas reales, steps e instructions.
 - waiting_input, HTTP 200: results parciales e input con index/name/type/location.
 - runtime_error, HTTP 422: diagnóstico ubicado y salidas parciales.
 - stopped: motor cancelado; la respuesta puede no enviarse si el cliente cerró.
@@ -115,6 +135,9 @@ que terminó: debe comprobarse status. Errores de análisis mantienen executed
 false y results vacío. Los inputs deben ser hasta 100 strings; valores ajenos
 a ese contrato devuelven 400. Se mantienen protecciones de origen/host y rutas.
 No se guarda código, entradas ni resultados. health declara execution true.
+También declara `intermediateExecution: true` y `optimization: true`.
+La respuesta informa `executionEngine: "quadruples"` si inició el motor,
+además del IR original, el optimizado y las estadísticas de optimización.
 
 ## Prueba rápida
 
@@ -135,6 +158,15 @@ Para entrada: `Definir dato Como REAL`, `Leer dato`, `Escribir dato * 2`
 entre Inicio/Fin. Introducir 4.5 produce 9.
 
 ## Validación y pendientes
+
+Actualización 2026-10-11: la migración a cuádruplos y el optimizador pasan
+160 pruebas de backend, incluidas comparaciones con el AST de referencia,
+lecturas/replay, errores ubicados, límites y cancelación. También pasan el
+chequeo de sintaxis y ocho pruebas del frontend. Plan en
+[pruebas del backend](../../backend/tests/README.md) y resultados en
+[verificación de cuádruplos](../pruebas/intermediate-runtime.md).
+Las verificaciones del navegador descritas debajo son históricas; no se
+repitieron en esta etapa.
 
 Actualización 2026-10-10: `npm.cmd --prefix backend test` ejecuta 11 casos
 persistentes de `Para` y `Repetir` a través de `/api/execute`; los 11 pasan.

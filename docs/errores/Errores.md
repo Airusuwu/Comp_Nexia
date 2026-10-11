@@ -1,6 +1,6 @@
-# Registro de errores del front
+# Registro de errores de Nexia
 
-## Alcance
+## Alcance de la revisión inicial del frontend
 
 Revisión de los cambios de frontend incorporados en `front` mediante el commit
 `b3f1c4b`. Los tres hallazgos y sus correcciones corresponden al frontend. El
@@ -48,7 +48,30 @@ esa lógica en `editor.js`, sin modificar el backend.
 - **Estado:** resuelto en `front`; no se modificó el backend. La comprobación
   visual en navegador queda pendiente.
 
-## Verificación
+### 4. El perfil compacto de cuádruplos no conserva todo lo necesario para ejecutar
+
+- **Detectado:** 11 de octubre de 2026, durante la revisión del generador para
+  habilitar un motor de código intermedio.
+- **Problema:** las hojas de expresiones eran operandos directos; un ejecutor
+  secuencial podía calcular una operación derecha antes de validar un literal
+  izquierdo fuera de rango. Tampoco había instrucciones para preservar el
+  presupuesto de pasos del AST ni posiciones específicas de errores de divisor,
+  `Leer` y límites de `Escribir`.
+- **Causa:** la versión 1 se diseñó como representación consultable; la API
+  todavía ejecutaba el AST y no dependía de esos cuádruplos para el runtime.
+  La limitación no afectaba al motor anterior.
+- **Corrección:** el perfil ejecutable versión 2 materializa las hojas con
+  `EVAL`, conserva pasos de origen con `TICK` y añade `executionMap` para
+  diagnósticos. La API utiliza este perfil y la máquina lo valida antes de
+  ejecutar; el optimizador conserva los controles y sus ubicaciones.
+- **Verificación:** el 11 de octubre pasan 160 pruebas de backend y el chequeo
+  de sintaxis. Los casos nuevos verifican la prioridad del literal izquierdo
+  frente a un fallo derecho, ubicaciones de divisor/Leer/Escribir, columnas
+  UTF-16 y conservación de pasos, tanto sin optimizar como al optimizar.
+  Evidencia en [verificación de cuádruplos](../pruebas/intermediate-runtime.md).
+- **Estado:** resuelto y verificado mediante pruebas automatizadas en `back`.
+
+## Verificación de la revisión inicial del frontend
 
 La comprobación de sintaxis anterior a estas correcciones había pasado para el
 commit revisado. La verificación funcional y visual de estas correcciones queda

@@ -298,7 +298,8 @@ describe('código intermedio por la API', () => {
   it('anuncia la cuarta fase y mantiene las capacidades existentes', async () => {
     const body = await (await fetch(`${baseUrl}/api/health`)).json();
     assert.deepEqual(body.capabilities, {
-      analysis: true, lexical: true, syntactic: true, semantic: true, intermediate: true, execution: true
+      analysis: true, lexical: true, syntactic: true, semantic: true, intermediate: true,
+      intermediateExecution: true, optimization: true, execution: true
     });
   });
 
@@ -311,7 +312,7 @@ describe('código intermedio por la API', () => {
     assert.equal(analyzed.body.executed, false);
     assert.deepEqual(analyzed.body.results, []);
     assert.deepEqual(analyzed.body.analysis, {
-      lexical: 'completed', syntactic: 'completed', semantic: 'completed', intermediate: 'completed'
+      lexical: 'completed', syntactic: 'completed', semantic: 'completed', intermediate: 'completed', optimization: 'completed'
     });
     assertReferences(analyzed.body.intermediateCode);
     assert.equal(executed.httpStatus, 200);
@@ -339,7 +340,7 @@ describe('código intermedio por la API', () => {
     const analyzed = await request('/api/analyze', source);
     const executed = await request('/api/execute', source);
     assert.equal(analyzed.httpStatus, 200);
-    assert.equal(analyzed.body.intermediateCode.quadruples[1].arg1.raw, '9007199254740993');
+    assert.equal(analyzed.body.intermediateCode.quadruples.find(quad => quad.op === 'EVAL').arg1.raw, '9007199254740993');
     assert.equal(executed.httpStatus, 422);
     assert.equal(executed.body.status, 'runtime_error');
     assert.equal(executed.body.diagnostics[0].code, 'NUMERIC_LIMIT');

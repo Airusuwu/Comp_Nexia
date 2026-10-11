@@ -28,7 +28,10 @@ export function createApp() {
         sendJson(response, 200, {
           status: 'ok',
           service: 'nexia-backend',
-          capabilities: { analysis: true, lexical: true, syntactic: true, semantic: true, intermediate: true, execution: true }
+          capabilities: {
+            analysis: true, lexical: true, syntactic: true, semantic: true, intermediate: true,
+            intermediateExecution: true, optimization: true, execution: true
+          }
         });
         return;
       }

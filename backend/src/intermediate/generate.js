@@ -2,23 +2,40 @@ import { SymbolTable } from '../symbols/table.js';
 import { requireType, binaryResultType, unaryResultType, assignmentResultType } from '../types/compatibility.js';
 
 // Cuarta fase: convierte un AST semánticamente válido en instrucciones, sin ejecutarlo.
-export function generateIntermediate(ast) {
+export function generateIntermediate(ast, { executable = false } = {}) {
   if (ast?.kind !== 'Program' || !Array.isArray(ast.body)) {
     throw new TypeError('Se requiere un AST Program validado por la semántica.');
   }
+  if (typeof executable !== 'boolean') throw new TypeError('executable debe ser booleano.');
 
   const table = new SymbolTable();
   const quadruples = [];
   const variables = [];
   const temporaries = [];
+  const executionMap = [];
   const scopes = [{ id: 's1', parent: null, location: { ...ast.location } }];
   const scopeStack = ['s1'];
   let labelCount = 0;
   const locationOf = (node) => ({ ...node.location });
   const reference = (kind, id) => ({ kind, id });
 
-  function emit(op, node, arg1 = null, arg2 = null, result = null) {
+  function emit(op, node, arg1 = null, arg2 = null, result = null, diagnosticNode = node) {
     quadruples.push({ op, arg1, arg2, result, location: locationOf(node) });
+    if (executable) executionMap.push({
+      location: locationOf(diagnosticNode),
+      ...(diagnosticNode.kind === 'Identifier' ? { name: diagnosticNode.name } : {})
+    });
+  }
+
+  // TICK conserva el presupuesto del recorrido original, incluso después de optimizar.
+  const tick = (node) => { if (executable) emit('TICK', node); };
+
+  function evaluate(value, node) {
+    if (!executable) return value;
+    const result = temporary(value.type, node);
+    // Materializa cada hoja en orden: un fallo izquierdo precede a la expresión derecha.
+    emit('EVAL', node, value.operand, null, result);
+    return { operand: result, type: value.type };
   }
 
   function temporary(type, node) {
@@ -58,16 +75,17 @@ export function generateIntermediate(ast) {
   }
 
   function expression(node) {
+    tick(node);
     if (node.kind === 'Literal') {
-      return {
+      return evaluate({
         type: requireType(node.literalType),
         operand: {
           kind: 'literal', type: node.literalType, raw: node.raw,
           ...(node.literalType === 'BOOLEANO' ? { canonical: node.canonical } : {})
         }
-      };
+      }, node);
     }
-    if (node.kind === 'Identifier') return variable(node);
+    if (node.kind === 'Identifier') return evaluate(variable(node), node);
     if (node.kind === 'GroupExpression') return expression(node.expression);
     if (node.kind === 'UnaryExpression') {
       const argument = expression(node.argument);
@@ -83,7 +101,8 @@ export function generateIntermediate(ast) {
       const right = expression(node.right);
       const type = binaryResultType(node.operator, left.type, right.type);
       const result = temporary(type, node);
-      emit(node.operator, node, left.operand, right.operand, result);
+      emit(node.operator, node, left.operand, right.operand, result,
+        ['/', '%'].includes(node.operator) ? node.right : node);
       return { operand: result, type };
     }
     throw new TypeError(`Expresión no soportada por el generador: ${node.kind}.`);
@@ -96,18 +115,22 @@ export function generateIntermediate(ast) {
 
   function statements(body) {
     for (const node of body) {
+      tick(node);
       if (node.kind === 'Declaration') {
-        for (const target of node.targets) declare(target, node.declaredType);
+        for (const target of node.targets) {
+          tick(target);
+          declare(target, node.declaredType);
+        }
       } else if (node.kind === 'Assignment') {
         const target = variable(node.target);
         const value = expression(node.value);
         assignmentResultType(target.type, value.type);
-        emit('ASSIGN', node, value.operand, null, target.operand);
+        emit('ASSIGN', node, value.operand, null, target.operand, node.value);
       } else if (node.kind === 'ReadStatement') {
-        emit('READ', node, null, null, variable(node.target).operand);
+        emit('READ', node, null, null, variable(node.target).operand, node.target);
       } else if (node.kind === 'WriteStatement') {
         emit('WRITE_BEGIN', node);
-        for (const value of node.values) emit('WRITE_ARG', value, expression(value).operand);
+        for (const value of node.values) emit('WRITE_ARG', value, expression(value).operand, null, null, node);
         emit('WRITE_END', node);
       } else if (node.kind === 'IfStatement') {
         const condition = expression(node.condition);
@@ -154,6 +177,7 @@ export function generateIntermediate(ast) {
           const inRange = temporary('BOOLEANO', node);
           emit('<=', node, current, limit, inRange);
           emit('JUMP_IF_FALSE', node, inRange, null, end);
+          tick(node);
           emit('ASSIGN', node.variable, current, null, counter);
           block(node.body, node);
 
@@ -174,5 +198,8 @@ export function generateIntermediate(ast) {
   }
 
   statements(ast.body);
-  return { version: 1, format: 'quadruples', quadruples, variables, temporaries, scopes };
+  return {
+    version: executable ? 2 : 1, format: 'quadruples', quadruples, variables, temporaries, scopes,
+    ...(executable ? { executionMap } : {})
+  };
 }
