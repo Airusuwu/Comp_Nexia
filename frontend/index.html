@@ -15,9 +15,6 @@
   <body>
     <svg class="svg-library" aria-hidden="true">
       <defs>
-        <symbol id="icon-code" viewBox="0 0 64 48">
-          <path d="m22 5-16 19 16 19M42 5l16 19-16 19M37 2 27 46" />
-        </symbol>
         <symbol id="icon-play" viewBox="0 0 48 48">
           <path class="icon-fill" d="M12 7v34l28-17z" />
         </symbol>
@@ -133,7 +130,7 @@
             </button>
             <button id="contrast-toggle" class="action-card contrast-toggle" type="button" aria-pressed="false">
               <svg class="action-card__icon" aria-hidden="true"><use href="#icon-contrast" /></svg>
-              <span id="contrast-label">Alto contraste: desactivado</span>
+              <span id="contrast-label">Contraste:<br>OFF</span>
             </button>
           </div>
         </aside>
@@ -151,6 +148,7 @@
              <div class="line-gutter" aria-hidden="true"><ol class="line-numbers" id="line-numbers"></ol></div>
               <div class="code-area">
                <div class="line-highlight" aria-hidden="true"></div>
+               <div class="error-highlight" aria-hidden="true"></div>
                 <div class="block-cursor" aria-hidden="true"></div> 
                 <textarea id="code-editor" class="code-input" aria-labelledby="editor-title" aria-describedby="editor-help" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off">// Nuevas líneas añadidas para demostrar espacio
 Inicio

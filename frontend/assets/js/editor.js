@@ -1,6 +1,5 @@
 (() => {
   const editor = document.getElementById('code-editor');
-  const gutter = document.querySelector('.line-gutter');
   const numbers = document.getElementById('line-numbers');
   const runButton = document.getElementById('run-program');
   const stopButton = document.getElementById('stop-program');
@@ -60,6 +59,7 @@
   let readingPercent = preferences.readingPercent;
   const blockCursor = document.querySelector('.block-cursor');
   const lineHighlight = document.querySelector('.line-highlight');
+  const errorHighlight = document.querySelector('.error-highlight');
   let charWidth = 0;
   let overlayMetricsFrame = 0;
   const errorCounter = document.getElementById('error-counter');
@@ -150,7 +150,7 @@
     if (enabled) root.setAttribute('data-contrast', 'high');
     else root.removeAttribute('data-contrast');
     toggle.setAttribute('aria-pressed', String(enabled));
-    contrastLabel.textContent = `Alto contraste: ${enabled ? 'activado' : 'desactivado'}`;
+        contrastLabel.innerHTML = enabled ? 'Contraste:<br>ON' : 'Contraste:<br>OFF';
   }
 
   function setTerminalVisibility(elements, visible) {
@@ -293,6 +293,29 @@
   lineHighlight.style.height = `${lineHeight}px`;
   }
 
+    function renderErrorHighlight() {
+    errorHighlight.replaceChildren();
+    if (errorLines.size === 0) {
+      errorHighlight.style.transform = 'translateY(0)';
+      return;
+    }
+
+    const style = getComputedStyle(editor);
+    const lineHeight = parseFloat(style.lineHeight);
+    const paddingTop = parseFloat(style.paddingTop);
+
+    const fragment = document.createDocumentFragment();
+    errorLines.forEach((lineNumber) => {
+      const band = document.createElement('div');
+      band.className = 'error-highlight__line';
+      band.style.top = `${paddingTop + (lineNumber - 1) * lineHeight}px`;
+      band.style.height = `${lineHeight}px`;
+      fragment.append(band);
+    });
+    errorHighlight.append(fragment);
+    errorHighlight.style.transform = `translateY(-${editor.scrollTop}px)`;
+  }
+
   function refreshOverlayMetrics() {
     if (overlayMetricsFrame) cancelAnimationFrame(overlayMetricsFrame);
     overlayMetricsFrame = requestAnimationFrame(() => {
@@ -329,9 +352,10 @@
     Array.from(numbers.children).forEach((item, index) => {
       item.classList.toggle('is-error', errorLines.has(index + 1));
     });
-    gutter.scrollTop = editor.scrollTop;
+    numbers.style.transform = `translateY(-${editor.scrollTop}px)`;
     highlightPosition();
   }
+
 
   function setBusy(busy) {
     runButton.setAttribute('aria-disabled', String(busy));
@@ -349,6 +373,8 @@
     setBusy(false);
     errorLines.clear();
     updateErrorCounter(0);
+    document.querySelectorAll('.line-numbers .is-error').forEach((el) => el.classList.remove('is-error'));
+    renderErrorHighlight();
     editor.removeAttribute('aria-invalid');
     editor.removeAttribute('aria-errormessage');
     updateNumbers();
@@ -444,6 +470,7 @@
       }
     }
     updateErrorCounter(errorCount);
+    renderErrorHighlight();
     for (let index = 0; index <= data.results.length; index += 1) {
       for (const entry of entries) {
         if (entry.after === index) {
@@ -578,16 +605,23 @@
         : '';
     showZoomNotice(`Tamaño del texto: ${readingPercent} %.${limit}`);
   }
-  decreaseButton.addEventListener('click', () => setReadingPercent(readingPercent - 25));
-  increaseButton.addEventListener('click', () => setReadingPercent(readingPercent + 25));
+  decreaseButton.addEventListener('click', () => {
+    if (decreaseButton.getAttribute('aria-disabled') === 'true') return;
+    setReadingPercent(readingPercent - 25);
+  });  
+  increaseButton.addEventListener('click', () => {
+    if (increaseButton.getAttribute('aria-disabled') === 'true') return;
+    setReadingPercent(readingPercent + 25);
+  });
   saveButton.setAttribute('aria-disabled', 'false');
   openButton.setAttribute('aria-disabled', 'false');
-
+  
   editor.addEventListener('input', codeChanged);
   editor.addEventListener('scroll', () => {
-  gutter.scrollTop = editor.scrollTop;
+  numbers.style.transform = `translateY(-${editor.scrollTop}px)`;
+  errorHighlight.style.transform = `translateY(-${editor.scrollTop}px)`;
   updateOverlays();
-  });  
+  });
   editor.addEventListener('click', highlightPosition);
   editor.addEventListener('keyup', highlightPosition);
   editor.addEventListener('select', highlightPosition);
