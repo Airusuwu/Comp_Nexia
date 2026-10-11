@@ -20,11 +20,52 @@
 - Al continuar el trabajo en otro chat, consultar y ampliar el registro existente
   en vez de iniciar otra colección de archivos.
 
+## Estado de ramas — 2026-10-10
+
+- Se integraron localmente en `back` los cambios publicados de `main`,
+  conservando el trabajo propio de ambas ramas. La sincronización está
+  pendiente de publicarse en `origin/back`.
+- La rama `back` queda como base para continuar el desarrollo del compilador.
+
+## Generación de código intermedio — 2026-10-10
+
+- Implementada localmente en `back` como cuarta fase, después de semántica.
+  `generateIntermediate(ast)` genera cuádruplos deterministas con tipos,
+  ámbitos, IDs internos y ubicaciones; cubre todo el lenguaje vigente.
+- `/api/analyze` y `/api/execute` añaden `intermediateCode` y
+  `analysis.intermediate`; `/api/health` añade la capacidad `intermediate`.
+  Con errores previos, la generación queda omitida y el campo es `null`.
+- El motor mantiene la ejecución del AST. La consulta del código intermedio
+  es por API, sin cambios de frontend ni optimización.
+- Pasan 36 pruebas persistentes: las 11 de ciclos y 25 nuevas de generador/API.
+  También pasan el chequeo de sintaxis y `git diff --check`.
+  El contrato se documenta en `docs/tecnica/intermediate-code.md` y la guía
+  del backend incluye el nuevo recorrido. La implementación se guarda en
+  `back`; su publicación en el remoto queda pendiente.
+- Servidor local reiniciado en `http://127.0.0.1:3000/`: health confirma
+  `intermediate: true`; se verificó generación completa y salida `14` para
+  `2 + 3 * 4`. El PID observado al reiniciar es `25856`.
+
+## Compilador: alcance aprobado (2026-10-10)
+
+- `Para` y `Repetir` quedaron implementados localmente en el compilador de `back`.
+  `npm.cmd --prefix backend test` pasa 11 pruebas de ejecución por la API; también
+  pasan `npm.cmd --prefix backend run check` y `git diff --check`.
+- `Para` usa contador local ENTERO, límite inclusivo, incremento fijo de uno y cero
+  iteraciones cuando inicio supera el límite. La forma vigente es
+  `Para i <- inicio Hasta Hacer límite`; no tiene cláusula de paso.
+- `Repetir ... Hasta Que` evalúa una condición BOOLEANO al final; el cuerpo corre
+  al menos una vez. La condición solo accede a variables declaradas fuera del
+  cuerpo.
+- El front no forma parte de este cambio. Funciones y paso configurable siguen
+  fuera del alcance.
+
 ## Sprint 1 — alto contraste y preferencias — 2026-10-09
 
 - Se implementan en `front` los puntos 8 y 9 de Ideas mejoras (Sprint 1), con
   preferencias locales del navegador.
-- El control del encabezado alterna el tema monocromático negro y blanco.
+- El control de contraste está al final de la barra lateral y alterna el tema
+  monocromático negro y blanco.
 - `localStorage` recuerda el tema, el tamaño de texto (100–200 %, en pasos de
   25 %) y si la terminal está minimizada. Una terminal minimizada sigue oculta
   tras recargar; ejecutar la vuelve a mostrar y guarda ese estado.
@@ -40,7 +81,7 @@
   archivos del backend. La comprobación visual en navegador queda pendiente; los
   cambios aún no tienen commit.
 
-## Estado vigente para continuar en un chat nuevo — 2026-09-25
+## Estado de referencia previo - 2026-09-25 (historico)
 
 **Leer esta sección primero.** El resto del archivo conserva la historia de cada
 etapa; menciones antiguas de trabajo pendiente, ramas o servidores no sustituyen

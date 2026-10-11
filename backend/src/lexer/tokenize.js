@@ -1,7 +1,10 @@
 import { literalType } from '../types/literals.js';
 import { TypeRuleError } from '../types/compatibility.js';
 
-const keywords = new Set(['Inicio', 'Fin', 'Definir', 'Como', 'Leer', 'Escribir', 'Si', 'Entonces', 'Sino', 'FinSi', 'Mientras', 'Hacer', 'FinMientras']);
+const keywords = new Set([
+  'Inicio', 'Fin', 'Definir', 'Como', 'Leer', 'Escribir', 'Si', 'Entonces', 'Sino', 'FinSi',
+  'Mientras', 'Hacer', 'FinMientras', 'Para', 'Hasta', 'FinPara', 'Repetir', 'Que'
+]);
 const typeNames = new Set(['ENTERO', 'REAL', 'TEXTO', 'CARACTER', 'BOOLEANO']);
 const booleanNames = new Set(['VERDADERO', 'FALSO']);
 const logicalOperators = new Set(['Y', 'O', 'NO']);

@@ -261,66 +261,45 @@ Fin
 Este programa muestra los números del `1` al `5`. Actualiza el contador para
 que el ciclo termine; Nexia limita las ejecuciones demasiado largas.
 
-## 11. Para: repetir una cantidad conocida de veces
+## 11. Para: recorrer un rango de enteros
 
-**Estado actual: `Para` todavía no está implementado en Nexia.** Su botón aparece
-en la interfaz, pero no está habilitado. Escribir una instrucción `Para` tampoco
-funciona aún. Su sintaxis definitiva está pendiente de implementación.
-
-Conceptualmente, un ciclo Para sirve para recorrer una secuencia con un contador,
-por ejemplo mostrar los números del 1 al 5. Debes identificar el valor inicial,
-el valor final y el incremento del contador.
-
-Por ahora puedes hacer ese recorrido con `Mientras`. Este ejemplo sí funciona:
+`Para` utiliza un contador local y recorre desde el valor inicial hasta el
+límite inclusive, aumentando de uno en uno:
 
 ```text
 Inicio
-Definir contador Como ENTERO
-contador <- 1
-
-Mientras contador <= 5 Hacer
-    Escribir "Vuelta: ", contador
-    contador <- contador + 1
-FinMientras
+Para i <- 1 Hasta Hacer 5
+    Escribir "Vuelta: ", i
+FinPara
 Fin
 ```
 
-El contador comienza en 1, aumenta de uno en uno y deja de entrar al ciclo cuando
-vale 6. Por eso se realizan cinco vueltas. No olvides actualizar el contador.
+El contador `i` solo existe dentro del ciclo; no hace falta declararlo antes.
+Los valores de inicio y límite deben ser `ENTERO` y se calculan una vez al
+entrar. Si el inicio es mayor que el límite, el cuerpo no se ejecuta. Nexia no
+admite una cláusula de paso configurable.
 
-## 12. Repetir: ejecutar antes de comprobar la condición
+## 12. Repetir: comprobar la condición al final
 
-**Estado actual: `Repetir` todavía no está implementado en Nexia.** Su botón no
-está habilitado y no se puede escribir esa instrucción en un programa ejecutable.
-La explicación siguiente es conceptual, no una gramática aprobada para Nexia.
-
-En un ciclo del tipo «repetir hasta que», el bloque se ejecuta **al menos una vez**
-y después se comprueba una condición de salida. Esto lo diferencia de `Mientras`,
-que comprueba su condición antes de ejecutar el bloque y podría no entrar nunca.
-
-Por ejemplo, para pedir un número hasta que sea positivo, puedes usar una variable
-booleana con `Mientras`. Este equivalente sí funciona en la versión actual:
+`Repetir` ejecuta el cuerpo al menos una vez y después comprueba `Hasta Que`:
 
 ```text
 Inicio
 Definir numero Como ENTERO
-Definir continuar Como BOOLEANO
-continuar <- VERDADERO
 
-Mientras continuar Hacer
-    Escribir "Ingresa un número entero mayor que cero:"
+Repetir
+    Escribir "Ingresa un numero positivo:"
     Leer numero
-    continuar <- numero <= 0
-FinMientras
+Hasta Que numero > 0
 
-Escribir "Se recibió un número positivo."
+Escribir "Se recibio un numero positivo."
 Fin
 ```
 
-Como `continuar` comienza en VERDADERO, se solicita el dato al menos una vez.
-Con un entero negativo o cero se repite; con uno positivo se termina. Una entrada
-que no sea un entero produce un error y detiene el programa, no un nuevo intento.
-Recuerda que el motor tiene un límite de 100 lecturas por ejecución.
+La condición debe producir un valor `BOOLEANO`. Las variables usadas en ella
+se declaran fuera del cuerpo; las variables locales del cuerpo no están
+visibles después de `Hasta Que`. El motor limita las iteraciones y también
+puedes cancelar una ejecución con **Detener** o **Escape**.
 
 ## 13. Consejos para evitar errores
 
@@ -335,5 +314,5 @@ Recuerda que el motor tiene un límite de 100 lecturas por ejecución.
 - Si aparece un error, revisa el mensaje, la línea y la columna indicados.
 - Puedes añadir comentarios con `//`; no se ejecutan.
 
-Esta versión admite `Si` y `Mientras`, pero todavía no admite `Para`, `Repetir`
-ni funciones. Para detalles técnicos y límites consulta [el motor de ejecución](../tecnica/runtime.md).
+Esta versión admite `Si`, `Mientras`, `Para` y `Repetir`. Las funciones
+continúan pendientes. Para detalles técnicos y límites consulta [el motor de ejecución](../tecnica/runtime.md).

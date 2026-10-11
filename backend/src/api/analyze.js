@@ -1,6 +1,7 @@
 import { tokenize } from '../lexer/tokenize.js';
 import { parse } from '../parser/parse.js';
 import { analyzeSemantics } from '../semantic/analyze.js';
+import { generateIntermediate } from '../intermediate/generate.js';
 import { execute } from '../runtime/execute.js';
 
 const maxBodyBytes = 512 * 1024;
@@ -76,11 +77,19 @@ export async function analyzeRequest(request, { run = false, signal } = {}) {
   const syntaxFailed = syntax?.diagnostics.length > 0;
   const semantic = syntax?.ast ? analyzeSemantics(syntax.ast) : null;
   const semanticFailed = semantic?.diagnostics.length > 0;
+  // Un fallo del generador se propaga al manejador HTTP; no se ejecuta ni se publica IR parcial.
+  const intermediateCode = semantic && !semanticFailed ? generateIntermediate(syntax.ast) : null;
   const analysis = {
     status: failed ? 'lexical_error' : syntaxFailed ? 'syntactic_error' : semanticFailed ? 'semantic_error' : 'analyzed',
     executed: false,
     results: [],
-    analysis: { lexical: failed ? 'error' : 'completed', syntactic: failed ? 'skipped' : syntaxFailed ? 'error' : 'completed', semantic: !semantic ? 'skipped' : semanticFailed ? 'error' : 'completed' },
+    analysis: {
+      lexical: failed ? 'error' : 'completed',
+      syntactic: failed ? 'skipped' : syntaxFailed ? 'error' : 'completed',
+      semantic: !semantic ? 'skipped' : semanticFailed ? 'error' : 'completed',
+      intermediate: intermediateCode ? 'completed' : 'skipped'
+    },
+    intermediateCode,
     symbols: semantic?.symbols ?? [],
     runtimeChecks: semantic?.runtimeChecks ?? [],
     tokens: lexical.tokens,
@@ -88,7 +97,7 @@ export async function analyzeRequest(request, { run = false, signal } = {}) {
     truncated: lexical.truncated || (syntax?.truncated ?? false),
     diagnostics: failed ? lexical.diagnostics : syntaxFailed ? syntax.diagnostics : semanticFailed ? semantic.diagnostics : [{
       code: 'ANALYSIS_COMPLETED',
-      message: `Análisis léxico, sintáctico y semántico completados. El programa no se ha ejecutado. Controles pendientes de ejecución: ${semantic.runtimeChecks.length}.`,
+      message: `Análisis léxico, sintáctico y semántico completados; código intermedio generado. El programa no se ha ejecutado. Controles pendientes de ejecución: ${semantic.runtimeChecks.length}.`,
       severity: 'info', stage: 'service', line: null, column: null
     }]
   };

@@ -587,7 +587,7 @@
   editor.addEventListener('scroll', () => {
   gutter.scrollTop = editor.scrollTop;
   updateOverlays();
-  });  
+  });
   editor.addEventListener('click', highlightPosition);
   editor.addEventListener('keyup', highlightPosition);
   editor.addEventListener('select', highlightPosition);

@@ -5,6 +5,16 @@ semántico y devuelve analyzed o semantic_error. El contrato y pendientes
 descritos aquí conservan el estado histórico del punto 8; véase
 semantic-analysis.md para el estado vigente.
 
+## Ciclos Para y Repetir aprobados (2026-10-10)
+
+- `Para identificador <- inicio Hasta Hacer límite ... FinPara`: inicio y límite
+  son expresiones ENTERO evaluadas una vez. El contador declarado en la cabecera
+  es local al ciclo, aumenta de uno en uno y el límite es inclusivo. Si inicio >
+  límite, el cuerpo no se ejecuta. No se admite un paso configurable.
+- `Repetir ... Hasta Que condición`: el cuerpo se ejecuta antes de comprobar la
+  condición y, por tanto, al menos una vez. La condición debe ser BOOLEANO; las
+  variables usadas deben estar declaradas fuera del cuerpo.
+
 ## Fuentes y decisiones
 
 El PDF A5 documenta declaraciones `Definir nombre Como TIPO`, asignaciones
@@ -20,20 +30,22 @@ Uriel aprobó expresamente en esta etapa:
   + y - binarios; comparaciones; Y; O.
 
 La indiferencia a mayúsculas de palabras reservadas continúa vigente.
-El lexer incorpora Hacer y FinMientras. No se cambia el código del editor
+El lexer incorpora Hacer, FinMientras, Para, Hasta, FinPara, Repetir y Que. No se cambia el código del editor
 automáticamente ni se admiten asignaciones con la flecha Unicode ←.
 
 ## Gramática implementada
 
 ```text
 programa    = saltos Inicio salto bloque Fin saltos EOF
-bloque      = { declaración | asignación | lectura | escritura | condicional | ciclo }
+bloque        = { declaracion | asignacion | lectura | escritura | condicional | cicloMientras | cicloPara | cicloRepetir }
 declaración = Definir identificador { , identificador } Como tipo finLínea
 asignación  = identificador <- expresión finLínea
 lectura     = Leer identificador finLínea
 escritura   = Escribir expresión { , expresión } finLínea
 condicional = Si expresión Entonces salto bloque [ Sino salto bloque ] FinSi finLínea
-ciclo       = Mientras expresión Hacer salto bloque FinMientras finLínea
+cicloMientras = Mientras expresion Hacer salto bloque FinMientras finLinea
+cicloPara     = Para identificador <- expresion Hasta Hacer expresion salto bloque FinPara finLinea
+cicloRepetir  = Repetir salto bloque Hasta Que expresion finLinea
 primaria    = literal | identificador | ( expresión )
 unaria      = ( + | - | NO ) unaria | primaria
 ```
@@ -52,10 +64,8 @@ propias. La indentación no determina bloques; se admiten bloques vacíos.
 
 Por ampliación solicitada por Uriel el 2026-09-10, Definir acepta listas de
 nombres separados por comas con un tipo común. Leer sigue usando una variable.
-No admite expresiones multilínea,
-inicializadores en declaraciones, funciones, Para o Repetir: esas extensiones
-no tienen gramática acordada. Tampoco decide ámbitos, igualdad entre nombres,
-rangos numéricos ni conversiones. Estas decisiones siguen pendientes.
+No admite expresiones multilínea, inicializadores en declaraciones ni funciones.
+Para y Repetir siguen las reglas aprobadas al inicio de este documento.
 
 ## Contrato del AST
 
@@ -77,6 +87,8 @@ incluyen sus cierres, pero no el salto posterior.
 | WriteStatement | values: expresiones |
 | IfStatement | condition, consequent: instrucciones, alternate: instrucciones o null |
 | WhileStatement | condition, body: instrucciones |
+| ForStatement | variable, initial, limit, body |
+| RepeatUntilStatement | body, condition |
 | Identifier | name: escritura original |
 | Literal | literalType, raw; canonical para booleanos |
 | UnaryExpression | operator, argument |
@@ -98,7 +110,7 @@ Límites técnicos: 64 llamadas anidadas de expresiones/bloques y 128 niveles de
 AST, incluidas cadenas binarias. Al excederlos: SYNTAX_LIMIT, truncated true,
 ast null; no un desbordamiento de pila. No son restricciones gramaticales.
 
-## API y estado real
+## API y estado histórico del punto 8
 
 - Sin errores: HTTP 200, status partial, lexical/syntactic completed, AST.
 - Error léxico: HTTP 422, lexical_error, syntactic skipped, ast null.
